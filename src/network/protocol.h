@@ -2,7 +2,7 @@
 #define __COMMON_PROTOCOL_H__
 
 #include <stdint.h>
-//#include "../ingame.h"
+#include "../ingame.h"
 #include "../main.h"
 
 
@@ -57,7 +57,7 @@ struct PacketKeypress {
 	uint16_t type;
 	uint16_t size;
 
-//	InGameKeyStateEntry keypress, keyrelease;
+	InGameKeyStateEntry keypress, keyrelease;
 };
 
 typedef struct PacketParticle PacketParticle;

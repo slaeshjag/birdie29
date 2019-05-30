@@ -181,7 +181,7 @@ int main(int argc, char  **argv) {
 	//gamestate_pane[GAME_STATE_CHARACTERS] = &character_room.pane;
 	gamestate_pane[GAME_STATE_LOBBY] = &lobby.pane;
 	gamestate_pane[GAME_STATE_ENTER_IP] = &enter_ip.pane;
-	//gamestate_pane[GAME_STATE_GAMEROOM] = &gameroom.pane;
+	gamestate_pane[GAME_STATE_GAMEROOM] = &gameroom.pane;
 	//gamestate_pane[GAME_STATE_GAME_OVER] = &game_over.pane;
 	
 	
