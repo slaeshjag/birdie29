@@ -185,6 +185,9 @@ int server_thread(void *arg) {
 				pack.size = sizeof(PacketMovableMove);
 				
 				for(i = 0; i < s->movable.movables; i++) {
+					if(!s->movable.movable[i].used)
+						continue;
+					
 					int angle;
 					pack.movable_move.x = s->movable.movable[i].x/1000;
 					pack.movable_move.y = s->movable.movable[i].y/1000;
