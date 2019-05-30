@@ -15,9 +15,11 @@ int movableInit() {
 
 	s->movable.bbox = d_bbox_new(MAX_MOVABLE); // Should be enough for anyone
 	s->movable.movables = 0;
-	
+	d_bbox_set_indexkey(s->movable.bbox);
+
 	for (i = 0; i < s->movable.movables; i++) {
 		s->movable.movable[i].used = 0;
+		s->movable.movable[i].req_cleanup = 0;
 	}
 
 	s->movable.in_loop = 0;
@@ -125,6 +127,8 @@ int movableSpawn(char *sprite, int x, int y, int l) {
 	s->movable.movable[idx].gravity_effect = 0;
 	s->movable.movable[idx].x_velocity = 0;
 	s->movable.movable[idx].y_velocity = 0;
+	s->movable.movable[idx].x_gravity = 0;
+	s->movable.movable[idx].y_gravity = 0;
 	s->movable.movable[idx].tile_collision = 1;
 	s->movable.movable[idx].req_cleanup = 0;
 	s->movable.movable[idx].id = idx;
