@@ -19,7 +19,10 @@ all: $(SUBDIRS)
 	@echo " [ LD ] $(BINFILE)"
 	@$(CC) -o $(BINFILE) $(CFLAGS) -Wl,--whole-archive $(addsuffix /out.a,$(SRCDIRS)) -Wl,--no-whole-archive $(MODULESLIBS) $(LDFLAGS)
 	
-	#@darnit-tmxconv res-input/map.tmx res/map.ldmz
+	@echo " [DTMX] map/map.ldmz"
+	@mkdir -p map
+	@darnit-tmxconv res-input/map.tmx map/map.ldmz
+	@cp res-input/tileset.png map/tileset.png
 	
 	@echo "Build complete."
 	@echo 
