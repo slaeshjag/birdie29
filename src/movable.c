@@ -419,11 +419,12 @@ nogravity:
 				continue;
 			}
 			
+			/*
 			if (!_test_boundaries((entry->x + delta_x)/1000 + util_sprite_xoff(entry->sprite), (entry->y)/1000 + util_sprite_yoff(entry->sprite), util_sprite_width(entry->sprite), util_sprite_height(entry->sprite))) {
 				delta_x = 0;
 				entry->movement_blocked = 1;
 				continue;
-			}
+			}*/
 
 			if (delta_x > 0) {
 				r = 1000 - r;
@@ -444,11 +445,12 @@ nogravity:
 				continue;
 			} 
 			
+			/*
 			if (!_test_boundaries((entry->x)/1000 + util_sprite_xoff(entry->sprite), (entry->y + delta_y)/1000 + util_sprite_yoff(entry->sprite), util_sprite_width(entry->sprite), util_sprite_height(entry->sprite))) {
 				delta_y = 0;
 				entry->movement_blocked = 1;
 				continue;
-			}
+			}*/
 
 			if (delta_y > 0) {
 				r = 1000 - r;
