@@ -21,7 +21,6 @@
 Gfx gfx;
 GameState gamestate;
 GameStateStruct *s;
-int server_sock;
 
 Player me;
 
@@ -34,14 +33,14 @@ char *team_name[] = {
 
 void (*state_render[GAME_STATES])()={
 	[GAME_STATE_MENU] = menu_render,
-//	[GAME_STATE_GAME] = ingame_loop,
+	[GAME_STATE_GAME] = ingame_loop,
 //	[GAME_STATE_CHARACTERS] = character_room_render,
 	[GAME_STATE_SELECT_NAME] = NULL,
 //	[GAME_STATE_GAME_OVER] = game_over_render,
 };
 
 void (*state_network_handler[GAME_STATES])()={
-//	[GAME_STATE_GAME] = ingame_network_handler,
+	[GAME_STATE_GAME] = ingame_network_handler,
 	[GAME_STATE_GAMEROOM] = gameroom_network_handler,
 	[GAME_STATE_LOBBY] = lobby_network_handler,
 };
@@ -53,7 +52,7 @@ void restart_to_menu(const char *name) {
 	char buf[4096];
 	
 	server_shutdown();
-	network_close_tcp(server_sock);
+	network_close_tcp(s->server_sock);
 	
 	sprintf(buf, "%s", d_fs_exec_path());
 	sprintf(buf, "%s", basename(buf));
@@ -66,7 +65,7 @@ void restart_to_menu(const char *name) {
 int join_game(unsigned long sip) {
 	PacketJoin join;
 	
-	if((server_sock = network_connect_tcp(sip, PORT + 1)) < 0) {
+	if((s->server_sock = network_connect_tcp(sip, PORT + 1)) < 0) {
 		fprintf(stderr, "failed to join %lu\n", sip);
 		return -1;
 	}
@@ -78,7 +77,7 @@ int join_game(unsigned long sip) {
 	join.name[NAME_LEN_MAX - 1] = 0;
 	join.team = 0;
 
-	protocol_send_packet(server_sock, (void *) &join);
+	protocol_send_packet(s->server_sock, (void *) &join);
 	return 0;
 }
 
