@@ -20,6 +20,8 @@ int movableInit() {
 		s->movable.movable[i].used = 0;
 	}
 
+	s->movable.in_loop = 0;
+	
 	return 0;
 }
 
@@ -124,6 +126,7 @@ int movableSpawn(char *sprite, int x, int y, int l) {
 	s->movable.movable[idx].x_velocity = 0;
 	s->movable.movable[idx].y_velocity = 0;
 	s->movable.movable[idx].tile_collision = 1;
+	s->movable.movable[idx].req_cleanup = 0;
 	s->movable.movable[idx].id = idx;
 	d_sprite_hitbox(s->movable.movable[idx].sprite, &h_x, &h_y, &h_w, &h_h);
 	d_bbox_move(s->movable.bbox, idx, s->movable.movable[idx].x / 1000 + h_x, s->movable.movable[idx].y / 1000 + h_y);
@@ -135,7 +138,12 @@ int movableSpawn(char *sprite, int x, int y, int l) {
 
 
 void movableDespawn(int idx) {
-	d_sprite_free(s->movable.movable[idx].sprite);
+	if (s->movable.in_loop)
+		s->movable.movable[idx].req_cleanup = 1;
+	else {
+		d_sprite_free(s->movable.movable[idx].sprite);
+		d_bbox_delete(s->movable.bbox, idx);
+	}
 	s->movable.movable[idx].used = 0;
 }
 
@@ -229,6 +237,9 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 	//int gravity, hack;
 	int delta_x, delta_y, r, p, gravity_x, gravity_y;
 	int hit_x, hit_y, hit_w, hit_h;
+	int i;
+	int collision_event[MAX_MOVABLE] = { 0 };
+	unsigned int hitlist[MAX_MOVABLE], hits;
 
 	DARNIT_MAP_LAYER *layer = &(s->active_level->layer[entry->l]);
 
@@ -237,6 +248,7 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 	hit_h--;
 
 	entry->gravity_blocked = 0;
+	entry->movement_blocked = 0;
 	if (entry->gravity_effect) {
 		gcenter_calc(entry->x / 1000, entry->y / 1000, &gravity_x, &gravity_y);
 		entry->x_gravity += gravity_x * d_last_frame_time();
@@ -267,6 +279,35 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 		p = delta_x * 1000 / (delta_y ? delta_y : 1);
 
 		while (delta_x || delta_y) {
+			if ((hits = d_bbox_test(s->movable.bbox, entry->x / 1000, entry->y / 1000, hit_w, hit_h, hitlist, MAX_MOVABLE)) > 0) {
+				for (i = 0; i < hits; i++) {
+					if (collision_event[hitlist[i]])
+						continue;
+					collision_event[hitlist[i]] = 1;
+					
+					if (hitlist[i] == entry->id)
+						continue;
+					if (!entry->used)
+						return -990123;
+					if (!s->movable.movable[hitlist[i]].used)
+						continue;
+					if (entry->callback.movable_collision)
+						entry->callback.movable_collision(entry->callback.user_pointer, entry->id, hitlist[i]);
+					
+					if (!entry->used)
+						return -123166;
+					if (!s->movable.movable[hitlist[i]].used)
+						continue;
+					if (s->movable.movable[hitlist[i]].callback.movable_collision)
+						s->movable.movable[hitlist[i]].callback.movable_collision(s->movable.movable[hitlist[i]].callback.user_pointer, hitlist[i], entry->id);
+						
+
+				}
+			}
+			
+			if (!entry->used)
+				return -1231145;
+
 			if (delta_x && ((!delta_y || delta_x * 1000 / (delta_y ? delta_y : 1) > p))) {
 				r = entry->x % 1000;
 				if (r + delta_x < 1000 && r + delta_x >= 0) {
@@ -325,6 +366,8 @@ nogravity:
 	entry->movement_blocked = 0;
 	if (entry->gravity_blocked) {
 		entry->x_gravity = entry->y_gravity = 0;
+		if (entry->callback.gravity_map_collision)
+			entry->callback.gravity_map_collision(entry->callback.user_pointer, entry->id);
 		//printf("Bonk!\n");
 	}
 
@@ -334,6 +377,35 @@ nogravity:
 	
 	
 	while (delta_x || delta_y) {
+		if ((hits = d_bbox_test(s->movable.bbox, entry->x / 1000, entry->y / 1000, hit_w, hit_h, hitlist, MAX_MOVABLE)) > 0) {
+			for (i = 0; i < hits; i++) {
+				if (collision_event[hitlist[i]])
+					continue;
+				collision_event[hitlist[i]] = 1;
+				
+				if (hitlist[i] == entry->id)
+					continue;
+				if (!entry->used)
+					return -990123;
+				if (!s->movable.movable[hitlist[i]].used)
+					continue;
+				if (entry->callback.movable_collision)
+					entry->callback.movable_collision(entry->callback.user_pointer, entry->id, hitlist[i]);
+				
+				if (!entry->used)
+					return -123166;
+				if (!s->movable.movable[hitlist[i]].used)
+					continue;
+				if (s->movable.movable[hitlist[i]].callback.movable_collision)
+					s->movable.movable[hitlist[i]].callback.movable_collision(s->movable.movable[hitlist[i]].callback.user_pointer, hitlist[i], entry->id);
+					
+
+			}
+		}
+			
+		if (!entry->used)
+			return -1231145;
+
 		if (delta_x && (!delta_y || delta_x * 1000 / (delta_y ? delta_y : 1) > p)) {
 			r = entry->x % 1000;
 			if (r + delta_x < 1000 && r + delta_x >= 0) {
@@ -350,20 +422,12 @@ nogravity:
 
 			if (delta_x > 0) {
 				r = 1000 - r;
-				/*if (movableMoveDoTestTowers(entry->x, delta_x, entry->x_velocity, COLLISION_LEFT, hit_x + hit_w, entry->y / 1000 + hit_y, hit_h)) {
-					entry->x_velocity = 0, delta_x = 0;
-					continue;
-				}*/
 
 				entry->movement_blocked |= movableMoveDo(layer, &entry->x, &delta_x, &entry->x_velocity, r, COLLISION_LEFT, hit_x + hit_w, 0, entry->y / 1000 + hit_y, hit_h);
 			} else {
 				if (!r)
 					r = 1000;
 				r *= -1;
-				/*if (movableMoveDoTestTowers(entry->x, delta_x, entry->x_velocity, COLLISION_RIGHT, hit_x, entry->y / 1000 + hit_y, hit_h)) {
-					entry->x_velocity = 0, delta_x = 0;
-					continue;
-				}*/
 
 				entry->movement_blocked |= movableMoveDo(layer, &entry->x, &delta_x, &entry->x_velocity, r, COLLISION_RIGHT, hit_x, 0, entry->y / 1000 + hit_y, hit_h);
 			}
@@ -383,23 +447,19 @@ nogravity:
 
 			if (delta_y > 0) {
 				r = 1000 - r;
-				/*if (movableMoveDoTestTowers(entry->y, delta_y, entry->y_velocity, COLLISION_TOP, hit_y + hit_h, entry->x / -1000 - hit_x, hit_w)) {
-					entry->y_velocity = 0, delta_y = 0;
-					continue;
-				}*/
 				entry->movement_blocked |= movableMoveDo(layer, &entry->y, &delta_y, &entry->y_velocity, r, COLLISION_TOP, hit_y + hit_h, 0, entry->x / -1000 - hit_x, hit_w);
 			} else {
 				if (!r)
 					r = 1000;
 				r *= -1;
-				/*if (movableMoveDoTestTowers(entry->y, delta_y, entry->y_velocity, COLLISION_BOTTOM, hit_y, entry->x / -1000 - hit_x, hit_w)) {
-					entry->y_velocity = -1, delta_y = 0;
-					continue;
-				}*/
 				entry->movement_blocked |= movableMoveDo(layer, &entry->y, &delta_y, &entry->y_velocity, r, COLLISION_BOTTOM, hit_y, -1, entry->x / -1000 - hit_x, hit_w);
 			}
 		}
 	}
+
+	if (entry->movement_blocked)
+		if (entry->callback.map_collision)
+			entry->callback.map_collision(entry->callback.user_pointer, entry->id);
 
 	return -1462573849;
 }
@@ -409,13 +469,13 @@ void movableLoop() {
 	int i, j, h_x, h_y, h_w, h_h, players_active = 0, winning_player = -1;
 	bool master = s->is_host;
 
-	//res = d_bbox_test(s->movable.bbox, 0, 0, INT_MAX, INT_MAX, s->movable.coll_buf, ~0);
+	s->movable.in_loop = 1;
 
 	for (j = 0; j < s->movable.movables; j++) {
 		i = j;
 			
 		if (master) {
-			//movableGravity(&s->movable.movable[i]);
+			movableGravity(&s->movable.movable[i]);
 			//printf("Player at %i %i\n", s->movable.movable[i].x / 1000, s->movable.movable[i].y / 1000);
 		}
 
@@ -433,6 +493,14 @@ void movableLoop() {
 		//fprintf(stderr, "win condition\n");
 		//server_announce_winner(winning_player);
 	}
+
+	for (i = 0; i < MAX_MOVABLE; i++)
+		if (!s->movable.movable[i].used && s->movable.movable[i].req_cleanup) {
+			d_sprite_free(s->movable.movable[i].sprite);
+			d_bbox_delete(s->movable.bbox, i);
+		}
+
+	s->movable.in_loop = 0;
 
 }
 

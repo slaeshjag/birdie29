@@ -37,6 +37,8 @@ typedef struct {
 	int			bbox;
 	int			ignore;
 	int			used;
+	int			req_cleanup;
+
 	DARNIT_SPRITE		*sprite;
 	int			x;
 	int			y;
@@ -58,6 +60,13 @@ typedef struct {
 	
 	int			gravity_blocked;
 	int			movement_blocked;
+
+	struct {
+		void		*user_pointer;
+		void 		(*map_collision)(void *usr_ptr, int movable_self);
+		void 		(*gravity_map_collision)(void *usr_ptr, int movable_self);
+		void		(*movable_collision)(void *usr_ptr, int movable_self, int movable_remote);
+	} callback;
 } MOVABLE_ENTRY;
 	
 
@@ -69,6 +78,7 @@ typedef struct {
 	int			movables;
 	int			respawn_x;
 	int			respawn_y;
+	int			in_loop;
 } MOVABLE;
 
 int movableInit();
