@@ -66,6 +66,8 @@ struct GameStateStruct {
 extern GameStateStruct *s;
 extern Player me;
 
+extern char *team_name[TEAMS_CAP];
+
 void game_state(GameState state);
 void restart_to_menu(const char *name);
 int join_game(unsigned long sip);

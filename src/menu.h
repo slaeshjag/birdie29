@@ -2,6 +2,7 @@
 #define MENU_H_
 
 #include <muil/muil.h>
+#include <darnit/darnit.h>
 
 typedef struct Menu Menu;
 struct Menu {
@@ -37,11 +38,15 @@ struct SelectName{
 	MuilWidget *hbox;
 	MuilWidget *label;
 	MuilWidget *entry;
+	MuilWidget *picture;
+	MuilWidget *slider;
 	struct {
 		MuilWidget *ok;
 		MuilWidget *quit;
 	} button;
 	
+	
+	DARNIT_TILESHEET *variant_tilesheet[PLAYER_VARIANTS];
 };
 
 extern Menu menu;
