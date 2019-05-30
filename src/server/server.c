@@ -57,6 +57,7 @@ void server_handle_client(ClientList *cli) {
 			case PACKET_TYPE_JOIN:
 				strcpy(cli->name, pack.join.name);
 				cli->team = pack.join.team;
+				printf("server: join %s team %i\n", cli->name, cli->team);
 				
 				response.type = PACKET_TYPE_JOIN;
 				response.size = sizeof(PacketJoin);

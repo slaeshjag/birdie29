@@ -51,12 +51,15 @@ void gameroom_network_handler() {
 	void *tmp;
 	int i;
 	
+	printf("%i\n", s->server_sock);
+	
 	if(!network_poll_tcp(s->server_sock))
 		return;
 	protocol_recv_packet(s->server_sock, &pack);
 	
 	switch(pack.type) {
 		case PACKET_TYPE_JOIN:
+			printf("client: player %s team %i\n");
 			if(s->player[pack.join.id].active) {
 				int i;
 				MuilPropertyValue v;
