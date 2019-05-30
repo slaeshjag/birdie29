@@ -29,7 +29,7 @@ void ingame_init() {
 	//const char *playerid_str;
 	/* Leak *all* the memory */
 	s->active_level = d_map_load(util_binrel_path("map/map.ldmz"));
-	s->camera.follow = -1;
+	s->camera.follow = me.movable;
 	s->camera.x = s->camera.y = 0;
 
 //	bulletInit();
