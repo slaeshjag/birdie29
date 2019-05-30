@@ -14,7 +14,7 @@ int movableInit() {
 	int i;
 
 	s->movable.bbox = d_bbox_new(MAX_MOVABLE); // Should be enough for anyone
-	s->movable.movables = 0;
+	s->movable.movables = MAX_MOVABLE;
 	d_bbox_set_indexkey(s->movable.bbox);
 
 	for (i = 0; i < s->movable.movables; i++) {
