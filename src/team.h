@@ -8,6 +8,7 @@
 
 struct Team {
 	struct Unit		unit;
+	int money;
 };
 
 

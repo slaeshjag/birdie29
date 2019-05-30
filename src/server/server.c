@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <darnit/darnit.h>
 #include "../main.h"
+#include "../bullet.h"
 #include "../network/network.h"
 #include "../network/protocol.h"
 
@@ -86,6 +87,11 @@ void server_handle_client(ClientList *cli) {
 				HANDLE_KEY(right);
 				HANDLE_KEY(up);
 				HANDLE_KEY(down);
+				
+				if(pack.keypress.keypress.shoot) {
+					bullet_spawn(BULLET_TYPE_WIMPY, s->player[cli->id]);
+				}
+				
 				break;
 			
 			case PACKET_TYPE_BLOCK_PLACE:
