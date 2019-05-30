@@ -29,6 +29,7 @@ void ingame_init() {
 	//const char *playerid_str;
 	/* Leak *all* the memory */
 	s->active_level = d_map_load(util_binrel_path("map/map.ldmz"));
+	unit_init(); // XXX: Don't even dare running init before the map is loaded
 	s->camera.follow = me.movable;
 	s->camera.x = s->camera.y = 0;
 

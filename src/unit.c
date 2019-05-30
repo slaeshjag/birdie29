@@ -71,7 +71,25 @@ fail:
 
 
 void unit_init() {
-	int i;
+	int i, j;
+	unsigned int tile, team;
+
+	TILESET_UNIT_BASE + TILESET_TEAM_STEP * team;
+
+	for (j = 0; j < s->active_level->layer->tilemap->h; j++)
+		for (i = 0; i < s->active_level->layer->tilemap->w; i++) {
+			tile = s->active_level->layer->tilemap->data[j * s->active_level->layer->tilemap->w + i] & TILESET_MASK;
+			if (tile < TILESET_UNIT_BASE)
+				continue;
+			team = (tile - TILESET_UNIT_BASE) / TILESET_TEAM_STEP;
+			if (((tile - TILESET_UNIT_BASE) % TILESET_TEAM_STEP) == UNIT_TYPE_SPAWN) {
+				if (team >= MAX_TEAM)
+					continue;
+				s->team[team].spawn.x = i;
+				s->team[team].spawn.y = j;
+				printf("found team %i spawn point at %i, %i\n", team, i, j);
+			}
+		}
 
 	for (i = 0; i < MAX_TEAM; i++)
 		s->team[i].unit.lock = d_util_mutex_create();

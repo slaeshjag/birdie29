@@ -173,7 +173,6 @@ int main(int argc, char  **argv) {
 	gameroom_init();
 	lobby_init();
 	movableInit();
-	unit_init();
 	//sfx_init();
 	//character_room_init();
 	//game_over_init();

@@ -1,8 +1,8 @@
 #ifndef UNIT_H_
 #define	UNIT_H_
 
-#define	TILESET_UNIT_BASE		64
-#define	TILESET_TEAM_STEP		16
+#define	TILESET_UNIT_BASE		60
+#define	TILESET_TEAM_STEP		10
 #define	TILESET_MASK			0xFFF
 
 #include <darnit/darnit.h>
@@ -10,7 +10,10 @@
 enum UnitType {
 	UNIT_TYPE_GENERATOR,
 	UNIT_TYPE_PYLON,
+	UNIT_TYPE_MINER,
 	UNIT_TYPE_WALL,
+	UNIT_TYPE_TURRET,
+	UNIT_TYPE_SPAWN,
 	UNIT_TYPES,
 };
 
