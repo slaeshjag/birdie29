@@ -23,23 +23,29 @@ void player_join(int id, const char *name, int team) {
 }
 
 void player_handle_keys(Player *player) {
+	MOVABLE_ENTRY *m = &s->movable.movable[player->movable];
+	
 	if(player->keystate.up) {
 		printf("client: player %i hold up\n", player->id);
-		s->movable.movable[player->movable].y_velocity = -PLAYER_SPEED;
+		m->y_velocity = -PLAYER_SPEED;
+		m->direction = PLAYER_DIRECTION_UP;
 	} else if(player->keystate.down) {
 		printf("client: player %i hold down\n", player->id);
-		s->movable.movable[player->movable].y_velocity = PLAYER_SPEED;
+		m->y_velocity = PLAYER_SPEED;
+		m->direction = PLAYER_DIRECTION_DOWN;
 	} else {
-		s->movable.movable[player->movable].y_velocity = 0;
+		m->y_velocity = 0;
 	}
 	
 	if(player->keystate.left) {
 		printf("client: player %i hold left\n", player->id);
-		s->movable.movable[player->movable].x_velocity = -PLAYER_SPEED;
+		m->x_velocity = -PLAYER_SPEED;
+		m->direction = PLAYER_DIRECTION_LEFT;
 	} else if(player->keystate.right) {
 		printf("client: player %i hold right\n", player->id);
-		s->movable.movable[player->movable].x_velocity = PLAYER_SPEED;
+		m->x_velocity = PLAYER_SPEED;
+		m->direction = PLAYER_DIRECTION_RIGHT;
 	} else {
-		s->movable.movable[player->movable].x_velocity = 0;
+		m->x_velocity = 0;
 	}
 }
