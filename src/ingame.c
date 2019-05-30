@@ -22,7 +22,6 @@ void ingame_init() {
 	s->camera.follow = -1;
 	s->camera.x = s->camera.y = 0;
 
-	movableInit();
 //	bulletInit();
 //	movableLoad();
 //	healthbar_init();

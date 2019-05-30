@@ -171,6 +171,7 @@ int main(int argc, char  **argv) {
 	menu_init();
 	gameroom_init();
 	lobby_init();
+	movableInit();
 	//sfx_init();
 	//character_room_init();
 	//game_over_init();
