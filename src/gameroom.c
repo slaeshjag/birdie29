@@ -19,8 +19,25 @@ static void button_callback(MuilWidget *widget, unsigned int type, MuilEvent *e)
 	}
 }
 
+static void listbox_team_callback(MuilWidget *widget, unsigned int type, MuilEvent *e)  {
+	MuilPropertyValue p;
+	
+	p = widget->get_prop(widget, MUIL_LISTBOX_PROP_SELECTED);
+	
+	PacketJoin join;
+
+	join.type = PACKET_TYPE_JOIN;
+	join.size = sizeof(PacketJoin);
+	join.id = 0;
+	memcpy(join.name, me.name, NAME_LEN_MAX);
+	join.name[NAME_LEN_MAX - 1] = 0;
+	join.team = p.i;
+
+	protocol_send_packet(s->server_sock, (void *) &join);
+}
 
 void gameroom_init() {
+	int i;
 	gameroom.pane.pane = muil_pane_create(10, 10, DISPLAY_WIDTH - 20, DISPLAY_HEIGHT - 20, gameroom.vbox = muil_widget_create_vbox());
 	gameroom.pane.next = NULL;
 
@@ -32,10 +49,21 @@ void gameroom_init() {
 	muil_vbox_add_child(gameroom.vbox, gameroom.list = muil_widget_create_listbox(gfx.font.small), 1);
 	
 	gameroom.hbox_button = muil_widget_create_hbox();
+	gameroom.hbox_team = muil_widget_create_hbox();
+	
+	muil_vbox_add_child(gameroom.hbox_team, gameroom.team.label = muil_widget_create_label(gfx.font.small, "Select team"), 0);
+	muil_vbox_add_child(gameroom.hbox_team, gameroom.team.list = muil_widget_create_listbox(gfx.font.small), 0);
+	
+	for(i = 0; i < TEAMS_CAP; i++)
+		muil_listbox_add(gameroom.team.list, team_name[i]);
+	
+	MuilPropertyValue p = {.i = 0};
+	gameroom.team.list->set_prop(gameroom.team.list, MUIL_LISTBOX_PROP_SELECTED, p);
 	
 	muil_vbox_add_child(gameroom.hbox_button, gameroom.button.back = muil_widget_create_button_text(gfx.font.small, "Back"), 0);
 	muil_vbox_add_child(gameroom.hbox_button, gameroom.button.start = muil_widget_create_button_text(gfx.font.small, "Start game"), 0);
 	
+	muil_vbox_add_child(gameroom.vbox, gameroom.hbox_team, 1);
 	muil_vbox_add_child(gameroom.vbox, gameroom.hbox_button, 0);
 	
 	gameroom.button.start->enabled = false;
@@ -43,6 +71,7 @@ void gameroom_init() {
 	gameroom.button.back->event_handler->add(gameroom.button.back, button_callback, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
 	gameroom.button.start->event_handler->add(gameroom.button.start, button_callback, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
 	
+	gameroom.team.list->event_handler->add(gameroom.team.list, listbox_team_callback, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
 }
 
 
@@ -63,12 +92,13 @@ void gameroom_network_handler() {
 				/* Changed team */
 				int i;
 				MuilPropertyValue v;
+				v = gameroom.list->get_prop(gameroom.list, MUIL_LISTBOX_PROP_SIZE);
 				
-				player_set(pack.join.id, pack.join.name);
+				player_set(pack.join.id, pack.join.name, pack.join.team);
 				
 				for(i = 0; i < v.i; i++) {
 					if(atoi(muil_listbox_get(gameroom.list, i)) == pack.join.id) {
-						asprintf(&tmp, "%i: %s", pack.join.id, pack.join.name);
+						asprintf(&tmp, "%i: %s [Team %s]", pack.join.id, pack.join.name, team_name[pack.join.team]);
 						muil_listbox_set(gameroom.list, i, tmp);
 						free(tmp);
 						break;
@@ -77,7 +107,7 @@ void gameroom_network_handler() {
 				
 			} else {
 				/* New player joined */
-				asprintf(&tmp, "%i: %s", pack.join.id, pack.join.name);
+				asprintf(&tmp, "%i: %s [Team %s]", pack.join.id, pack.join.name, team_name[pack.join.team]);
 				muil_listbox_add(gameroom.list, tmp);
 				free(tmp);
 				

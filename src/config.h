@@ -11,10 +11,12 @@
 #define PLAYER_CAP 32
 #define PLAYER_VARIANTS 4
 
+#define TEAMS_CAP 4
+
 #define PANE_R 0xCD
 #define PANE_G 0xCD
 #define PANE_B 0xCD
 
-#define PLAYER_SPEED 100
+#define PLAYER_SPEED 500
 
 #endif
