@@ -61,7 +61,7 @@ void restart_to_menu(const char *name) {
 	else
 		execl(d_fs_exec_path(), buf, NULL);
 }
-
+ 
 int join_game(unsigned long sip) {
 	PacketJoin join;
 	
@@ -106,7 +106,7 @@ void game_state(GameState state) {
 	//Game state constructors
 	switch(state) {
 		case GAME_STATE_GAME:
-			//ingame_init();
+			ingame_init();
 			//init game shit
 			//pthread_create(&game.thread, NULL, object_thread, NULL);
 			#ifndef __DEBUG__

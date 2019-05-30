@@ -18,7 +18,7 @@ void ingame_init() {
 	int i;
 	const char *playerid_str;
 	/* Leak *all* the memory */
-	s->active_level = d_map_load(util_binrel_path("map.ldmz"));
+	s->active_level = d_map_load(util_binrel_path("map/map.ldmz"));
 	s->camera.follow = -1;
 	s->camera.x = s->camera.y = 0;
 

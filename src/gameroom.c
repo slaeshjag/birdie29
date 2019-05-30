@@ -51,7 +51,6 @@ void gameroom_network_handler() {
 	void *tmp;
 	int i;
 	
-	printf("%i\n", s->server_sock);
 	
 	if(!network_poll_tcp(s->server_sock))
 		return;
