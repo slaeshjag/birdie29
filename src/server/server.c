@@ -133,10 +133,8 @@ void server_handle_client(ClientList *cli) {
 }
 
 int server_thread(void *arg) {
-	PacketLobby pack;
-	Packet move;
+	Packet pack;
 	ClientList *tmp;
-	void *p;
 	int i;
 	
 	for(;;) {
@@ -160,8 +158,8 @@ int server_thread(void *arg) {
 				
 				pack.type = PACKET_TYPE_LOBBY;
 				pack.size = sizeof(PacketLobby);
-				memset(pack.name, 0, NAME_LEN_MAX);
-				strcpy(pack.name, me.name);
+				memset(pack.lobby.name, 0, NAME_LEN_MAX);
+				strcpy(pack.lobby.name, me.name);
 				
 				network_broadcast_udp(&pack, pack.size);
 				usleep(100000);
@@ -169,14 +167,12 @@ int server_thread(void *arg) {
 				
 			case SERVER_STATE_STARTING:
 				for(tmp = client; tmp; tmp = tmp->next) {
-					PacketStart start;
+					pack.type = PACKET_TYPE_START;
+					pack.size = sizeof(PacketStart);
 					
-					start.type = PACKET_TYPE_START;
-					start.size = sizeof(PacketStart);
+					pack.start.player_id = tmp->id;
 					
-					start.player_id = tmp->id;
-					
-					protocol_send_packet(tmp->sock, (void *) &start);
+					protocol_send_packet(tmp->sock, (void *) &pack);
 				}
 				
 				server_state = SERVER_STATE_GAME;
@@ -185,32 +181,24 @@ int server_thread(void *arg) {
 			case SERVER_STATE_GAME:
 				d_util_semaphore_wait(sem);
 				
-				move.type = PACKET_TYPE_MOVE_OBJECT;
-				move.size = 4 + s->movable.movables*10;
-				p = move.raw;
+				pack.type = PACKET_TYPE_MOVABLE_MOVE;
+				pack.size = sizeof(PacketMovableMove);
 				
 				for(i = 0; i < s->movable.movables; i++) {
 					int angle;
-					*((uint16_t *) p) = (s->movable.movable[i].x)/1000;
-					p+= 2;
-					*((uint16_t *) p) = (s->movable.movable[i].y)/1000;
-					p+= 2;
-					*((uint8_t *) p) = s->movable.movable[i].direction;
-					p+= 1;
+					pack.movable_move.x = s->movable.movable[i].x/1000;
+					pack.movable_move.y = s->movable.movable[i].y/1000;
+					pack.movable_move.dir = s->movable.movable[i].direction;
+					
 					angle = s->movable.movable[i].angle;
 					if (angle < 0)
 						angle += 3600;
-					*((uint8_t *) p) = (angle / 10 / 2);
-					p += 1;
-					*((uint16_t *) p) = 0;
-					p += 2;
-					*((uint16_t *) p) = 0;
-					p += 2;
-				}
-				
-				for(tmp = client; tmp; tmp = tmp->next) {
-					if(tmp->id != me.id)
-						protocol_send_packet(tmp->sock, &move);
+					pack.movable_move.angle = (angle / 10 / 2);
+					
+					for(tmp = client; tmp; tmp = tmp->next) {
+						if(tmp->id != me.id)
+							protocol_send_packet(tmp->sock, &pack);
+					}
 				}
 				
 				for(tmp = client; tmp; tmp = tmp->next)

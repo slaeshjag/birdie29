@@ -12,7 +12,7 @@ enum PacketType {
 	PACKET_TYPE_JOIN,
 	PACKET_TYPE_TEAM,
 	PACKET_TYPE_START,
-	PACKET_TYPE_MOVE_OBJECT,
+	PACKET_TYPE_MOVABLE_MOVE,
 	PACKET_TYPE_SOUND,
 	PACKET_TYPE_KEYPRESS,
 	PACKET_TYPE_BLOCK_PLACE,
@@ -177,12 +177,25 @@ struct PacketChangeApple {
 };
 
 
+typedef struct PacketMovableMove PacketMovableMove;
+struct PacketMovableMove {
+	uint16_t type;
+	uint16_t size;
+	
+	uint32_t movable;
+	
+	int32_t x;
+	int32_t y;
+	int16_t angle;
+	int16_t dir;
+};
+
 typedef union Packet Packet;
 union Packet {
 	struct {
 		uint16_t type;
 		uint16_t size;
-		uint8_t raw[1024];
+		//uint8_t raw[1024];
 	};
 	
 	PacketLobby lobby;
@@ -199,6 +212,7 @@ union Packet {
 	PacketBulletAnnounce bullet_announce;
 	PacketBulletRemove bullet_remove;
 	PacketChangeApple change_apple;
+	PacketMovableMove movable_move;
 };
 
 int protocol_send_packet(int sock, Packet *pack);
