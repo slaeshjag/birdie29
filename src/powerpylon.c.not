@@ -23,7 +23,7 @@ int _unit_pylon_list_remove(struct PylonEntry *from, struct PylonEntry *del) {
 }
 
 
-static void _unit_pylon_list_add(
+//static void _unit_pylon_list_add(
 
 
 static void _unit_pylon_pulse_climb(struct PylonEntry *pylon) {
@@ -110,7 +110,7 @@ void _unit_pylon_delete(struct unit *unit) {
 }
 
 
-void pylon_init(SERVER_UNIT *unit, unsigned int x, unsigned int y) {
+void pylon_init( *unit, unsigned int x, unsigned int y) {
 	int i, j, k, owner, team, radius, index;
 
 	owner = unit->owner;

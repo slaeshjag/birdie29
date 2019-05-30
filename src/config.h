@@ -14,6 +14,6 @@
 #define PANE_G 0xCD
 #define PANE_B 0xCD
 
-#define PLAYER_SPEED 10000
+#define PLAYER_SPEED 100
 
 #endif

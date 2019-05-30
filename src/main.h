@@ -11,6 +11,7 @@
 #include "player.h"
 #include "movable.h"
 #include "config.h"
+#include "team.h"
 
 typedef struct Color Color;
 struct Color {
@@ -49,6 +50,7 @@ typedef struct GameStateStruct GameStateStruct;
 struct GameStateStruct {
 	bool is_host;
 	Player *player[PLAYER_CAP];
+	struct Team team[MAX_TEAM];
 	int server_sock;
 	MOVABLE movable;
 	DARNIT_MAP *active_level;

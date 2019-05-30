@@ -254,6 +254,7 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 	entry->gravity_blocked = 0;
 	entry->movement_blocked = 0;
 	if (entry->gravity_effect) {
+		printf("gravity effect\n");
 		gcenter_calc(entry->x / 1000, entry->y / 1000, &gravity_x, &gravity_y);
 		entry->x_gravity += gravity_x * d_last_frame_time();
 		entry->y_gravity += gravity_y * d_last_frame_time();
