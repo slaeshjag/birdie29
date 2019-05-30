@@ -9,6 +9,7 @@
 
 #define NAME_LEN_MAX 64
 #define PLAYER_CAP 32
+#define PLAYER_VARIANTS 4
 
 #define PANE_R 0xCD
 #define PANE_G 0xCD

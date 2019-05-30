@@ -14,6 +14,10 @@ static void button_callback_name(MuilWidget *widget, unsigned int type, MuilEven
 	}
 	v = select_name.entry->get_prop(select_name.entry, MUIL_ENTRY_PROP_TEXT);
 	snprintf(me.name, NAME_LEN_MAX, "%s", (char *) v.p);
+	
+	v = select_name.slider->get_prop(select_name.slider, MUIL_SLIDER_PROP_VALUE);
+	me.sprite_variant = v.i;
+	
 	game_state(GAME_STATE_MENU);
 }
 
@@ -32,8 +36,61 @@ static void button_callback_menu(MuilWidget *widget, unsigned int type, MuilEven
 		d_quit();
 }
 
-void menu_init() {
+static void slider_callback_picture(MuilWidget *widget, unsigned int type, MuilEvent *e) {
 	MuilPropertyValue v;
+	
+	v = widget->get_prop(widget, MUIL_SLIDER_PROP_VALUE);
+	
+	v.p = select_name.variant_tilesheet[v.i];
+	select_name.picture->set_prop(select_name.picture, MUIL_IMAGEVIEW_PROP_TILESHEET, v);
+	select_name.picture->set_prop(select_name.picture, MUIL_IMAGEVIEW_PROP_TILESHEET, v);
+}
+
+void menu_select_name_init() {
+	MuilPropertyValue v;
+	
+	select_name.pane.pane = muil_pane_create(DISPLAY_WIDTH/2 - 200, DISPLAY_HEIGHT/2 - 300/2, 400, 300, select_name.vbox = muil_widget_create_vbox());
+	select_name.pane.next = NULL;
+	
+	select_name.pane.pane->background_color.r = PANE_R;
+	select_name.pane.pane->background_color.g = PANE_G;
+	select_name.pane.pane->background_color.b = PANE_B;
+	
+	muil_vbox_add_child(select_name.vbox, select_name.label = muil_widget_create_label(gfx.font.large, "Customize your character"), 1);
+	muil_vbox_add_child(select_name.vbox, select_name.entry = muil_widget_create_entry(gfx.font.small), 0);
+	
+	muil_vbox_add_child(select_name.vbox, select_name.picture = muil_widget_create_imageview_raw(48, 48, DARNIT_PFORMAT_RGBA8), 0);
+	muil_vbox_add_child(select_name.vbox, select_name.slider = muil_widget_create_slider(4), 0);
+	
+	select_name.hbox = muil_widget_create_hbox();
+	muil_vbox_add_child(select_name.hbox, select_name.button.ok = muil_widget_create_button_text(gfx.font.small, "OK"), 0);
+	muil_vbox_add_child(select_name.hbox, select_name.button.quit = muil_widget_create_button_text(gfx.font.small, "Quit"), 0);
+	muil_vbox_add_child(select_name.vbox, select_name.hbox, 0);
+	
+	#ifdef _WIN32
+	v.p = getenv("USERNAME");
+	#else
+	v.p = getenv("LOGNAME");
+	#endif
+	select_name.entry->set_prop(select_name.entry, MUIL_ENTRY_PROP_TEXT, v);
+	
+	select_name.button.ok->event_handler->add(select_name.button.ok, button_callback_name, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
+	select_name.button.quit->event_handler->add(select_name.button.quit, button_callback_name, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
+	
+	select_name.slider->event_handler->add(select_name.slider, slider_callback_picture, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
+	
+	select_name.variant_tilesheet[0] = d_render_tilesheet_load("res/player_var0.png", 48, 48, DARNIT_PFORMAT_RGBA8);
+	select_name.variant_tilesheet[1] = d_render_tilesheet_load("res/player_var1.png", 48, 48, DARNIT_PFORMAT_RGBA8);
+	select_name.variant_tilesheet[2] = d_render_tilesheet_load("res/player_var2.png", 48, 48, DARNIT_PFORMAT_RGBA8);
+	select_name.variant_tilesheet[3] = d_render_tilesheet_load("res/player_var3.png", 48, 48, DARNIT_PFORMAT_RGBA8);
+	
+	v.p = select_name.variant_tilesheet[0];
+	select_name.picture->set_prop(select_name.picture, MUIL_IMAGEVIEW_PROP_TILESHEET, v);
+	select_name.picture->set_prop(select_name.picture, MUIL_IMAGEVIEW_PROP_TILESHEET, v);
+}
+
+void menu_init() {
+	//MuilPropertyValue v;
 	menu.pane.pane = muil_pane_create(10, 10, DISPLAY_WIDTH - 20, 220, menu.vbox = muil_widget_create_vbox());
 	menu.pane.next = &menu_help.pane;
 	
@@ -68,31 +125,8 @@ void menu_init() {
 	menu.button.join->event_handler->add(menu.button.join, button_callback_menu, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
 	//menu.button.character->event_handler->add(menu.button.character, button_callback_menu, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
 	menu.button.quit->event_handler->add(menu.button.quit, button_callback_menu, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
-        
-        
-	select_name.pane.pane = muil_pane_create(DISPLAY_WIDTH/2 - 200, DISPLAY_HEIGHT/2 - 150/2, 400, 150, select_name.vbox = muil_widget_create_vbox());
-	select_name.pane.next = NULL;
 	
-	select_name.pane.pane->background_color.r = PANE_R;
-	select_name.pane.pane->background_color.g = PANE_G;
-	select_name.pane.pane->background_color.b = PANE_B;
-	
-	muil_vbox_add_child(select_name.vbox, select_name.label = muil_widget_create_label(gfx.font.large, "Enter a name"), 1);
-	muil_vbox_add_child(select_name.vbox, select_name.entry = muil_widget_create_entry(gfx.font.small), 0);
-	select_name.hbox = muil_widget_create_hbox();
-	muil_vbox_add_child(select_name.hbox, select_name.button.ok = muil_widget_create_button_text(gfx.font.small, "OK"), 0);
-	muil_vbox_add_child(select_name.hbox, select_name.button.quit = muil_widget_create_button_text(gfx.font.small, "Quit"), 0);
-	muil_vbox_add_child(select_name.vbox, select_name.hbox, 0);
-	
-	#ifdef _WIN32
-	v.p = getenv("USERNAME");
-	#else
-	v.p = getenv("LOGNAME");
-	#endif
-	select_name.entry->set_prop(select_name.entry, MUIL_ENTRY_PROP_TEXT, v);
-	
-	select_name.button.ok->event_handler->add(select_name.button.ok, button_callback_name, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
-	select_name.button.quit->event_handler->add(select_name.button.quit, button_callback_name, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
+	menu_select_name_init();
 }
 
 void menu_render() {
