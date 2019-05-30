@@ -207,7 +207,7 @@ int server_thread(void *arg) {
 				}
 				
 				for(tmp = client; tmp; tmp = tmp->next) {
-					if(tmp->id != s->player_id)
+					if(tmp->id != me.id)
 						protocol_send_packet(tmp->sock, &move);
 				}
 				

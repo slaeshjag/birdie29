@@ -58,10 +58,13 @@ void gameroom_network_handler() {
 	
 	switch(pack.type) {
 		case PACKET_TYPE_JOIN:
-			printf("client: player %s team %i\n");
-			if(s->player[pack.join.id].active) {
+			printf("client: player %s team %i\n", pack.join.name, pack.join.team);
+			if(s->player[pack.join.id]) {
+				/* Changed team */
 				int i;
 				MuilPropertyValue v;
+				
+				player_set(pack.join.id, pack.join.name);
 				
 				for(i = 0; i < v.i; i++) {
 					if(atoi(muil_listbox_get(gameroom.list, i)) == pack.join.id) {
@@ -73,18 +76,18 @@ void gameroom_network_handler() {
 				}
 				
 			} else {
+				/* New player joined */
 				asprintf(&tmp, "%i: %s", pack.join.id, pack.join.name);
 				muil_listbox_add(gameroom.list, tmp);
 				free(tmp);
 				
-				s->player[pack.join.id].active = true;
-				strcpy(s->player[pack.join.id].name, pack.join.name);
+				player_join(pack.join.id, pack.join.name, pack.join.team);
 			}
 			break;
 		
 		case PACKET_TYPE_START:
-			s->player_id = pack.start.player_id;
-			printf("Started game as player %i\n", s->player_id);
+			me.id = pack.start.player_id;
+			printf("Started game as player %i\n", me.id);
 			game_state(GAME_STATE_GAME);
 			break;
 	}

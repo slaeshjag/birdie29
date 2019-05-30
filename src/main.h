@@ -8,21 +8,9 @@
 //#include "sfx.h"
 //#include "effect.h"
 
-#define DISPLAY_WIDTH 1280
-#define DISPLAY_HEIGHT 720
-#define PORT 1341
-
-#define GAME_TITLE "The Game"
-
-#define NAME_LEN_MAX 64
-#define PLAYER_CAP 32
-
-#define PANE_R 0xCD
-#define PANE_G 0xCD
-#define PANE_B 0xCD
-
 #include "player.h"
 #include "movable.h"
+#include "config.h"
 
 typedef struct Color Color;
 struct Color {
@@ -59,9 +47,8 @@ extern Gfx gfx;
 
 typedef struct GameStateStruct GameStateStruct;
 struct GameStateStruct {
-	int	player_id;
 	bool is_host;
-	Player player[PLAYER_CAP];
+	Player *player[PLAYER_CAP];
 	int server_sock;
 	MOVABLE movable;
 	DARNIT_MAP *active_level;
