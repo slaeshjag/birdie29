@@ -40,6 +40,7 @@ struct Unit {
 void unit_init();
 void unit_add(int team, enum UnitType type, int x, int y);
 void unit_delete(int team, int index);
+void unit_housekeeping();
 
 
 #endif

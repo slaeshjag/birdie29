@@ -206,6 +206,7 @@ int server_thread(void *arg) {
 				
 				for(tmp = client; tmp; tmp = tmp->next)
 					server_handle_client(tmp);
+				unit_housekeeping();
 				break;
 		}
 	}
