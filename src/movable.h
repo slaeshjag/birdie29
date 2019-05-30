@@ -5,6 +5,7 @@
 
 #define GRAVITY_CAP		40
 #define	GRAVITY_SCALE		1
+#define	MAX_MOVABLE		16384 //Should be enough for anyone
 
 #define	COLLISION_NONE	0x00000
 #define	COLLISION_BOTTOM	0x10000
@@ -34,6 +35,8 @@ typedef struct {
 typedef struct {
 	int			id;
 	int			bbox;
+	int			ignore;
+	int			used;
 	DARNIT_SPRITE		*sprite;
 	int			x;
 	int			y;
@@ -59,8 +62,8 @@ typedef struct {
 	
 
 typedef struct {
-	MOVABLE_ENTRY		*movable;
-	unsigned int		*coll_buf;
+	MOVABLE_ENTRY		movable[MAX_MOVABLE];
+	unsigned int		coll_buf[MAX_MOVABLE];
 	//unsigned int		*ai_coll_buf;
 	DARNIT_BBOX		*bbox;
 	int			movables;
@@ -70,7 +73,6 @@ typedef struct {
 
 int movableInit();
 int movableLoad();
-void movableSpawn();
 void movableKillEmAll();
 int movableGravity(MOVABLE_ENTRY *entry);
 void movableLoop();
@@ -78,6 +80,7 @@ void movableLoopRender(int layer);
 int movableTileCollision(MOVABLE_ENTRY *entry, int off_x, int off_y);
 void movableFreezeSprites(int freeze);
 void movableRespawn();
+int movableSpawn(char *sprite, int x, int y, int l);
 
 
 #endif
