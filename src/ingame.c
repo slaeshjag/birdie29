@@ -14,6 +14,15 @@
 //#include "effect.h"
 //#include "sfx.h"
 
+#define KEYEVENT(key) do { \
+	if (newstate.left ^ oldstate.left) { \
+		if (newstate.left) \
+			pressevent.key = true, releaseevent.key = false; \
+		else \
+			releaseevent.key = true, pressevent.key = false; \
+	} \
+} while(0)
+
 void ingame_init() {
 	int i;
 	const char *playerid_str;
@@ -124,20 +133,10 @@ void ingame_client_keyboard() {
 	if(d_keys_get().select)
 		restart_to_menu(me.name);
 	
-	
-	if (newstate.left ^ oldstate.left) {
-		if (newstate.left)
-			pressevent.left = true, releaseevent.left = false;
-		else
-			releaseevent.left = true, pressevent.left = false;
-	}
-
-	if (newstate.right ^ oldstate.right) {
-		if (newstate.right)
-			pressevent.right = true, releaseevent.right = false;
-		else
-			releaseevent.right = true, pressevent.right = false;
-	}
+	KEYEVENT(left);
+	KEYEVENT(right);
+	KEYEVENT(up);
+	KEYEVENT(down);
 	
 
 	//if(newstate.left || newstate.right)
