@@ -9,6 +9,7 @@
 #include "network/protocol.h"
 #include "server/server.h"
 #include "main.h"
+#include "player.h"
 //#include "gameover.h"
 #include "util.h"
 //#include "effect.h"
@@ -24,8 +25,8 @@
 } while(0)
 
 void ingame_init() {
-	int i;
-	const char *playerid_str;
+	//int i;
+	//const char *playerid_str;
 	/* Leak *all* the memory */
 	s->active_level = d_map_load(util_binrel_path("map/map.ldmz"));
 	s->camera.follow = -1;
@@ -51,7 +52,7 @@ void ingame_init() {
 
 
 void ingame_loop() {
-	int i, team1t, team2t;
+	int i;
 	
 	d_render_clearcolor_set(0x88, 0xf2, 0xff);
 	
@@ -174,32 +175,18 @@ void ingame_client_keyboard() {
 
 void ingame_network_handler() {
 	Packet pack;
-	void *p;
-	int i;
 	
 	while(network_poll_tcp(s->server_sock)) {
 		
 		protocol_recv_packet(s->server_sock, &pack);
 		
 		switch(pack.type) {
-			case PACKET_TYPE_MOVE_OBJECT:
-				p = pack.raw;
-				
-				for(i = 0; i < s->movable.movables; i++) {
-					s->movable.movable[i].x = ((int) (*((uint16_t *) p))) * 1000;
-					p+= 2;
-					s->movable.movable[i].y = ((int) (*((uint16_t *) p))) * 1000;
-					p+= 2;
-					s->movable.movable[i].direction = *((uint8_t *) p);
-					p+= 1;
-					s->movable.movable[i].angle = *((uint8_t *) p);
-					s->movable.movable[i].angle *= (2 * 10);
-					p += 1;
-					//s->movable.movable[i].hp = *((uint16_t *) p);
-					p += 2;
-					//s->movable.movable[i].hp_max = *((uint16_t *) p);
-					p += 2;
-				}
+			case PACKET_TYPE_MOVABLE_MOVE:
+				s->movable.movable[pack.movable_move.movable].x = pack.movable_move.x * 1000;
+				s->movable.movable[pack.movable_move.movable].y = pack.movable_move.y * 1000;
+				s->movable.movable[pack.movable_move.movable].direction = pack.movable_move.dir;
+				s->movable.movable[pack.movable_move.movable].angle = pack.movable_move.angle;
+				s->movable.movable[pack.movable_move.movable].angle *= (2 * 10);
 				break;
 			
 			case PACKET_TYPE_BULLET_ANNOUNCE:
