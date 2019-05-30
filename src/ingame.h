@@ -1,7 +1,6 @@
 #ifndef INGAME_H_
 #define INGAME_H_
 
-#include "main.h"
 #include <stdbool.h>
 
 //#define	TIMER_COUNTDOWN_WIN	90

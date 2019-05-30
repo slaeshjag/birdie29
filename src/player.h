@@ -2,6 +2,7 @@
 #define PLAYER_H_
 
 #include "config.h"
+#include "ingame.h"
 
 typedef struct Player Player;
 struct Player {
@@ -10,6 +11,8 @@ struct Player {
 	int sprite_variant;
 	int team;
 	int movable;
+	
+	InGameKeyStateEntry keystate;
 };
 
 void player_join(int id, const char *name, int team);

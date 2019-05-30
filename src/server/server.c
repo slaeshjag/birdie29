@@ -7,17 +7,19 @@
 #include "../network/network.h"
 #include "../network/protocol.h"
 
-#if 0
+#define XSTR(s) STR(s)
+#define STR(s) #s
+
 #define HANDLE_KEY(A) do { \
-		if(pack.keypress.keypress.A ) \
-			ingame_keystate[cli->id].A = 1; \
-		if(pack.keypress.keyrelease.A ) \
-			ingame_keystate[cli->id].A = 0; \
+		if(pack.keypress.keypress.A ) { \
+			printf("server: player %i press %s\n", cli->id, STR(A)); \
+			s->player[cli->id]->keystate.A = 1; \
+		} if(pack.keypress.keyrelease.A ) {\
+			printf("server: player %i release %s\n", cli->id, STR(A)); \
+			s->player[cli->id]->keystate.A = 0; \
+		} \
 	} while(0)
 
-#endif
-
-#define HANDLE_KEY(a)
 
 int usleep(useconds_t usec);
 
@@ -82,8 +84,8 @@ void server_handle_client(ClientList *cli) {
 			case PACKET_TYPE_KEYPRESS:
 				HANDLE_KEY(left);
 				HANDLE_KEY(right);
-				HANDLE_KEY(jump);
-				HANDLE_KEY(action);
+				HANDLE_KEY(up);
+				HANDLE_KEY(down);
 				break;
 			
 			case PACKET_TYPE_BLOCK_PLACE:

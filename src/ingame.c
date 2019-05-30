@@ -15,8 +15,8 @@
 //#include "sfx.h"
 
 #define KEYEVENT(key) do { \
-	if (newstate.left ^ oldstate.left) { \
-		if (newstate.left) \
+	if (newstate.key ^ oldstate.key) { \
+		if (newstate.key) \
 			pressevent.key = true, releaseevent.key = false; \
 		else \
 			releaseevent.key = true, pressevent.key = false; \
@@ -105,12 +105,17 @@ void ingame_loop() {
 
 	
 	ingame_client_keyboard();
+	
+	for(i = 0; i < PLAYER_CAP; i++) {
+		if(s->player[i])
+			player_handle_keys(s->player[i]);
+	}
 }
 
 
 void ingame_client_keyboard() {
 	static struct InGameKeyStateEntry oldstate = {};
-	struct InGameKeyStateEntry newstate, pressevent, releaseevent;
+	struct InGameKeyStateEntry newstate, pressevent = {}, releaseevent = {};
 
 	memset(&pressevent, 0, sizeof(pressevent));
 	memset(&releaseevent, 0, sizeof(pressevent));
