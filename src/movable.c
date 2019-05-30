@@ -10,14 +10,22 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-
 int movableInit() {
-	s->movable.movable = NULL;
-	s->movable.coll_buf = NULL;
-	s->movable.bbox = NULL;
+	int i;
+
+	s->movable.bbox = d_bbox_new(MAX_MOVABLE); // Should be enough for anyone
 	s->movable.movables = 0;
+	
+	for (i = 0; i < s->movable.movables; i++) {
+		s->movable.movable[i].used = 0;
+	}
 
 	return 0;
+}
+
+
+static int _next_available() {
+	return d_bbox_add(s->movable.bbox, 3, 3, 17, 17);
 }
 
 
@@ -97,37 +105,38 @@ static int _lookup_movable_player_id(int id) {
 }
 
 
-void movableSpawn() {
-	int i, h_x, h_y, h_w, h_h, team1 = 0, team2 = 16;
+int movableSpawn(char *sprite, int x, int y, int l) {
+	int idx;
+	int h_x, h_y, h_w, h_h;
 
-	for (i = 0; i < s->movable.movables; i++) {
-		d_sprite_direction_set(s->movable.movable[i].sprite, 0);
-		//s->movable.movable[i].ai = ailib_get(d_map_prop(s->active_level->object[i].ref, "ai"));
-		s->movable.movable[i].x = s->active_level->object[i].x * 1000 * s->active_level->layer->tile_w;
-		s->movable.movable[i].y = s->active_level->object[i].y * 1000 * s->active_level->layer->tile_h;
-		printf("spawning movable %i at %i %i\n", i, s->movable.movable[i].x/1000, s->movable.movable[i].y/1000);
-		s->movable.movable[i].l = s->active_level->object[i].l;
-		s->movable.movable[i].direction = 0;
-		//s->movable.movable[i].hp = 1;
-		s->movable.movable[i].angle = 0;
-		s->movable.movable[i].gravity_effect = 0;
-		s->movable.movable[i].x_velocity = 0;
-		s->movable.movable[i].y_velocity = 1;
-		s->movable.movable[i].tile_collision = 1;
-		s->movable.movable[i].id = i;
-		d_sprite_hitbox(s->movable.movable[i].sprite, &h_x, &h_y, &h_w, &h_h);
-		d_bbox_add(s->movable.bbox, s->movable.movable[i].x / 1000 + h_x, s->movable.movable[i].x / 1000 + h_x, h_w, h_h);
+	idx = _next_available();
+	s->movable.movable[idx].used = 1;
+	s->movable.movable[idx].sprite = d_sprite_load(util_binrel_path(sprite), 0, DARNIT_PFORMAT_RGB5A1);
 
-	}
+	d_sprite_direction_set(s->movable.movable[idx].sprite, 0);
+	s->movable.movable[idx].x = x * 1000;
+	s->movable.movable[idx].y = y * 1000;
+	printf("spawning movable %i at %i %i\n", idx, s->movable.movable[idx].x/1000, s->movable.movable[idx].y/1000);
+	s->movable.movable[idx].l = l;
+	s->movable.movable[idx].direction = 0;
+	s->movable.movable[idx].angle = 0;
+	s->movable.movable[idx].gravity_effect = 0;
+	s->movable.movable[idx].x_velocity = 0;
+	s->movable.movable[idx].y_velocity = 0;
+	s->movable.movable[idx].tile_collision = 1;
+	s->movable.movable[idx].id = idx;
+	d_sprite_hitbox(s->movable.movable[idx].sprite, &h_x, &h_y, &h_w, &h_h);
+	d_bbox_move(s->movable.bbox, idx, s->movable.movable[idx].x / 1000 + h_x, s->movable.movable[idx].y / 1000 + h_y);
+	d_bbox_resize(s->movable.bbox, idx, h_w, h_h);
+	d_sprite_animate_start(s->movable.movable[idx].sprite);
 
-	if (s->is_host) {
-		//for (i = team1; i < 16; i++)
-		//	s->movable.movable[_lookup_movable_player_id(i)].hp = 0;
-		//for (i = team2; i < 32; i++)
-		//	s->movable.movable[_lookup_movable_player_id(i)].hp = 0;
-	}
+	return idx;
+}
 
-	return;
+
+void movableDespawn(int idx) {
+	d_sprite_free(s->movable.movable[idx].sprite);
+	s->movable.movable[idx].used = 0;
 }
 
 
@@ -146,48 +155,6 @@ int movableTileCollision(MOVABLE_ENTRY *entry, int off_x, int off_y) {
 	box_y /= s->active_level->layer[entry->l].tile_h;
 	w = s->active_level->layer[entry->l].tilemap->w;
 	return s->active_level->layer[entry->l].tilemap->data[box_x + box_y * w];
-}
-
-
-int movableLoad() {
-	#if 0
-	int i;
-	MOVABLE_ENTRY *entry;
-
-	movableKillEmAll();
-
-	for (i = 0; i < s->movable.movables; i++)
-		d_sprite_free(s->movable.movable[i].sprite);
-
-	if (!(entry = realloc(s->movable.movable, sizeof(MOVABLE_ENTRY) * s->active_level->objects))) {
-		free(s->movable.movable);
-		free(s->movable.coll_buf);
-		free(s->movable.ai_coll_buf);
-		d_bbox_free(s->movable.bbox);
-		movableInit();
-		return -1;
-	}
-
-	s->movable.movable = entry;
-	s->movable.movables = s->active_level->objects;
-	s->movable.coll_buf = malloc(sizeof(int) * s->active_level->objects);
-	s->movable.ai_coll_buf = malloc(sizeof(int) * s->active_level->objects);
-	s->movable.bbox = d_bbox_new(s->movable.movables);
-	d_bbox_set_indexkey(s->movable.bbox);
-
-	for (i = 0; i < s->movable.movables; i++) {
-		s->movable.movable[i].sprite = d_sprite_load(util_binrel_path(d_map_prop(s->active_level->object[i].ref, "sprite")), 0, DARNIT_PFORMAT_RGB5A1);
-		d_sprite_animate_start(s->movable.movable[i].sprite);
-		s->movable.movable[i].prevent_respawn = 0;
-
-	}
-	
-	movableSpawn();
-	movableLoop();
-
-	#endif
-
-	return 0;
 }
 
 
@@ -457,7 +424,6 @@ void movableLoop() {
 			d_sprite_direction_set(s->movable.movable[i].sprite, s->movable.movable[i].direction);
 		d_sprite_move(s->movable.movable[i].sprite, s->movable.movable[i].x / 1000, s->movable.movable[i].y / 1000);
 		d_sprite_hitbox(s->movable.movable[i].sprite, &h_x, &h_y, &h_w, &h_h);
-//		d_sprite_rotate(s->movable.movable[i].sprite, s->movable.movable[i].angle>1800?s->movable.movable[i].angle:3600-s->movable.movable[i].angle);
 		d_sprite_rotate(s->movable.movable[i].sprite, s->movable.movable[i].angle);
 		d_bbox_move(s->movable.bbox, i, s->movable.movable[i].x / 1000 + h_x, s->movable.movable[i].y / 1000 + h_y);
 		d_bbox_resize(s->movable.bbox, i, h_w, h_h);
@@ -481,14 +447,15 @@ void movableFreezeSprites(int freeze) {
 
 
 void movableLoopRender(int layer) {
-	int i;
+	int i, res;
+	unsigned int *arr = s->movable.coll_buf;
 
-//	res = d_bbox_test(s->movable.bbox, s->camera.x - 128, s->camera.y - 128, d_platform_get().screen_w + 256, d_platform_get().screen_h + 256, s->movable.coll_buf, ~0);
+	res = d_bbox_test(s->movable.bbox, s->camera.x - 128, s->camera.y - 128, d_platform_get().screen_w + 256, d_platform_get().screen_h + 256, s->movable.coll_buf, ~0);
 
-	for (i = 0; i < s->movable.movables; i++) {
-		if (s->movable.movable[i].l != layer)
+	for (i = 0; i < res; i++) {
+		if (s->movable.movable[arr[i]].l != layer)
 			continue;
-		d_sprite_draw(s->movable.movable[i].sprite);
+		d_sprite_draw(s->movable.movable[arr[i]].sprite);
 	}
 }
 
