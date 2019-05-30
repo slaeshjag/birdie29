@@ -17,6 +17,7 @@
 //#include "gameover.h"
 #include "menu.h"
 #include "main.h"
+#include "team.h"
 
 Gfx gfx;
 GameState gamestate;
@@ -172,6 +173,7 @@ int main(int argc, char  **argv) {
 	gameroom_init();
 	lobby_init();
 	movableInit();
+	unit_init();
 	//sfx_init();
 	//character_room_init();
 	//game_over_init();
