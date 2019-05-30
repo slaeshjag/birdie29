@@ -475,11 +475,15 @@ void movableLoop() {
 
 	s->movable.in_loop = 1;
 
-	for (j = 0; j < s->movable.movables; j++) {
+	for (j = 0; j < MAX_MOVABLE; j++) {
 		i = j;
-			
+		if (!s->movable.movable[i].used)
+			continue;
+
 		if (master) {
 			movableGravity(&s->movable.movable[i]);
+			if (!s->movable.movable[i].used)
+				continue;
 			//printf("Player at %i %i\n", s->movable.movable[i].x / 1000, s->movable.movable[i].y / 1000);
 		}
 
