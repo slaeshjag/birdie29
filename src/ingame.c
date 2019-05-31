@@ -117,8 +117,9 @@ void ingame_loop() {
 
 void ingame_client_keyboard() {
 	DARNIT_MOUSE mouse;
-	int highlight_x, highlight_y;
+	int mouse_angle;
 	int tile_size;
+	int angle;
 	
 	static struct InGameKeyStateEntry oldstate = {};
 	struct InGameKeyStateEntry newstate, pressevent = {}, releaseevent = {};
@@ -153,6 +154,14 @@ void ingame_client_keyboard() {
 	KEYEVENT(down);
 	KEYEVENT(shoot);
 	
+	mouse = d_mouse_get();
+	
+	int x, y;
+	
+	y = (cs->drawable->entry[cs->player[me.id]->movable].y) - (cs->camera.y + mouse.y);
+	x = (cs->drawable->entry[cs->player[me.id]->movable].x) - (cs->camera.x + mouse.x);
+	
+	angle = atan2(y, x)*180/M_PI + 180;
 
 	//if(newstate.left || newstate.right)
 	//	sfx_play(SFX_WALK);
@@ -163,7 +172,9 @@ void ingame_client_keyboard() {
 	kp.type = PACKET_TYPE_KEYPRESS;
 	kp.keypress = pressevent;
 	kp.keyrelease = releaseevent;
-
+	
+	kp.mouse_angle = angle;
+	
 	protocol_send_packet(cs->server_sock, (void *) &kp);
 
 	oldstate = newstate;
