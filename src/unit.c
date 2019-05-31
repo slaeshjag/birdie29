@@ -16,8 +16,6 @@ void unit_housekeeping() {
 	struct UnitEntry **e, *tmp;
 
 	for (i = 0; i < MAX_TEAM; i++) {
-		d_util_mutex_lock(ss->team[i].unit.lock);
-		
 		for (e = &ss->team[i].unit.unit; *e; e = &(*e)->next) {
 			if ((*e)->delete_flag) {
 				tmp = *e;
@@ -25,8 +23,6 @@ void unit_housekeeping() {
 				free(tmp);
 			}
 		}
-		
-		d_util_mutex_unlock(ss->team[i].unit.lock);
 	}
 }
 
@@ -34,15 +30,12 @@ void unit_housekeeping() {
 void unit_delete(int team, int index) {
 	struct UnitEntry **e;
 
-	d_util_mutex_lock(ss->team[team].unit.lock);
 	for (e = &ss->team[team].unit.unit; *e; e = &(*e)->next) {
 		if ((*e)->map_index == index)
 			continue;
 		(*e)->delete_flag = 1;
 		break;
 	}
-	
-	d_util_mutex_unlock(ss->team[team].unit.lock);
 }
 
 
@@ -50,8 +43,6 @@ int unit_add(int team, enum UnitType type, int x, int y) {
 	int index, id;
 	struct UnitEntry *e;
 	int success = 0;
-	
-	d_util_mutex_lock(ss->team[team].unit.lock);
 
 	if (x < 0 || y < 0)
 		goto fail;
@@ -75,7 +66,6 @@ int unit_add(int team, enum UnitType type, int x, int y) {
 	success = 1;
 
 fail:
-	d_util_mutex_unlock(ss->team[team].unit.lock);
 	return success;	
 }
 
@@ -105,7 +95,5 @@ void unit_prepare() {
 void unit_init() {
 	int i;
 
-	for (i = 0; i < MAX_TEAM; i++)
-		ss->team[i].unit.lock = d_util_mutex_create();
 	return;
 }

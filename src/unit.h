@@ -39,8 +39,6 @@ struct UnitEntry {
 
 
 struct Unit {
-	DARNIT_MUTEX			*lock;
-
 	struct UnitEntry		*unit;
 };
 

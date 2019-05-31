@@ -16,6 +16,7 @@ void player_join(int id, const char *name, int team) {
 	strcpy(p->name, name);
 	p->id = id;
 	p->team = team;
+	p->selected_building = -1;
 	
 	//p->movable = movableSpawn("res/player.spr", 0, 0, 0, 0 /* TODO: Replace with sprite index */);
 	

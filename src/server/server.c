@@ -332,14 +332,11 @@ int server_thread(void *arg) {
 				for (i = 0; i < MAX_TEAM; i++) {
 					struct UnitEntry *ue;
 					
-					d_util_mutex_lock(ss->team[i].unit.lock);
 					for (ue = ss->team[i].unit.unit; ue; ue = ue->next) {
 						if (ue->create_flag); // Just created
 						if (ue->modify_flag); // Has been modified since last loop
 						if (ue->delete_flag); // Will be deleted at the end of the loop
 					}
-
-					d_util_mutex_unlock(ss->team[i].unit.lock);
 				}
 				
 				for(tmp = client; tmp; tmp = tmp->next)

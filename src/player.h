@@ -21,6 +21,7 @@ struct Player {
 	int movable;
 	
 	int angle;
+	int selected_building;
 };
 
 void player_set(int id, const char *name, int team);
