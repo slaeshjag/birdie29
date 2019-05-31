@@ -183,6 +183,7 @@ int main(int argc, char  **argv) {
 	movableInit();
 	spritelist_init();
 	bullet_init();
+	unit_init();
 	cs->drawable = drawable_init();
 	//sfx_init();
 	//character_room_init();
