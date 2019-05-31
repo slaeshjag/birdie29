@@ -218,6 +218,7 @@ void unit_prepare() {
 				ss->active_level->layer->tilemap->data[j * ss->active_level->layer->tilemap->w + i + 1] &= ~TILESET_MASK;
 				ss->active_level->layer->tilemap->data[j * ss->active_level->layer->tilemap->w + i + 1] |= 2;
 				
+				ss->team[team].money += _unit_properties[UNIT_TYPE_GENERATOR].cost;
 				unit_add(team, UNIT_TYPE_GENERATOR, i, j);
 				
 				PacketTileUpdate pack;
