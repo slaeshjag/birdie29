@@ -199,12 +199,42 @@ void unit_prepare() {
 			if (tile < TILESET_UNIT_BASE)
 				continue;
 			team = (tile - TILESET_UNIT_BASE) / TILESET_TEAM_STEP;
+			if (team >= MAX_TEAM)
+				continue;
+			
 			if (((tile) % TILESET_TEAM_STEP) == ((_unit_properties[UNIT_TYPE_SPAWN].tiles.bottom_left) % TILESET_TEAM_STEP)) {
-				if (team >= MAX_TEAM)
-					continue;
 				ss->team[team].spawn.x = i * ss->active_level->layer->tile_w;
 				ss->team[team].spawn.y = j * ss->active_level->layer->tile_h;
 				printf("found team %i spawn point at %i, %i\n", team, i, j);
+			}
+			
+			if (((tile) % TILESET_TEAM_STEP) == 15) {
+				printf("found generator for team at %i, %i\n", team, i, j);
+				
+				/* Base plate */
+				ss->active_level->layer->tilemap->data[j * ss->active_level->layer->tilemap->w + i] &= ~TILESET_MASK;
+				ss->active_level->layer->tilemap->data[j * ss->active_level->layer->tilemap->w + i] |= 2;
+				
+				ss->active_level->layer->tilemap->data[j * ss->active_level->layer->tilemap->w + i + 1] &= ~TILESET_MASK;
+				ss->active_level->layer->tilemap->data[j * ss->active_level->layer->tilemap->w + i + 1] |= 2;
+				
+				unit_add(team, UNIT_TYPE_GENERATOR, i, j);
+				
+				PacketTileUpdate pack;
+				int x, y;
+				int type;
+				int team;
+	
+				pack.type = PACKET_TYPE_TILE_UPDATE;
+				pack.size = sizeof(PacketTileUpdate);
+				pack.layer = 0;
+				
+				pack.x = i;
+				pack.y = j;
+				pack.tile = 2;
+				server_broadcast_packet((void *) &pack);
+				pack.x++;
+				server_broadcast_packet((void *) &pack);
 			}
 		}
 	return;
