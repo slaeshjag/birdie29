@@ -12,7 +12,6 @@ struct Team {
 		int		x;
 		int		y;
 	} spawn;
-	int money;
 };
 
 

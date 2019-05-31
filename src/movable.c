@@ -109,13 +109,13 @@ static int _lookup_movable_player_id(int id) {
 }
 
 
-int movableSpawn(char *sprite, int x, int y, int l) {
+int movableSpawnReal(DARNIT_SPRITE *spr, int x, int y, int l) {
 	int idx;
 	int h_x, h_y, h_w, h_h;
 
 	idx = _next_available();
 	s->movable.movable[idx].used = 1;
-	s->movable.movable[idx].sprite = d_sprite_load(util_binrel_path(sprite), 0, DARNIT_PFORMAT_RGB5A1);
+	s->movable.movable[idx].sprite = spr;
 
 	d_sprite_direction_set(s->movable.movable[idx].sprite, 0);
 	s->movable.movable[idx].x = x * 1000;
@@ -138,6 +138,16 @@ int movableSpawn(char *sprite, int x, int y, int l) {
 	d_sprite_animate_start(s->movable.movable[idx].sprite);
 
 	return idx;
+}
+
+int movableSpawn(char *sprite, int x, int y, int l) {
+	return movableSpawnReal(d_sprite_load(util_binrel_path(sprite), 0, DARNIT_PFORMAT_RGB5A1), x, y, l);
+
+}
+
+
+int movableSpawnSprite(DARNIT_SPRITE *spr, int x, int y, int l) {
+	return movableSpawnReal(d_sprite_copy(spr), x, y, l);
 }
 
 

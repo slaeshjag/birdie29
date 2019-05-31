@@ -1,0 +1,48 @@
+#include <math.h>
+
+#include "main.h"
+#include "config.h"
+#include "player.h"
+#include "bullet.h"
+
+BulletProperties bullet_properties[BULLET_TYPES] = {
+	[BULLET_TYPE_WIMPY] = {
+		.damage = 1,
+		.ttl = 200,
+		.cost = 1,
+		.speed = 10,
+	},
+	
+	[BULLET_TYPE_BADASS] = {
+		.damage = 10,
+		.ttl = 60,
+		.cost = 10,
+		.speed = 2,
+	},
+};
+
+
+int bullet_spawn(BulletType type, Player *owner) {
+	int x, y, angle;
+	Bullet *bullet = NULL;
+	
+	if(s->team[owner->team].money - bullet_properties[type].cost < 0)
+		return -1;
+	
+	bullet = malloc(sizeof(Bullet));
+	
+	x = s->movable.movable[owner->movable].x;
+	y = s->movable.movable[owner->movable].y;
+	angle = s->movable.movable[owner->movable].angle;
+	
+	bullet->type = type;
+	bullet->ticks = bullet_properties[type].ttl;
+	//bullet->movable = movableSpawn(bullet_properties[type].sprite, x, y, 1);
+	s->movable.movable[bullet->movable].angle = angle;
+	s->movable.movable[bullet->movable].x_velocity = bullet_properties[type].speed * cos(((double) angle)*M_PI/180.0);
+	s->movable.movable[bullet->movable].y_velocity = bullet_properties[type].speed * sin(((double) angle)*M_PI/180.0);
+	
+	s->team[owner->team].money -= bullet_properties[type].cost;
+	
+	return bullet->movable;
+}

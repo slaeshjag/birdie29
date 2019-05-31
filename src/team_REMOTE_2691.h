@@ -8,10 +8,6 @@
 
 struct Team {
 	struct Unit		unit;
-	struct {
-		int		x;
-		int		y;
-	} spawn;
 	int money;
 };
 

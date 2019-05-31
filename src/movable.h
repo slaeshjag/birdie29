@@ -91,6 +91,7 @@ int movableTileCollision(MOVABLE_ENTRY *entry, int off_x, int off_y);
 void movableFreezeSprites(int freeze);
 void movableRespawn();
 int movableSpawn(char *sprite, int x, int y, int l);
+int movableSpawnSprite(DARNIT_SPRITE *spr, int x, int y, int l);
 
 
 #endif
