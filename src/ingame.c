@@ -13,6 +13,7 @@
 //#include "gameover.h"
 #include "util.h"
 #include "hud.h"
+#include "particles.h"
 //#include "effect.h"
 //#include "sfx.h"
 
@@ -84,6 +85,7 @@ void ingame_loop() {
 	}
 	
 	hud_update();
+	particle_loop();
 	
 	camera_work();
 	for(i = 0; i < MAP_LAYERS; i++) {
@@ -91,7 +93,7 @@ void ingame_loop() {
 	}
 
 	d_render_offset(cs->camera.x, cs->camera.y);
-	
+
 	for (i = 0; i < MAP_LAYERS; i++) {
 		d_render_offset(0, 0);
 		d_render_tint(255, 255, 255, 255);
@@ -105,6 +107,8 @@ void ingame_loop() {
 	
 	/*for(i = 0; i < PARTICLE_EFFECTS; i++)
 		d_particle_draw(s->particle_effect[i]);*/
+	
+	particle_render();
 
 	/* HUD */
 	d_render_offset(0, 0);
