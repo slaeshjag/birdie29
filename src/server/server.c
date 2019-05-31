@@ -249,6 +249,10 @@ void server_handle_client(Client *cli) {
 				break;
 			case PACKET_TYPE_BULLET_REMOVE:
 				break;
+			
+			case PACKET_TYPE_BUILD_UNIT:
+				printf("server: building %i at (%i, %i)\n", pack.build.unit, cli->highlight.x, cli->highlight.y);
+				break;
 			default:
 				fprintf(stderr, "wat %i\n", pack.type);
 				break;

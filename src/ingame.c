@@ -138,6 +138,7 @@ void ingame_client_keyboard() {
 	newstate.down = d_keys_get().down;
 	newstate.suicide = d_keys_get().x;
 	newstate.shoot = d_keys_get().a;
+	newstate.build = d_keys_get().y;
 	
 
 	
@@ -148,7 +149,6 @@ void ingame_client_keyboard() {
 		d_keys_set(keys);
 		//ingame_apple_bullet_fire();
 	}
-
 	
 	if(d_keys_get().select)
 		restart_to_menu(me.name);
@@ -158,6 +158,20 @@ void ingame_client_keyboard() {
 	KEYEVENT(up);
 	KEYEVENT(down);
 	KEYEVENT(shoot);
+	KEYEVENT(build);
+	
+	if(pressevent.build) {
+		PacketBuildUnit buildunit;
+		
+		if(cs->player[me.id]->selected_building >= 0) {		
+			buildunit.type = PACKET_TYPE_BUILD_UNIT,
+			buildunit.size = sizeof(PacketBuildUnit);
+			
+			buildunit.unit = cs->player[me.id]->selected_building;
+			
+			protocol_send_packet(cs->server_sock, (void *) &buildunit);
+		}
+	}
 	
 	mouse = d_mouse_get();
 	

@@ -23,10 +23,10 @@ enum PacketType {
 	PACKET_TYPE_PARTICLE,
 	PACKET_TYPE_EXPLOSION,
 	PACKET_TYPE_STATUS_UPDATE,
-	PACKET_TYPE_APPLE_BULLET_FIRE,
 	PACKET_TYPE_BULLET_ANNOUNCE,
 	PACKET_TYPE_BULLET_UPDATE,
 	PACKET_TYPE_BULLET_REMOVE,
+	PACKET_TYPE_BUILD_UNIT,
 	PACKET_TYPE_EXIT,
 };
 
@@ -138,39 +138,12 @@ struct PacketStatusUpdate {
 };
 
 
-typedef struct PacketAppleBullet PacketAppleBullet;
-struct PacketAppleBullet {
-	uint16_t type;
-	uint16_t size;
-
-	int32_t xdir;
-	int32_t ydir;
-};
-
-
 typedef struct PacketExit PacketExit;
 struct PacketExit {
 	uint16_t type;
 	uint16_t size;
 };
 
-
-typedef struct PacketAppleCount PacketAppleCount;
-struct PacketAppleCount {
-	uint16_t type;
-	uint16_t size;
-
-	uint8_t player;
-	uint8_t apple[4];
-	uint8_t selected;
-};
-
-
-typedef struct PacketChangeApple PacketChangeApple;
-struct PacketChangeApple {
-	uint16_t type;
-	uint16_t size;
-};
 
 
 typedef struct PacketMovableSpawn PacketMovableSpawn;
@@ -234,6 +207,14 @@ struct PacketTileUpdate {
 	uint32_t layer;
 };
 
+typedef struct PacketBuildUnit PacketBuildUnit;
+struct PacketBuildUnit {
+	uint16_t type;
+	uint16_t size;
+	
+	uint32_t unit;
+};
+
 typedef union Packet Packet;
 union Packet {
 	struct {
@@ -254,12 +235,12 @@ union Packet {
 	PacketBulletUpdate bullet_update;
 	PacketBulletAnnounce bullet_announce;
 	PacketBulletRemove bullet_remove;
-	PacketChangeApple change_apple;
 	PacketMovableSpawn movable_spawn;
 	PacketMovableMove movable_move;
 	PacketMovableDespawn movable_despawn;
 	PacketTileUpdate tile_update;
 	PacketMapChange map_change;
+	PacketBuildUnit build;
 };
 
 int protocol_send_packet(int sock, Packet *pack);
