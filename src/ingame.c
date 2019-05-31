@@ -141,28 +141,9 @@ void ingame_client_keyboard() {
 	newstate.up = d_keys_get().up;
 	newstate.down = d_keys_get().down;
 	newstate.suicide = d_keys_get().x;
-	//newstate.shoot = d_keys_get().a;
-	//newstate.build = d_keys_get().y;
+	newstate.shoot = d_keys_get().lmb;
+	newstate.build = d_keys_get().rmb;
 	
-
-	
-	if (d_keys_get().lmb) {
-		DARNIT_KEYS keys;
-		keys = d_keys_zero();
-		keys.lmb = 1;
-		d_keys_set(keys);
-		
-		newstate.shoot = true;
-	}
-	
-	if (d_keys_get().rmb) {
-		DARNIT_KEYS keys;
-		keys = d_keys_zero();
-		keys.rmb = 1;
-		d_keys_set(keys);
-		
-		newstate.build = true;
-	}
 	
 	if(d_keys_get().select)
 		restart_to_menu(me.name);
