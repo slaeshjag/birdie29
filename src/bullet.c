@@ -42,7 +42,7 @@ int bullet_spawn(BulletType type, Player *owner) {
 	
 	x = s->movable.movable[owner->movable].x;
 	y = s->movable.movable[owner->movable].y;
-	angle = s->movable.movable[owner->movable].angle;
+	angle = owner->angle;
 	
 	bullet->type = type;
 	bullet->ticks = bullet_properties[type].ttl;
