@@ -78,8 +78,8 @@ void _client_highlight_cursor(Client *player) {
 	highlight_y = ((ss->movable.movable[player->movable].y + (tile_size/2 - 1)*1000)/tile_size)/1000;
 	//mouse.x
 	
-	highlight_x += cos(player->angle*M_PI/180.0) + 0.5;
-	highlight_y += sin(player->angle*M_PI/180.0) + 0.5;
+	highlight_x += 2.0*cos(player->angle*M_PI/180.0) + 0.5;
+	highlight_y += 2.0*sin(player->angle*M_PI/180.0) + 0.5;
 	
 	pack.x = player->highlight.x;
 	pack.y = player->highlight.y;
