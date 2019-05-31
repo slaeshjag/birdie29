@@ -71,6 +71,7 @@ void server_handle_client(ClientList *cli) {
 					strcpy(response.join.name, tmp->name);
 					response.join.team = tmp->team;
 					response.join.id = tmp->id;
+					response.join.movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);
 					protocol_send_packet(cli->sock, &response);
 					
 					if(tmp->sock != cli->sock) {

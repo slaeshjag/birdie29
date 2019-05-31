@@ -6,6 +6,7 @@
 //#include "server/server.h"
 #include "util.h"
 //#include "block.h"
+#include "spritelist.h"
 #include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -156,7 +157,7 @@ int movableSpawnReal(DARNIT_SPRITE *spr, int x, int y, int l, int type_hint) {
 		pack.movable_spawn.dir = 0;
 		pack.movable_spawn.movable = idx;
 
-		server_broadcast_packet(&pack);
+		//server_broadcast_packet(&pack);
 	}
 
 	return idx;
@@ -168,8 +169,8 @@ int movableSpawn(char *sprite, int x, int y, int l, int type_hint) {
 }
 
 
-int movableSpawnSprite(DARNIT_SPRITE *spr, int x, int y, int l, int type_hint) {
-	return movableSpawnReal(d_sprite_copy(spr), x, y, l, type_hint);
+int movableSpawnSprite(int x, int y, int l, int sprite) {
+	return movableSpawnReal(spritelist_get(sprite), x, y, l, sprite);
 }
 
 

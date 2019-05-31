@@ -18,6 +18,8 @@
 #include "menu.h"
 #include "main.h"
 #include "team.h"
+#include "spritelist.h"
+
 
 Gfx gfx;
 GameState gamestate;
@@ -179,6 +181,7 @@ int main(int argc, char  **argv) {
 	menu_init();
 	lobby_init();
 	movableInit();
+	spritelist_init();
 	bullet_init();
 	cs->drawable = drawable_init();
 	//sfx_init();
