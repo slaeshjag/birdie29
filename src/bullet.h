@@ -2,6 +2,7 @@
 #define BULLET_H_
 
 #include <darnit/darnit.h>
+#include "server/server.h"
 #include "player.h"
 
 typedef enum BulletType BulletType;
@@ -30,6 +31,6 @@ struct BulletProperties {
 
 extern BulletProperties bullet_properties[BULLET_TYPES];
 
-int bullet_spawn(BulletType type, Player *owner);
+int bullet_spawn(BulletType type, Client *owner);
 
 #endif

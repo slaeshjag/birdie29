@@ -1,5 +1,7 @@
 #include <math.h>
 
+#include "server/server.h"
+
 #include "main.h"
 #include "config.h"
 #include "player.h"
@@ -31,7 +33,7 @@ void bullet_init() {
 }
 
 
-int bullet_spawn(BulletType type, Player *owner) {
+int bullet_spawn(BulletType type, Client *owner) {
 	int x, y, angle;
 	Bullet *bullet = NULL;
 	

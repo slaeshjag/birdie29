@@ -21,12 +21,10 @@ struct Player {
 	int movable;
 	
 	int angle;
-	
-	InGameKeyStateEntry keystate;
 };
 
 void player_set(int id, const char *name, int team);
 void player_join(int id, const char *name, int team);
-void player_handle_keys(Player *player);
+
 
 #endif

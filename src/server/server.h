@@ -1,6 +1,24 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
+#include "../config.h"
+#include "../ingame.h"
+#include "../network/protocol.h"
+
+typedef struct Client Client;
+struct Client {
+	int id;
+	int sock;
+	char name[NAME_LEN_MAX];
+	int team;
+	int movable;
+	int angle;
+	
+	InGameKeyStateEntry keystate;
+	
+	Client *next;
+};
+
 void server_start();
 void server_start_game();
 void server_kick();

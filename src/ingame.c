@@ -113,13 +113,6 @@ void ingame_loop() {
 
 	
 	ingame_client_keyboard();
-	
-	if(ss->is_host) {
-		for(i = 0; i < PLAYER_CAP; i++) {
-			if(ss->player[i])
-				player_handle_keys(ss->player[i]);
-		}
-	}
 }
 
 

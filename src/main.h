@@ -52,7 +52,6 @@ extern Gfx gfx;
 typedef struct GameStateStruct GameStateStruct;
 struct GameStateStruct {
 	bool is_host;
-	Player *player[PLAYER_CAP];
 	struct Team team[MAX_TEAM];
 	MOVABLE movable;
 	DARNIT_MAP *active_level;
