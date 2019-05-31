@@ -17,6 +17,8 @@ struct Drawable *drawable_init() {
 		drw->entry[i].angle = 0;
 	}
 
+	return drw;
+
 }
 
 
