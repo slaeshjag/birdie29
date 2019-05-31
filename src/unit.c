@@ -159,7 +159,7 @@ int unit_add(int team, UnitType type, int x, int y) {
 	e->delete_flag = 0;
 	
 	e->pylon = NULL;
-	e->map_index = index;
+	e->map_index = x + y*ss->active_level->layer->tilemap->w;;
 	e->x = x;
 	e->y = y;
 	e->type = type;

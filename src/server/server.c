@@ -211,7 +211,6 @@ void server_handle_client(Client *cli) {
 					}
 				}
 				
-				unit_prepare();
 
 				break;
 			
@@ -310,6 +309,8 @@ int server_thread(void *arg) {
 				printf("server: starting...\n");
 				for (i = 0; i < MAX_TEAM; i++)
 					ss->team[i].power_map = pylonpower_map_new(ss->active_level->layer->tilemap->w, ss->active_level->layer->tilemap->h);
+				unit_prepare();
+				
 				for(tmp = client; tmp; tmp = tmp->next) {
 					/* teleport players to their spawning point */
 					tmp->movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);

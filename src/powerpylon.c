@@ -195,6 +195,8 @@ struct PylonPowerEntry *pylonpower_map_new(int w, int h) {
 
 	map = malloc(sizeof(*map));
 	map->map = calloc(sizeof(*map->map) * w*h, 1);
+	map->w = w;
+	map->h = h;
 	
 	return map;
 }
