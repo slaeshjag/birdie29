@@ -60,9 +60,14 @@ void unit_delete(int team, int index) {
 
 
 bool _collision_with_tile(int x, int y, UnitType type) {
-	int i;
+	int index = x + y * ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->w;
 	
-	//ss->active_level->layer->tilemap
+	if(ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->data[index] && _unit_properties[type].tiles.bottom_left)
+		return true;
+	
+	if(ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->data[index + 1] && _unit_properties[type].tiles.bottom_right)
+		return true;
+	
 	
 	return false;
 }
