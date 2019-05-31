@@ -7,7 +7,7 @@ struct Drawable *drawable_init() {
 	struct Drawable *drw;
 
 	drw = malloc(sizeof(*drw));
-	drw->entry = malloc(sizeof(*drw) * MAX_MOVABLE);
+	drw->entry = malloc(sizeof(*drw->entry) * MAX_MOVABLE);
 	
 	for (i = 0; i < MAX_MOVABLE; i++) {
 		drw->entry[i].sprite = NULL;

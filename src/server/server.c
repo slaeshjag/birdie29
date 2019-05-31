@@ -217,6 +217,7 @@ int server_thread(void *arg) {
 				
 			case SERVER_STATE_GAME:
 				d_util_semaphore_wait(sem);
+				movableLoop();
 				
 				pack.type = PACKET_TYPE_MOVABLE_MOVE;
 				pack.size = sizeof(PacketMovableMove);
