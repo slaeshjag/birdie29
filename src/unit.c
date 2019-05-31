@@ -74,8 +74,6 @@ void unit_init() {
 	int i, j;
 	unsigned int tile, team;
 
-	TILESET_UNIT_BASE + TILESET_TEAM_STEP * team;
-
 	for (j = 0; j < s->active_level->layer->tilemap->h; j++)
 		for (i = 0; i < s->active_level->layer->tilemap->w; i++) {
 			tile = s->active_level->layer->tilemap->data[j * s->active_level->layer->tilemap->w + i] & TILESET_MASK;

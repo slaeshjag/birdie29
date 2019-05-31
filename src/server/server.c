@@ -142,7 +142,7 @@ void server_handle_client(ClientList *cli) {
 int server_thread(void *arg) {
 	Packet pack;
 	ClientList *tmp;
-	int i;
+	int i, j;
 	
 	for(;;) {
 		switch(server_state) {
@@ -209,6 +209,19 @@ int server_thread(void *arg) {
 						if(tmp->id != me.id)
 							protocol_send_packet(tmp->sock, &pack);
 					}
+				}
+
+				for (i = 0; i < MAX_TEAM; i++) {
+					struct UnitEntry *ue;
+					
+					d_util_mutex_lock(s->team[i].unit.lock);
+					for (ue = s->team[i].unit.unit; ue; ue = ue->next) {
+						if (ue->create_flag); // Just created
+						if (ue->modify_flag); // Has been modified since last loop
+						if (ue->delete_flag); // Will be deleted at the end of the loop
+					}
+
+					d_util_mutex_unlock(s->team[i].unit.lock);
 				}
 				
 				for(tmp = client; tmp; tmp = tmp->next)
