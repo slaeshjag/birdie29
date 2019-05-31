@@ -10,6 +10,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "network/network.h"
+#include "network/protocol.h"
+#include "server/server.h"
+
+
 int movableInit() {
 	int i;
 
@@ -109,7 +114,7 @@ static int _lookup_movable_player_id(int id) {
 }
 
 
-int movableSpawnReal(DARNIT_SPRITE *spr, int x, int y, int l) {
+int movableSpawnReal(DARNIT_SPRITE *spr, int x, int y, int l, int type_hint) {
 	int idx;
 	int h_x, h_y, h_w, h_h;
 
@@ -137,17 +142,34 @@ int movableSpawnReal(DARNIT_SPRITE *spr, int x, int y, int l) {
 	d_bbox_resize(ss->movable.bbox, idx, h_w, h_h);
 	d_sprite_animate_start(ss->movable.movable[idx].sprite);
 
+	/* Send packet */ {
+		Packet pack;
+		
+		pack.type = PACKET_TYPE_MOVABLE_SPAWN;
+		pack.size = sizeof(PacketMovableSpawn);
+
+		pack.movable_spawn.x = x;
+		pack.movable_spawn.y = y;
+		pack.movable_spawn.l = l;
+		pack.movable_spawn.sprite_type = type_hint;
+		pack.movable_spawn.angle = 0;
+		pack.movable_spawn.dir = 0;
+		pack.movable_spawn.movable = idx;
+
+		server_broadcast_packet(&pack);
+	}
+
 	return idx;
 }
 
-int movableSpawn(char *sprite, int x, int y, int l) {
-	return movableSpawnReal(d_sprite_load(util_binrel_path(sprite), 0, DARNIT_PFORMAT_RGB5A1), x, y, l);
+int movableSpawn(char *sprite, int x, int y, int l, int type_hint) {
+	return movableSpawnReal(d_sprite_load(util_binrel_path(sprite), 0, DARNIT_PFORMAT_RGB5A1), x, y, l, type_hint);
 
 }
 
 
-int movableSpawnSprite(DARNIT_SPRITE *spr, int x, int y, int l) {
-	return movableSpawnReal(d_sprite_copy(spr), x, y, l);
+int movableSpawnSprite(DARNIT_SPRITE *spr, int x, int y, int l, int type_hint) {
+	return movableSpawnReal(d_sprite_copy(spr), x, y, l, type_hint);
 }
 
 
