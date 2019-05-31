@@ -15,6 +15,10 @@ struct Client {
 	int angle;
 	
 	InGameKeyStateEntry keystate;
+	struct {
+		int x;
+		int y;
+	} highlight;
 	
 	Client *next;
 };

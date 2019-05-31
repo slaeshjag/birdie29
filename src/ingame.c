@@ -117,6 +117,10 @@ void ingame_loop() {
 
 
 void ingame_client_keyboard() {
+	DARNIT_MOUSE mouse;
+	int highlight_x, highlight_y;
+	int tile_size;
+	
 	static struct InGameKeyStateEntry oldstate = {};
 	struct InGameKeyStateEntry newstate, pressevent = {}, releaseevent = {};
 
@@ -129,6 +133,8 @@ void ingame_client_keyboard() {
 	newstate.down = d_keys_get().down;
 	newstate.suicide = d_keys_get().x;
 	newstate.shoot = d_keys_get().a;
+	
+
 	
 	if (d_keys_get().lmb) {
 		DARNIT_KEYS keys;
@@ -175,6 +181,7 @@ void ingame_client_keyboard() {
 		 
 		//protocol_send_packet(server_sock, (void *) &pack);
 	}
+	
 }
 
 void ingame_network_handler() {
@@ -190,6 +197,10 @@ void ingame_network_handler() {
 				break;
 			case PACKET_TYPE_MOVABLE_MOVE:
 				drawable_move(cs->drawable, pack.movable_move.movable, pack.movable_move.x, pack.movable_move.y, 20*pack.movable_move.angle, pack.movable_move.dir);
+				break;
+			
+			case PACKET_TYPE_TILE_UPDATE:
+				cs->map.layer[pack.tile_update.layer]->data[pack.tile_update.y * cs->map.layer[pack.tile_update.layer]->w + pack.tile_update.x] = pack.tile_update.tile;
 				break;
 			
 			case PACKET_TYPE_BULLET_ANNOUNCE:

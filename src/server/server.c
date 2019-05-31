@@ -66,13 +66,45 @@ static void _client_handle_keys(Client *player) {
 	}
 }
 
+void _client_highlight_cursor(Client *player) {
+	PacketTileUpdate pack = {.type = PACKET_TYPE_TILE_UPDATE, .size = sizeof(PacketTileUpdate)};
+	int tile_size = ss->active_level->layer[0].tile_w;
+	int highlight_x;
+	int highlight_y;
+	
+	//mouse = d_mouse_get();
+	highlight_x = ((ss->movable.movable[player->movable].x + (tile_size/2 - 1)*1000)/tile_size)/1000;
+	highlight_y = ((ss->movable.movable[player->movable].y + (tile_size/2 - 1)*1000)/tile_size)/1000;
+	//mouse.x
+	
+	pack.x = player->highlight.x;
+	pack.y = player->highlight.y;
+	pack.tile = 0;
+	pack.layer = 2;
+	
+	protocol_send_packet(player->sock, (Packet *) &pack);
+	
+	player->highlight.x = highlight_x;
+	player->highlight.y = highlight_y;
+	
+	pack.x = player->highlight.x;
+	pack.y = player->highlight.y;
+	pack.tile = 69;
+	pack.layer = 2;
+	
+	protocol_send_packet(player->sock, (Packet *) &pack);
+}
+
 void server_handle_client(Client *cli) {
 	Packet pack;
 	Packet response;
 	Client *tmp;
 	int i;
 	
-	_client_handle_keys(cli);
+	if(server_state == SERVER_STATE_GAME) {
+		_client_handle_keys(cli);
+		_client_highlight_cursor(cli);
+	}
 	
 	while(network_poll_tcp(cli->sock)) {
 		protocol_recv_packet(cli->sock, &pack);
