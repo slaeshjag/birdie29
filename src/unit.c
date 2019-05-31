@@ -158,6 +158,7 @@ int unit_add(int team, UnitType type, int x, int y) {
 	e->modify_flag = 0;
 	e->delete_flag = 0;
 	
+	e->pylon = NULL;
 	e->map_index = index;
 	e->x = x;
 	e->y = y;
@@ -168,7 +169,11 @@ int unit_add(int team, UnitType type, int x, int y) {
 	
 	e->next = ss->team[team].unit.unit;
 	ss->team[team].unit.unit = e;
+	e->team = team;
 	success = 1;
+
+	if (e->type == UNIT_TYPE_PYLON)
+		pylon_init(e, x, y);
 	
 	PacketTileUpdate pack;
 	

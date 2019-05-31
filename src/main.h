@@ -68,7 +68,7 @@ struct ClientStateStruct {
 	struct Team team[MAX_TEAM];
 	int server_sock;
 	struct Drawable *drawable;
-	struct Particle *particle;
+	struct ParticleEntry *particle;
 	struct {
 		DARNIT_TILEMAP *layer[MAP_LAYERS];
 	} map;

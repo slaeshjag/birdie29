@@ -7,6 +7,7 @@
 #define	TILESET_COLLISION_MASK (0xF << 16)
 
 #include <darnit/darnit.h>
+#include "powerpylon.h"
 
 typedef enum UnitType UnitType;
 enum UnitType {
@@ -45,8 +46,12 @@ struct UnitEntry {
 	unsigned int			previous_tile;
 	UnitType			type;
 	UnitEntry		*next;
-	
+	int				team;
 	int health;
+	struct PylonEntry		*pylon;
+
+	
+	
 	
 	int				create_flag;
 	int				modify_flag;
