@@ -90,6 +90,8 @@ void gameroom_init() {
 		}
 		
 		d_file_list_free(dirlist);
+		
+		gameroom.map.list->event_handler->add(gameroom.map.list, listbox_map_callback, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
 	}
 	
 	
