@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 #include <libgen.h>
 #include <signal.h>
 #include <stdbool.h>
@@ -18,6 +19,7 @@
 #include "menu.h"
 #include "main.h"
 #include "team.h"
+#include "hud.h"
 #include "spritelist.h"
 
 
@@ -184,6 +186,7 @@ int main(int argc, char  **argv) {
 	spritelist_init();
 	bullet_init();
 	unit_init();
+	hud_init();
 	cs->drawable = drawable_init();
 	//sfx_init();
 	//character_room_init();
@@ -196,6 +199,7 @@ int main(int argc, char  **argv) {
 	gamestate_pane[GAME_STATE_ENTER_IP] = &enter_ip.pane;
 	gamestate_pane[GAME_STATE_GAMEROOM] = &gameroom.pane;
 	//gamestate_pane[GAME_STATE_GAME_OVER] = &game_over.pane;
+	gamestate_pane[GAME_STATE_GAME] = &hud.pane;
 	
 	
 	signal(SIGINT, d_quit);
@@ -216,15 +220,16 @@ int main(int argc, char  **argv) {
 		d_render_begin();
 		d_render_blend_enable();
 		
-		d_render_tint(20, 20, 20, 255);
-		
-		if(gamestate_pane[gamestate])
-			muil_events(gamestate_pane[gamestate], 1);
 	
 		d_render_tint(255, 255, 255, 255);
 		if(state_render[gamestate])
 			state_render[gamestate]();
 	
+		d_render_tint(20, 20, 20, 255);
+		
+		if(gamestate_pane[gamestate])
+			muil_events(gamestate_pane[gamestate], 1);
+		
 		d_render_end();
 		d_loop();
 	}

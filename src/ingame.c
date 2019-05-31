@@ -12,6 +12,7 @@
 #include "player.h"
 //#include "gameover.h"
 #include "util.h"
+#include "hud.h"
 //#include "effect.h"
 //#include "sfx.h"
 
@@ -112,6 +113,8 @@ void ingame_loop() {
 
 	
 	ingame_client_keyboard();
+	
+	hud_render();
 }
 
 
@@ -162,7 +165,20 @@ void ingame_client_keyboard() {
 	x = (cs->drawable->entry[cs->player[me.id]->movable].x) - (cs->camera.x + mouse.x);
 	
 	angle = atan2(y, x)*180/M_PI + 180;
-
+	
+	if(mouse.wheel != 0) {
+		if(mouse.wheel > 0)
+			cs->player[me.id]->selected_building += 1;
+		else
+			cs->player[me.id]->selected_building -= 1;
+		
+		if(cs->player[me.id]->selected_building >= UNIT_TYPES - 1)
+			cs->player[me.id]->selected_building = -1;
+		
+		if(cs->player[me.id]->selected_building < -1)
+			cs->player[me.id]->selected_building = UNIT_TYPES - 2;
+	}
+	
 	//if(newstate.left || newstate.right)
 	//	sfx_play(SFX_WALK);
 
