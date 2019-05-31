@@ -13,6 +13,7 @@
 #include "drawable.h"
 #include "config.h"
 #include "team.h"
+#include "bullet.h"
 
 typedef struct Color Color;
 struct Color {
@@ -55,7 +56,7 @@ struct GameStateStruct {
 	struct Team team[MAX_TEAM];
 	MOVABLE movable;
 	DARNIT_MAP *active_level;
-	
+	Bullet *bullet;
 	//SfxStruct sfx;
 	
 };

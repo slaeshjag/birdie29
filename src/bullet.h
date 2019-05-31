@@ -2,7 +2,7 @@
 #define BULLET_H_
 
 #include <darnit/darnit.h>
-#include "server/server.h"
+//#include "server/server.h"
 #include "player.h"
 #include "spritelist.h"
 
@@ -18,6 +18,8 @@ struct Bullet {
 	BulletType type;
 	int movable;
 	int ticks;
+	int owner;
+	Bullet *next;
 };
 
 typedef struct BulletProperties BulletProperties;
@@ -33,6 +35,8 @@ struct BulletProperties {
 
 extern BulletProperties bullet_properties[BULLET_TYPES];
 
-int bullet_spawn(BulletType type, Client *owner);
+//int bullet_spawn(BulletType type, Client *owner);
+int bullet_loop();
+void bullet_init();
 
 #endif

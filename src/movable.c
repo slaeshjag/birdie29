@@ -182,6 +182,16 @@ void movableDespawn(int idx) {
 		d_bbox_delete(ss->movable.bbox, idx);
 	}
 	ss->movable.movable[idx].used = 0;
+
+	/* Send packet */ {
+		Packet pack;
+		
+		pack.type = PACKET_TYPE_MOVABLE_DESPAWN;
+		pack.size = sizeof(PacketMovableDespawn);
+	
+		pack.movable_despawn.movable = idx;
+		server_broadcast_packet(&pack);
+	}
 }
 
 
