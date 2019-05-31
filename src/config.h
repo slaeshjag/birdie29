@@ -35,4 +35,8 @@ enum MapLayer {
 	MAP_LAYERS,
 };
 
+/* Which tiles are non-passable */
+#define TILESHEET_COLLISION_TILE_LOW 72
+#define TILESHEET_COLLISION_TILE_HIGH (TILESHEET_COLLISION_TILE_LOW + 8*3)
+
 #endif
