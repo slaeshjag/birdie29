@@ -63,6 +63,7 @@ struct PacketKeypress {
 	uint16_t size;
 
 	InGameKeyStateEntry keypress, keyrelease;
+	int32_t mouse_angle;
 };
 
 typedef struct PacketParticle PacketParticle;
