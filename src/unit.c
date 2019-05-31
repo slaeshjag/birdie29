@@ -4,12 +4,27 @@
 #include "network/protocol.h"
 #include "server/server.h"
 
+#define PLACE_TILE(X, Y, TYPE, TILE_POSITION, LAYER) do { \
+	int tile = _unit_properties[TYPE].tiles.TILE_POSITION + (TILESET_TEAM_STEP) * team; \
+	if(tile > 0) { \
+		int index = (X) + (Y) * ss->active_level->layer[LAYER].tilemap->w; \
+		ss->active_level->layer[LAYER].tilemap->data[index] = tile; \
+		pack.x = (X); \
+		pack.y = (Y); \
+		pack.tile = tile; \
+		pack.layer = LAYER; \
+		server_broadcast_packet((void *) &pack); \
+	} \
+} while(0)
 
-static struct UnitTiles _building_tiles[UNIT_TYPES] = {
-	[UNIT_TYPE_GENERATOR] = { 0, 0, 0, 0 },
-	[UNIT_TYPE_PYLON] = { 0, 0, 0, 0 },
-	[UNIT_TYPE_MINER] = { 0, 0, 0, 0 },
-	[UNIT_TYPE_WALL] = { 0, 0, 0, 0 },
+
+static UnitProperties _unit_properties[UNIT_TYPES] = {
+	[UNIT_TYPE_GENERATOR] = {.tiles = { 104, 105, 96, 97 }, .cost = 100},
+	[UNIT_TYPE_PYLON] = {.tiles = { 106, -1, 98, -1 }, .cost = 10},
+	[UNIT_TYPE_MINER] = {.tiles = { 107, -1, -1, -1 }, .cost = 20},
+	[UNIT_TYPE_TURRET] = {.tiles = { 108, -1, -1, -1 }, .cost = 50},
+	[UNIT_TYPE_WALL] = {.tiles = { 109, -1, 101, -1 }, .cost = 5},
+	[UNIT_TYPE_SPAWN] = {.tiles = { 110, -1, -1, -1 }, .cost = -1},
 };
 
 
@@ -42,7 +57,7 @@ void unit_delete(int team, int index) {
 }
 
 
-int unit_add(int team, enum UnitType type, int x, int y) {
+int unit_add(int team, UnitType type, int x, int y) {
 	int index, id;
 	struct UnitEntry *e;
 	int success = 0;
@@ -52,16 +67,19 @@ int unit_add(int team, enum UnitType type, int x, int y) {
 	if (x >= ss->active_level->layer->tilemap->w || y >= ss->active_level->layer->tilemap->h)
 		goto fail;
 	
-	index = x + y * ss->active_level->layer->tilemap->w;
-
-	if ((ss->active_level->layer->tilemap->data[index] & TILESET_MASK) >= TILESET_UNIT_BASE)
-		goto fail; // Unit already there
+	if(ss->team[team].money < _unit_properties[type].cost)
+		goto fail;
+	
+	ss->team[team].money -= _unit_properties[type].cost;
+	
+	//if ((ss->active_level->layer->tilemap->data[index] & TILESET_MASK) >= TILESET_UNIT_BASE)
+	//	goto fail; // Unit already there
 	e = malloc(sizeof(*e));
 	e->create_flag = 1;
 	e->modify_flag = 0;
 	e->delete_flag = 0;
-	e->previous_tile = ss->active_level->layer->tilemap->data[index];
-	ss->active_level->layer->tilemap->data[index] = TILESET_UNIT_BASE + TILESET_TEAM_STEP * team + type;
+	//e->previous_tile = ss->active_level->layer->tilemap->data[index];
+	
 	e->map_index = index;
 	e->type = type;
 	e->next = ss->team[team].unit.unit;
@@ -74,12 +92,10 @@ int unit_add(int team, enum UnitType type, int x, int y) {
 	pack.type = PACKET_TYPE_TILE_UPDATE;
 	pack.size = sizeof(PacketTileUpdate);
 	
-	pack.x = x;
-	pack.y = y;
-	pack.tile = ss->active_level->layer->tilemap->data[index];
-	pack.layer = 0;
-	
-	server_broadcast_packet((void *) &pack);
+	PLACE_TILE(x, y, type, bottom_left, MAP_LAYER_BUILDING_LOWER);
+	PLACE_TILE(x + 1, y, type, bottom_right, MAP_LAYER_BUILDING_LOWER);
+	PLACE_TILE(x, y - 1, type, top_left, MAP_LAYER_BUILDING_UPPER);
+	PLACE_TILE(x + 1, y - 1, type, top_right, MAP_LAYER_BUILDING_UPPER);
 
 fail:
 	return success;	
@@ -96,7 +112,7 @@ void unit_prepare() {
 			if (tile < TILESET_UNIT_BASE)
 				continue;
 			team = (tile - TILESET_UNIT_BASE) / TILESET_TEAM_STEP;
-			if (((tile - TILESET_UNIT_BASE) % TILESET_TEAM_STEP) == UNIT_TYPE_SPAWN) {
+			if (((tile) % TILESET_TEAM_STEP) == ((_unit_properties[UNIT_TYPE_SPAWN].tiles.bottom_left) % TILESET_TEAM_STEP)) {
 				if (team >= MAX_TEAM)
 					continue;
 				ss->team[team].spawn.x = i * ss->active_level->layer->tile_w;

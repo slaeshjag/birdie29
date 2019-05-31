@@ -15,4 +15,12 @@ struct PylonEntry {
 };
 
 
+struct PylonPowerMap {
+	int				w;
+	int				h;
+	unsigned int			*map;
+};
+
+
+
 #endif

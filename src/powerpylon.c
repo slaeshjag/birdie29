@@ -64,7 +64,7 @@ static void _unit_pylon_pulse() {
 	struct UnitEntry *next;
 
 	for (i = 0; i < MAX_TEAM; i++) {
-		_unit_pylon_pluse_climb(ss->team[i].generator);
+		_unit_pylon_pulse_climb(ss->team[i].generator);
 	}
 
 	for (i = 0; i < MAX_TEAM; i++) {
@@ -74,12 +74,12 @@ static void _unit_pylon_pulse() {
 			if (next->pylon->pulse) {
 				if (!next->pylon->power) {
 					next->pylon->power= 1;
-					//playerCalcSetPower(list->unit->owner, list->x, list->y, 1);
+					playerCalcSetPower(next->team, next->pylon->x, next->pylon->y, 1);
 				}
 			} else {
 				if (next->pylon->power) {
 					next->pylon->power = 0;
-					//playerCalcSetPower(list->unit->owner, list->x, list->y, -1);
+					playerCalcSetPower(next->team, next->pylon->x, next->pylon->y, -1);
 				}
 			}
 
@@ -92,7 +92,6 @@ static void _unit_pylon_pulse() {
 
 
 void _unit_pylon_delete(struct UnitEntry *unit) {
-	struct PylonEntry **list;
 	int i;
 
 	if (unit->pylon->power)
@@ -100,7 +99,7 @@ void _unit_pylon_delete(struct UnitEntry *unit) {
 	
 	for (i = 0; i < unit->pylon->neighbours; i++)
 		if (unit->pylon->neighbour[i])
-			_unit_pylon_list_remove(unit->pylon->neighbour[i], &unit->pylon);
+			_unit_pylon_list_remove(unit->pylon->neighbour[i], unit->pylon);
 	free(unit->pylon->neighbour);
 	unit->pylon->neighbour = NULL;
 
@@ -156,7 +155,7 @@ void pylon_init(struct UnitEntry *unit, unsigned int x, unsigned int y) {
 		if (dx*dx + dy*dy >= radius*radius)
 			continue;
 		if (next->pylon->power && !unit->pylon->power) {
-			playerCalcSetPower(team, x, y, 1);
+			//playerCalcSetPower(team, x, y, 1);
 			unit->pylon->power = 1;
 		}
 		
@@ -171,4 +170,21 @@ void pylon_init(struct UnitEntry *unit, unsigned int x, unsigned int y) {
 	
 
 	return;
+}
+
+
+
+struct PylonPowerEntry *pylonpower_map_new(int w, int h) {
+	struct PylonPowerMap *map;
+
+	map = malloc(sizeof(*map));
+	map->map = calloc(sizeof(*map->map) * w*h, 1);
+	
+	return map;
+}
+
+
+void pylonpower_diff(struct PylonPowerMap *map, int x, int y, int diff) {
+
+	//map->map[x + map->w * y];
 }
