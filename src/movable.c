@@ -182,6 +182,16 @@ void movableDespawn(int idx) {
 		d_bbox_delete(ss->movable.bbox, idx);
 	}
 	ss->movable.movable[idx].used = 0;
+
+	/* Send packet */ {
+		Packet pack;
+		
+		pack.type = PACKET_TYPE_MOVABLE_DESPAWN;
+		pack.size = sizeof(PacketMovableDespawn);
+	
+		pack.movable_despawn.movable = idx;
+		server_broadcast_packet(&pack);
+	}
 }
 
 
@@ -223,13 +233,16 @@ void movableKillEmAll() {
 }
 
 
-int movableMoveDo(DARNIT_MAP_LAYER *layer, int *pos, int *delta, int *vel, int space, int col, int hit_off, int vel_r, int i, int i_b) {
+int movableMoveDo(DARNIT_MAP_LAYER *layer, int *pos, int *delta, int *vel, int space, int col, int hit_off, int vel_r, int i, int i_b, int *tile_index) {
 	int u, t, tile_w, tile_h, map_w, i_2;
 	unsigned int *map_d;
 	tile_w = layer->tile_w;
 	tile_h = layer->tile_h;
 	map_w = layer->tilemap->w;
 	map_d = layer->tilemap->data;
+
+	if (tile_index)
+		*tile_index = -1;
 
 	if (!(*delta))
 		return 0;
@@ -254,6 +267,14 @@ int movableMoveDo(DARNIT_MAP_LAYER *layer, int *pos, int *delta, int *vel, int s
 	i = (i < 0) ? t * map_w + abs(i) / tile_w : (i / tile_h) * map_w + t;
 	
 	if (map_d[i] & col || map_d[i_2] & col) {
+		if (map_d[i] & col) {
+			if (tile_index)
+				*tile_index = i;
+		} else if (map_d[i_2] & col) {
+			if (tile_index)
+				*tile_index = i;
+		}
+
 		(*vel) = vel_r;
 		(*delta) = 0;
 		return 1;
@@ -274,7 +295,7 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 	//int gravity, hack;
 	int delta_x, delta_y, r, p, gravity_x, gravity_y;
 	int hit_x, hit_y, hit_w, hit_h;
-	int i;
+	int i, tmp, collided_tile = -1;
 	int collision_event[MAX_MOVABLE] = { 0 };
 	unsigned int hitlist[MAX_MOVABLE], hits;
 
@@ -358,18 +379,18 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 				if (delta_x > 0) {
 					r = 1000 - r;
 					if (!entry->tile_collision)
-						(movableMoveDo(layer, &entry->x, &delta_x, &entry->x_gravity, r, 0, hit_x + hit_w, 0, entry->y / 1000 + hit_y, hit_h));
+						(movableMoveDo(layer, &entry->x, &delta_x, &entry->x_gravity, r, 0, hit_x + hit_w, 0, entry->y / 1000 + hit_y, hit_h, NULL));
 					else
-						entry->gravity_blocked |= (movableMoveDo(layer, &entry->x, &delta_x, &entry->x_gravity, r, COLLISION_LEFT, hit_x + hit_w, 0, entry->y / 1000 + hit_y, hit_h));
+						entry->gravity_blocked |= (movableMoveDo(layer, &entry->x, &delta_x, &entry->x_gravity, r, COLLISION_LEFT, hit_x + hit_w, 0, entry->y / 1000 + hit_y, hit_h, NULL));
 						
 				} else { 
 					if (!r)
 						r = 1000;
 					r *= -1;
 					if (!entry->tile_collision)
-						movableMoveDo(layer, &entry->x, &delta_x, &entry->x_gravity, r, 0, hit_x, 0, entry->y / 1000 + hit_y, hit_h);
+						movableMoveDo(layer, &entry->x, &delta_x, &entry->x_gravity, r, 0, hit_x, 0, entry->y / 1000 + hit_y, hit_h, NULL);
 					else
-						entry->gravity_blocked |= movableMoveDo(layer, &entry->x, &delta_x, &entry->x_gravity, r, COLLISION_RIGHT, hit_x, 0, entry->y / 1000 + hit_y, hit_h);
+						entry->gravity_blocked |= movableMoveDo(layer, &entry->x, &delta_x, &entry->x_gravity, r, COLLISION_RIGHT, hit_x, 0, entry->y / 1000 + hit_y, hit_h, NULL);
 				}
 			} else {
 				r = entry->y % 1000;
@@ -382,17 +403,17 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 				if (delta_y > 0) {
 					r = 1000 - r;
 					if (!entry->tile_collision)
-						movableMoveDo(layer, &entry->y, &delta_y, &entry->y_gravity, r, 0, hit_y + hit_h, 0, entry->x / -1000 - hit_x, hit_w);
+						movableMoveDo(layer, &entry->y, &delta_y, &entry->y_gravity, r, 0, hit_y + hit_h, 0, entry->x / -1000 - hit_x, hit_w, NULL);
 					else
-						entry->gravity_blocked |= movableMoveDo(layer, &entry->y, &delta_y, &entry->y_gravity, r, COLLISION_TOP, hit_y + hit_h, 0, entry->x / -1000 - hit_x, hit_w);
+						entry->gravity_blocked |= movableMoveDo(layer, &entry->y, &delta_y, &entry->y_gravity, r, COLLISION_TOP, hit_y + hit_h, 0, entry->x / -1000 - hit_x, hit_w, NULL);
 				} else {
 					if (!r)
 						r = 1000;
 					r *= -1;
 					if (!entry->tile_collision)
-						movableMoveDo(layer, &entry->y, &delta_y, &entry->y_gravity, r, 0, hit_y, -1, entry->x / -1000 - hit_x, hit_w);
+						movableMoveDo(layer, &entry->y, &delta_y, &entry->y_gravity, r, 0, hit_y, -1, entry->x / -1000 - hit_x, hit_w, NULL);
 					else
-						entry->gravity_blocked |= movableMoveDo(layer, &entry->y, &delta_y, &entry->y_gravity, r, COLLISION_BOTTOM, hit_y, -1, entry->x / -1000 - hit_x, hit_w);
+						entry->gravity_blocked |= movableMoveDo(layer, &entry->y, &delta_y, &entry->y_gravity, r, COLLISION_BOTTOM, hit_y, -1, entry->x / -1000 - hit_x, hit_w, NULL);
 				}
 			} 
 
@@ -462,14 +483,17 @@ nogravity:
 			if (delta_x > 0) {
 				r = 1000 - r;
 
-				entry->movement_blocked |= movableMoveDo(layer, &entry->x, &delta_x, &entry->x_velocity, r, COLLISION_LEFT, hit_x + hit_w, 0, entry->y / 1000 + hit_y, hit_h);
+				entry->movement_blocked |= movableMoveDo(layer, &entry->x, &delta_x, &entry->x_velocity, r, COLLISION_LEFT, hit_x + hit_w, 0, entry->y / 1000 + hit_y, hit_h, &tmp);
 			} else {
 				if (!r)
 					r = 1000;
 				r *= -1;
 
-				entry->movement_blocked |= movableMoveDo(layer, &entry->x, &delta_x, &entry->x_velocity, r, COLLISION_RIGHT, hit_x, 0, entry->y / 1000 + hit_y, hit_h);
+				entry->movement_blocked |= movableMoveDo(layer, &entry->x, &delta_x, &entry->x_velocity, r, COLLISION_RIGHT, hit_x, 0, entry->y / 1000 + hit_y, hit_h, &tmp);
 			}
+
+			if (tmp > -1)
+				collided_tile = tmp;
 		} else {	/* delta_y måste vara != 0 */
 			r = entry->y % 1000;
 			if (r + delta_y < 1000 && r + delta_y >= 0) {
@@ -487,19 +511,22 @@ nogravity:
 
 			if (delta_y > 0) {
 				r = 1000 - r;
-				entry->movement_blocked |= movableMoveDo(layer, &entry->y, &delta_y, &entry->y_velocity, r, COLLISION_TOP, hit_y + hit_h, 0, entry->x / -1000 - hit_x, hit_w);
+				entry->movement_blocked |= movableMoveDo(layer, &entry->y, &delta_y, &entry->y_velocity, r, COLLISION_TOP, hit_y + hit_h, 0, entry->x / -1000 - hit_x, hit_w, &tmp);
 			} else {
 				if (!r)
 					r = 1000;
 				r *= -1;
-				entry->movement_blocked |= movableMoveDo(layer, &entry->y, &delta_y, &entry->y_velocity, r, COLLISION_BOTTOM, hit_y, -1, entry->x / -1000 - hit_x, hit_w);
+				entry->movement_blocked |= movableMoveDo(layer, &entry->y, &delta_y, &entry->y_velocity, r, COLLISION_BOTTOM, hit_y, -1, entry->x / -1000 - hit_x, hit_w, &tmp);
 			}
+			
+			if (tmp > -1)
+				collided_tile = tmp;
 		}
 	}
 
 	if (entry->movement_blocked)
 		if (entry->callback.map_collision)
-			entry->callback.map_collision(entry->callback.user_pointer, entry->id);
+			entry->callback.map_collision(entry->callback.user_pointer, entry->id, collided_tile);
 
 	return -1462573849;
 }

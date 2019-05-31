@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <darnit/darnit.h>
 #include <muil/muil.h>
+//#include "server/server.h"
 #include "network/network.h"
 #include "network/protocol.h"
-//#include "server/server.h"
 #include "gameroom.h"
 #include "main.h"
 
@@ -178,6 +178,9 @@ void gameroom_network_handler() {
 				break;
 			case PACKET_TYPE_MOVABLE_SPAWN:
 				drawable_spawn(cs->drawable, pack.movable_spawn.sprite_type, pack.movable_spawn.movable, pack.movable_spawn.x, pack.movable_spawn.y, pack.movable_spawn.l, pack.movable_spawn.angle);
+				break;
+			case PACKET_TYPE_MOVABLE_DESPAWN:
+				drawable_despawn(cs->drawable, pack.movable_despawn.movable);
 				break;
 		}
 	}

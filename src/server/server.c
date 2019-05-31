@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <darnit/darnit.h>
+#include "server.h"
 #include "../main.h"
 #include "../bullet.h"
 #include "../network/network.h"
@@ -302,6 +303,7 @@ int server_thread(void *arg) {
 			case SERVER_STATE_GAME:
 				d_util_semaphore_wait(sem);
 				
+				bullet_loop();
 				movableLoop();
 				
 				pack.type = PACKET_TYPE_MOVABLE_MOVE;

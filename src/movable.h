@@ -64,7 +64,7 @@ typedef struct {
 
 	struct {
 		void		*user_pointer;
-		void 		(*map_collision)(void *usr_ptr, int movable_self);
+		void 		(*map_collision)(void *usr_ptr, int movable_self, int tile_index);
 		void 		(*gravity_map_collision)(void *usr_ptr, int movable_self);
 		void		(*movable_collision)(void *usr_ptr, int movable_self, int movable_remote);
 	} callback;

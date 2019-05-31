@@ -18,6 +18,14 @@ enum UnitType {
 };
 
 
+struct UnitTiles {
+	unsigned int			bottom_left;
+	unsigned int			bottom_right;
+	unsigned int			top_left;
+	unsigned int			top_right;
+};
+
+
 struct UnitEntry {
 	int				map_index;
 	unsigned int			previous_tile;

@@ -2,6 +2,14 @@
 #include "unit.h"
 
 
+static struct UnitTiles _building_tiles[UNIT_TYPES] = {
+	[UNIT_TYPE_GENERATOR] = { 0, 0, 0, 0 },
+	[UNIT_TYPE_PYLON] = { 0, 0, 0, 0 },
+	[UNIT_TYPE_MINER] = { 0, 0, 0, 0 },
+	[UNIT_TYPE_WALL] = { 0, 0, 0, 0 },
+};
+
+
 
 void unit_housekeeping() {
 	int i;

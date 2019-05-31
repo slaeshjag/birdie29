@@ -224,7 +224,10 @@ void ingame_network_handler() {
 			case PACKET_TYPE_MOVABLE_MOVE:
 				drawable_move(cs->drawable, pack.movable_move.movable, pack.movable_move.x, pack.movable_move.y, 20*pack.movable_move.angle, pack.movable_move.dir);
 				break;
-			
+			case PACKET_TYPE_MOVABLE_DESPAWN:
+				drawable_despawn(cs->drawable, pack.movable_despawn.movable);
+				break;
+
 			case PACKET_TYPE_TILE_UPDATE:
 				cs->map.layer[pack.tile_update.layer]->data[pack.tile_update.y * cs->map.layer[pack.tile_update.layer]->w + pack.tile_update.x] = pack.tile_update.tile;
 				break;
