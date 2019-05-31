@@ -1,7 +1,6 @@
 #include <string.h>
 
 #include "player.h"
-#include "server/server.h"
 #include "main.h"
 
 void player_set(int id, const char *name, int team) {

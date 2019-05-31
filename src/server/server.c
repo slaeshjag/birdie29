@@ -9,6 +9,7 @@
 #include "../bullet.h"
 #include "../network/network.h"
 #include "../network/protocol.h"
+#include "../serverplayer.h"
 
 #define XSTR(s) STR(s)
 #define STR(s) #s
@@ -44,11 +45,11 @@ static void _client_handle_keys(Client *player) {
 	MOVABLE_ENTRY *m = &ss->movable.movable[player->movable];
 	
 	if(player->keystate.up) {
-		printf("server loop: player %i hold up\n", player->id);
+		//printf("server loop: player %i hold up\n", player->id);
 		m->y_velocity = -PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_UP;
 	} else if(player->keystate.down) {
-		printf("server loop: player %i hold down\n", player->id);
+		//printf("server loop: player %i hold down\n", player->id);
 		m->y_velocity = PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_DOWN;
 	} else {
@@ -56,11 +57,11 @@ static void _client_handle_keys(Client *player) {
 	}
 	
 	if(player->keystate.left) {
-		printf("server loop: player %i hold left\n", player->id);
+		//printf("server loop: player %i hold left\n", player->id);
 		m->x_velocity = -PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_LEFT;
 	} else if(player->keystate.right) {
-		printf("server loop: player %i hold right\n", player->id);
+		//printf("server loop: player %i hold right\n", player->id);
 		m->x_velocity = PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_RIGHT;
 	} else {
@@ -135,6 +136,7 @@ void server_handle_client(Client *cli) {
 			case PACKET_TYPE_JOIN:
 				strcpy(cli->name, pack.join.name);
 				cli->team = pack.join.team;
+				cli->hp = PLAYER_HP;
 				printf("server: join %s team %i\n", cli->name, cli->team);
 				
 				response.type = PACKET_TYPE_JOIN;
@@ -317,7 +319,8 @@ int server_thread(void *arg) {
 				
 				bullet_loop();
 				movableLoop();
-				
+				serverplayer_loop(client);
+
 				pack.type = PACKET_TYPE_MOVABLE_MOVE;
 				pack.size = sizeof(PacketMovableMove);
 				
@@ -420,4 +423,9 @@ void server_broadcast_packet(Packet *pack) {
 
 	for(tmp = client; tmp; tmp = tmp->next)
 		protocol_send_packet(tmp->sock, pack);
+}
+
+
+Client *server_get_client_list() {
+	return client;
 }
