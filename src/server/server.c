@@ -266,7 +266,8 @@ int server_thread(void *arg) {
 					pack.movable_move.x = ss->movable.movable[i].x/1000;
 					pack.movable_move.y = ss->movable.movable[i].y/1000;
 					pack.movable_move.dir = ss->movable.movable[i].direction;
-					
+					pack.movable_move.movable = i;
+
 					angle = ss->movable.movable[i].angle;
 					if (angle < 0)
 						angle += 3600;
