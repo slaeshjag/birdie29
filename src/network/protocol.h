@@ -22,7 +22,7 @@ enum PacketType {
 	PACKET_TYPE_MAP_CHANGE,
 	PACKET_TYPE_PARTICLE,
 	PACKET_TYPE_EXPLOSION,
-	PACKET_TYPE_TIMER,
+	PACKET_TYPE_STATUS_UPDATE,
 	PACKET_TYPE_APPLE_BULLET_FIRE,
 	PACKET_TYPE_BULLET_ANNOUNCE,
 	PACKET_TYPE_BULLET_UPDATE,
@@ -127,11 +127,13 @@ struct PacketBulletUpdate {
 };
 
 
-typedef struct PacketTimer PacketTimer;
-struct PacketTimer {
+typedef struct PacketStatusUpdate PacketStatusUpdate;
+struct PacketStatusUpdate {
 	uint16_t type;
 	uint16_t size;
-
+	
+	uint32_t money[TEAMS_CAP];
+	
 	uint32_t time_left;
 };
 
@@ -248,7 +250,7 @@ union Packet {
 	PacketExit exit;
 	PacketExplosion explosion;
 	PacketParticle particle;
-	PacketTimer timer;
+	PacketStatusUpdate status;
 	PacketBulletUpdate bullet_update;
 	PacketBulletAnnounce bullet_announce;
 	PacketBulletRemove bullet_remove;
