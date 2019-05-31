@@ -5,9 +5,9 @@
 #include "server/server.h"
 
 #define PLACE_TILE(X, Y, TYPE, TILE_POSITION, LAYER) do { \
-	if(_building_tiles[type].bottom_left > 0) { \
-		int index = (X) + (Y) * ss->active_level->layer->tilemap->w; \
-		int tile = _building_tiles[TYPE].TILE_POSITION + TILESET_TEAM_STEP * team; \
+	int tile = _building_tiles[TYPE].TILE_POSITION + (TILESET_TEAM_STEP) * team; \
+	if(tile > 0) { \
+		int index = (X) + (Y) * ss->active_level->layer[LAYER].tilemap->w; \
 		ss->active_level->layer[LAYER].tilemap->data[index] = tile; \
 		pack.x = (X); \
 		pack.y = (Y); \
@@ -22,7 +22,8 @@ static struct UnitTiles _building_tiles[UNIT_TYPES] = {
 	[UNIT_TYPE_GENERATOR] = { 104, 105, 96, 97 },
 	[UNIT_TYPE_PYLON] = { 106, -1, 98, -1 },
 	[UNIT_TYPE_MINER] = { 107, -1, -1, -1 },
-	[UNIT_TYPE_WALL] = { 0, 0, 0, 0 },
+	[UNIT_TYPE_TURRET] = { 108, -1, -1, -1 },
+	[UNIT_TYPE_WALL] = { 109, -1, 101, -1 },
 };
 
 
