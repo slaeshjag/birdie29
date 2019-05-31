@@ -95,7 +95,7 @@ void _client_highlight_cursor(Client *player) {
 	
 	pack.x = player->highlight.x;
 	pack.y = player->highlight.y;
-	pack.tile = 69;
+	pack.tile = 1;
 	pack.layer = MAP_LAYER_OVL_MISC;
 	
 	protocol_send_packet(player->sock, (Packet *) &pack);
