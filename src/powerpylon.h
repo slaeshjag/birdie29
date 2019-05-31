@@ -12,8 +12,7 @@ struct PylonEntry {
 	unsigned int			y;
 	struct PylonEntry		**neighbour;
 	int				neighbours;
-	struct PylonEntry		*next;
-}
+};
 
 
 #endif

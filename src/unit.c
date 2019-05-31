@@ -66,6 +66,7 @@ int unit_add(int team, enum UnitType type, int x, int y) {
 	e->type = type;
 	e->next = ss->team[team].unit.unit;
 	ss->team[team].unit.unit = e;
+	e->team = team;
 	success = 1;
 	
 	PacketTileUpdate pack;

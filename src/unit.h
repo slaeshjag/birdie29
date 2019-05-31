@@ -6,6 +6,7 @@
 #define	TILESET_MASK			0xFFF
 
 #include <darnit/darnit.h>
+#include "powerpylon.h"
 
 enum UnitType {
 	UNIT_TYPE_GENERATOR,
@@ -30,7 +31,9 @@ struct UnitEntry {
 	int				map_index;
 	unsigned int			previous_tile;
 	enum UnitType			type;
+	int				team;
 	struct UnitEntry		*next;
+	struct PylonEntry		*pylon;
 
 	int				create_flag;
 	int				modify_flag;
