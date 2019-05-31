@@ -125,9 +125,9 @@ void game_state(GameState state) {
 			muil_selected_widget = select_name.entry;
 			break;
 		case GAME_STATE_LOBBY:
-			gameroom.button.start->enabled = false;
 			ss->is_host = false;
 			gameroom_init();
+			gameroom.button.start->enabled = false;
 			//muil_listbox_clear(lobby.list);
 			break;
 		case GAME_STATE_ENTER_IP:
