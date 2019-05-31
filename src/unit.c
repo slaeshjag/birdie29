@@ -1,5 +1,8 @@
 #include "main.h"
+#include "main.h"
 #include "unit.h"
+#include "network/protocol.h"
+#include "server/server.h"
 
 
 static struct UnitTiles _building_tiles[UNIT_TYPES] = {
@@ -58,12 +61,24 @@ int unit_add(int team, enum UnitType type, int x, int y) {
 	e->modify_flag = 0;
 	e->delete_flag = 0;
 	e->previous_tile = ss->active_level->layer->tilemap->data[index];
-	ss->active_level->layer->tilemap->data[index] = TILESET_UNIT_BASE + TILESET_TEAM_STEP * team;
+	ss->active_level->layer->tilemap->data[index] = TILESET_UNIT_BASE + TILESET_TEAM_STEP * team + type;
 	e->map_index = index;
 	e->type = type;
 	e->next = ss->team[team].unit.unit;
 	ss->team[team].unit.unit = e;
 	success = 1;
+	
+	PacketTileUpdate pack;
+	
+	pack.type = PACKET_TYPE_TILE_UPDATE;
+	pack.size = sizeof(PacketTileUpdate);
+	
+	pack.x = x;
+	pack.y = y;
+	pack.tile = ss->active_level->layer->tilemap->data[index];
+	pack.layer = 0;
+	
+	server_broadcast_packet((void *) &pack);
 
 fail:
 	return success;	
