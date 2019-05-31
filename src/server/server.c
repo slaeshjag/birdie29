@@ -193,10 +193,18 @@ void server_handle_client(Client *cli) {
 					for(x = 0; x < response.map_change.w; x++) {
 						for(y = 0; y < response.map_change.h; y++) {
 							for(i = 0; i < MAP_LAYERS; i++) {
+								uint32_t tile;
+								/* Specific part of the tilesheet is collision tiles */
+								tile = ss->active_level->layer[i].tilemap->data[y*response.map_change.w + x];
+								if(tile >= TILESHEET_COLLISION_TILE_LOW && tile <= TILESHEET_COLLISION_TILE_HIGH) {
+									tile |= TILESET_COLLISION_MASK;
+									ss->active_level->layer[0].tilemap->data[y*response.map_change.w + x] = tile;
+								}
+								
 								response.tile_update.x = x;
 								response.tile_update.y = y;
 								response.tile_update.layer = i;
-								response.tile_update.tile = ss->active_level->layer[i].tilemap->data[y*response.map_change.w + x];
+								response.tile_update.tile = ss->active_level->layer[i].tilemap->data[y*response.map_change.w + x] & TILESET_MASK;
 								protocol_send_packet(tmp->sock, &response);
 							}
 						}
