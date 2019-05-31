@@ -30,7 +30,6 @@ void ingame_init() {
 	/* Leak *all* the memory */
 	
 	
-	unit_init(); // XXX: Don't even dare running init before the map is loaded
 	cs->camera.follow = me.movable;
 	cs->camera.x = cs->camera.y = 0;
 

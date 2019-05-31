@@ -180,6 +180,8 @@ void server_handle_client(Client *cli) {
 					}
 				}
 				
+				unit_prepare();
+
 				break;
 			
 			case PACKET_TYPE_KEYPRESS:
@@ -276,6 +278,10 @@ int server_thread(void *arg) {
 			case SERVER_STATE_STARTING:
 				printf("server: starting...\n");
 				for(tmp = client; tmp; tmp = tmp->next) {
+					/* teleport players to their spawning point */
+					ss->movable.movable[client->movable].x = ss->team[client->team].spawn.x * 1000;
+					ss->movable.movable[client->movable].y = ss->team[client->team].spawn.y * 1000;
+
 					pack.type = PACKET_TYPE_START;
 					pack.size = sizeof(PacketStart);
 					
@@ -289,6 +295,7 @@ int server_thread(void *arg) {
 				
 			case SERVER_STATE_GAME:
 				d_util_semaphore_wait(sem);
+				
 				movableLoop();
 				
 				pack.type = PACKET_TYPE_MOVABLE_MOVE;
