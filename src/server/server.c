@@ -91,7 +91,11 @@ void server_handle_client(ClientList *cli) {
 					ss->team[i].money = MONEY_START;
 				}
 				
-				ss->active_level = d_map_load(pack.map_change.name);
+				{
+					char name[MAP_NAME_LEN_MAX + 10];
+					snprintf(name, MAP_NAME_LEN_MAX + 10, "map/%s", pack.map_change.name);
+					ss->active_level = d_map_load(name);
+				}
 				
 				strcpy(response.map_change.name, pack.map_change.name);
 				response.map_change.w = ss->active_level->layer[0].tilemap->w;
@@ -181,7 +185,7 @@ void server_handle_client(ClientList *cli) {
 int server_thread(void *arg) {
 	Packet pack;
 	ClientList *tmp;
-	int i, j;
+	int i;
 	
 	for(;;) {
 		switch(server_state) {
