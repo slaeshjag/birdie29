@@ -9,6 +9,7 @@
 	if(tile > 0) { \
 		int index = (X) + (Y) * ss->active_level->layer[LAYER].tilemap->w; \
 		ss->active_level->layer[LAYER].tilemap->data[index] = tile; \
+		ss->active_level->layer[0].tilemap->data[index] |= TILESET_COLLISION_MASK; \
 		pack.x = (X); \
 		pack.y = (Y); \
 		pack.tile = tile; \
@@ -16,7 +17,6 @@
 		server_broadcast_packet((void *) &pack); \
 	} \
 } while(0)
-
 
 static UnitProperties _unit_properties[UNIT_TYPES] = {
 	[UNIT_TYPE_GENERATOR] = {.tiles = { 104, 105, 96, 97 }, .cost = 100},
@@ -57,17 +57,28 @@ void unit_delete(int team, int index) {
 }
 
 
+bool _collision_with_tile(int x, int y, UnitType type) {
+	int i;
+	
+	//ss->active_level->layer->tilemap
+	
+	return false;
+}
+
 int unit_add(int team, UnitType type, int x, int y) {
 	int index, id;
 	struct UnitEntry *e;
 	int success = 0;
 
-	if (x < 0 || y < 0)
+	if (x < 2 || y < 2)
 		goto fail;
-	if (x >= ss->active_level->layer->tilemap->w || y >= ss->active_level->layer->tilemap->h)
+	if (x >= (ss->active_level->layer->tilemap->w - 2) || y >= (ss->active_level->layer->tilemap->h - 2))
 		goto fail;
 	
 	if(ss->team[team].money < _unit_properties[type].cost)
+		goto fail;
+	
+	if(_collision_with_tile(x, y, type))
 		goto fail;
 	
 	ss->team[team].money -= _unit_properties[type].cost;
@@ -78,7 +89,6 @@ int unit_add(int team, UnitType type, int x, int y) {
 	e->create_flag = 1;
 	e->modify_flag = 0;
 	e->delete_flag = 0;
-	//e->previous_tile = ss->active_level->layer->tilemap->data[index];
 	
 	e->map_index = index;
 	e->type = type;
