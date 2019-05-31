@@ -276,6 +276,10 @@ void ingame_network_handler() {
 				//d_particle_pulse(s->particle_effect[pack.particle.effect_type]);
 				//sfx_play(SFX_APPLE);
 				break;
+			case PACKET_TYPE_POWER_EVENT:
+				if (pack.power_event.team == me.team)
+					printf("power event at %i, %i: %i\n", pack.power_event.x, pack.power_event.y, pack.power_event.sign);
+				break;
 		}
 	}
 }

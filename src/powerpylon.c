@@ -2,6 +2,9 @@
 #include "main.h"
 #include "team.h"
 
+#include "server/server.h"
+#include "network/protocol.h"
+
 int static _unit_range() {
 	return PYLON_RANGE;
 }
@@ -92,6 +95,11 @@ static void _unit_pylon_pulse() {
 }
 
 
+void unit_pylon_pulse() {
+	return _unit_pylon_pulse();
+}
+
+
 void unit_pylon_delete(struct UnitEntry *unit) {
 	int i;
 
@@ -157,20 +165,22 @@ void pylon_init(struct UnitEntry *unit, unsigned int x, unsigned int y) {
 		pos_y = next->map_index / ss->active_level->layer->tilemap->w;
 		dx = x - pos_x;
 		dy = y - pos_y;
-		if (dx*dx + dy*dy > radius*radius)
+		if (dx*dx + dy*dy > radius*radius) {
+			printf("Out of range (pos_x = %i, pos_y = %i, dx = %i, dy = %i\n", pos_x, pos_y, dx, dy);
 			continue;
+		}
 		if (next->pylon->power && !unit->pylon->power) {
 			_pylon_recalc_diff(unit->team, unit->pylon->x, unit->pylon->y, 1);
 			unit->pylon->power = 1;
 		}
-		
+
 		_unit_pylon_list_add(next->pylon, unit->pylon);
 		_unit_pylon_list_add(unit->pylon, next->pylon);
 
 	}
 
 	
-	unit->pylon->power = (unit->type == UNIT_TYPE_GENERATOR) ? 1 : unit->pylon->power;
+	//unit->pylon->power = (unit->type == UNIT_TYPE_GENERATOR) ? 1 : unit->pylon->power;
 	printf("pylon!\n");
 	_unit_pylon_pulse();
 	
@@ -192,6 +202,17 @@ struct PylonPowerEntry *pylonpower_map_new(int w, int h) {
 
 void _pylon_recalc_diff(int team, int x, int y, int diff) {
 	/* TODO: Announce change to players */
+	Packet pack;
+
+	pack.type = PACKET_TYPE_POWER_EVENT;
+	pack.size = sizeof(PacketPowerEvent);
+
+	pack.power_event.team = team;
+	pack.power_event.sign = diff;
+	pack.power_event.x = x;
+	pack.power_event.y = y;
+
+	server_broadcast_packet(&pack);
 
 	pylonpower_diff(ss->team[team].power_map, x, y, diff);
 }

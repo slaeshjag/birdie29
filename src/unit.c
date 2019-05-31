@@ -107,6 +107,8 @@ int unit_add(int team, UnitType type, int x, int y) {
 
 	if (e->type == UNIT_TYPE_PYLON)
 		pylon_init(e, x, y);
+	if (e->type == UNIT_TYPE_GENERATOR)
+		pylon_init(e, x, y), ss->team[team].generator = e->pylon, unit_pylon_pulse();
 	
 	PacketTileUpdate pack;
 	

@@ -27,6 +27,7 @@ struct PylonPowerMap {
 //void pylon_init(struct UnitEntry *unit, unsigned int x, unsigned int y);
 void pylonpower_diff(struct PylonPowerMap *map, int x, int y, int diff);
 struct PylonPowerEntry *pylonpower_map_new(int w, int h);
+void unit_pylon_pulse();
 
 
 
