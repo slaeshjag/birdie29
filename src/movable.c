@@ -13,23 +13,23 @@
 int movableInit() {
 	int i;
 
-	s->movable.bbox = d_bbox_new(MAX_MOVABLE); // Should be enough for anyone
-	s->movable.movables = MAX_MOVABLE;
-	d_bbox_set_indexkey(s->movable.bbox);
+	ss->movable.bbox = d_bbox_new(MAX_MOVABLE); // Should be enough for anyone
+	ss->movable.movables = MAX_MOVABLE;
+	d_bbox_set_indexkey(ss->movable.bbox);
 
-	for (i = 0; i < s->movable.movables; i++) {
-		s->movable.movable[i].used = 0;
-		s->movable.movable[i].req_cleanup = 0;
+	for (i = 0; i < ss->movable.movables; i++) {
+		ss->movable.movable[i].used = 0;
+		ss->movable.movable[i].req_cleanup = 0;
 	}
 
-	s->movable.in_loop = 0;
+	ss->movable.in_loop = 0;
 	
 	return 0;
 }
 
 
 static int _next_available() {
-	return d_bbox_add(s->movable.bbox, 3, 3, 17, 17);
+	return d_bbox_add(ss->movable.bbox, 3, 3, 17, 17);
 }
 
 
@@ -40,15 +40,15 @@ int _test_boundaries(int x, int y, int x2, int y2) {
 	x2 += x;
 	y2 += y;
 
-	if (!strcmp(xprop = d_map_prop(s->active_level->prop, "center_x"), "NO SUCH KEY"))
+	if (!strcmp(xprop = d_map_prop(ss->active_level->prop, "center_x"), "NO SUCH KEY"))
 		center_x = 100;
 	else
 		center_x = atoi(xprop);
-	if (!strcmp(yprop = d_map_prop(s->active_level->prop, "center_y"), "NO SUCH KEY"))
+	if (!strcmp(yprop = d_map_prop(ss->active_level->prop, "center_y"), "NO SUCH KEY"))
 		center_x = 100;
 	else
 		center_y = atoi(yprop);
-	if (!strcmp(rprop = d_map_prop(s->active_level->prop, "radius"), "NO SUCH KEY"))
+	if (!strcmp(rprop = d_map_prop(ss->active_level->prop, "radius"), "NO SUCH KEY"))
 		radius = 500;
 	else
 		radius = atoi(rprop);
@@ -73,11 +73,11 @@ void gcenter_calc(int x, int y, int *gx, int *gy) {
 	int center_x, center_y;
 	const char *xprop, *yprop;
 	
-	if (!strcmp(xprop = d_map_prop(s->active_level->prop, "center_x"), "NO SUCH KEY"))
+	if (!strcmp(xprop = d_map_prop(ss->active_level->prop, "center_x"), "NO SUCH KEY"))
 		center_x = 100;
 	else
 		center_x = atoi(xprop);
-	if (!strcmp(yprop = d_map_prop(s->active_level->prop, "center_y"), "NO SUCH KEY"))
+	if (!strcmp(yprop = d_map_prop(ss->active_level->prop, "center_y"), "NO SUCH KEY"))
 		center_y = 100;
 	else
 		center_y = atoi(yprop);
@@ -98,8 +98,8 @@ static int _lookup_movable_player_id(int id) {
 	const char *playerid_str;
 	int i;
 
-	for (i = 0; i < s->movable.movables; i++) {
-		if (!(playerid_str = s->active_level->object[s->movable.movable[i].id].ref, "block_id"))
+	for (i = 0; i < ss->movable.movables; i++) {
+		if (!(playerid_str = ss->active_level->object[ss->movable.movable[i].id].ref, "block_id"))
 			return 0;
 		if (atoi(playerid_str) == id)
 			return i;
@@ -114,28 +114,28 @@ int movableSpawnReal(DARNIT_SPRITE *spr, int x, int y, int l) {
 	int h_x, h_y, h_w, h_h;
 
 	idx = _next_available();
-	s->movable.movable[idx].used = 1;
-	s->movable.movable[idx].sprite = spr;
+	ss->movable.movable[idx].used = 1;
+	ss->movable.movable[idx].sprite = spr;
 
-	d_sprite_direction_set(s->movable.movable[idx].sprite, 0);
-	s->movable.movable[idx].x = x * 1000;
-	s->movable.movable[idx].y = y * 1000;
-	printf("spawning movable %i at %i %i\n", idx, s->movable.movable[idx].x/1000, s->movable.movable[idx].y/1000);
-	s->movable.movable[idx].l = l;
-	s->movable.movable[idx].direction = 0;
-	s->movable.movable[idx].angle = 0;
-	s->movable.movable[idx].gravity_effect = 0;
-	s->movable.movable[idx].x_velocity = 0;
-	s->movable.movable[idx].y_velocity = 0;
-	s->movable.movable[idx].x_gravity = 0;
-	s->movable.movable[idx].y_gravity = 0;
-	s->movable.movable[idx].tile_collision = 1;
-	s->movable.movable[idx].req_cleanup = 0;
-	s->movable.movable[idx].id = idx;
-	d_sprite_hitbox(s->movable.movable[idx].sprite, &h_x, &h_y, &h_w, &h_h);
-	d_bbox_move(s->movable.bbox, idx, s->movable.movable[idx].x / 1000 + h_x, s->movable.movable[idx].y / 1000 + h_y);
-	d_bbox_resize(s->movable.bbox, idx, h_w, h_h);
-	d_sprite_animate_start(s->movable.movable[idx].sprite);
+	d_sprite_direction_set(ss->movable.movable[idx].sprite, 0);
+	ss->movable.movable[idx].x = x * 1000;
+	ss->movable.movable[idx].y = y * 1000;
+	printf("spawning movable %i at %i %i\n", idx, ss->movable.movable[idx].x/1000, ss->movable.movable[idx].y/1000);
+	ss->movable.movable[idx].l = l;
+	ss->movable.movable[idx].direction = 0;
+	ss->movable.movable[idx].angle = 0;
+	ss->movable.movable[idx].gravity_effect = 0;
+	ss->movable.movable[idx].x_velocity = 0;
+	ss->movable.movable[idx].y_velocity = 0;
+	ss->movable.movable[idx].x_gravity = 0;
+	ss->movable.movable[idx].y_gravity = 0;
+	ss->movable.movable[idx].tile_collision = 1;
+	ss->movable.movable[idx].req_cleanup = 0;
+	ss->movable.movable[idx].id = idx;
+	d_sprite_hitbox(ss->movable.movable[idx].sprite, &h_x, &h_y, &h_w, &h_h);
+	d_bbox_move(ss->movable.bbox, idx, ss->movable.movable[idx].x / 1000 + h_x, ss->movable.movable[idx].y / 1000 + h_y);
+	d_bbox_resize(ss->movable.bbox, idx, h_w, h_h);
+	d_sprite_animate_start(ss->movable.movable[idx].sprite);
 
 	return idx;
 }
@@ -152,13 +152,13 @@ int movableSpawnSprite(DARNIT_SPRITE *spr, int x, int y, int l) {
 
 
 void movableDespawn(int idx) {
-	if (s->movable.in_loop)
-		s->movable.movable[idx].req_cleanup = 1;
+	if (ss->movable.in_loop)
+		ss->movable.movable[idx].req_cleanup = 1;
 	else {
-		d_sprite_free(s->movable.movable[idx].sprite);
-		d_bbox_delete(s->movable.bbox, idx);
+		d_sprite_free(ss->movable.movable[idx].sprite);
+		d_bbox_delete(ss->movable.bbox, idx);
 	}
-	s->movable.movable[idx].used = 0;
+	ss->movable.movable[idx].used = 0;
 }
 
 
@@ -173,10 +173,10 @@ int movableTileCollision(MOVABLE_ENTRY *entry, int off_x, int off_y) {
 	off_x += (off_x == -2) ? 1 : 0;
 	off_y += (off_y == -2) ? 1 : 0;
 
-	box_x /= s->active_level->layer[entry->l].tile_w;
-	box_y /= s->active_level->layer[entry->l].tile_h;
-	w = s->active_level->layer[entry->l].tilemap->w;
-	return s->active_level->layer[entry->l].tilemap->data[box_x + box_y * w];
+	box_x /= ss->active_level->layer[entry->l].tile_w;
+	box_y /= ss->active_level->layer[entry->l].tile_h;
+	w = ss->active_level->layer[entry->l].tilemap->w;
+	return ss->active_level->layer[entry->l].tilemap->data[box_x + box_y * w];
 }
 
 
@@ -185,15 +185,15 @@ void movableKillEmAll() {
 	#if 0
 	int i;
 
-	for (i = 0; i < s->movable.movables; i++) {
-		if (!s->movable.movable[i].ai)
+	for (i = 0; i < ss->movable.movables; i++) {
+		if (!ss->movable.movable[i].ai)
 			continue;
-		if (s->movable.movable[i].hp <= 0)
+		if (ss->movable.movable[i].hp <= 0)
 			continue;
-		s->movable.movable[i].ai(s, &s->movable.movable[i], MOVABLE_MSG_DESTROY);
+		ss->movable.movable[i].ai(s, &ss->movable.movable[i], MOVABLE_MSG_DESTROY);
 	}
 
-	d_bbox_clear(s->movable.bbox);
+	d_bbox_clear(ss->movable.bbox);
 
 	return;
 	#endif
@@ -255,7 +255,7 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 	int collision_event[MAX_MOVABLE] = { 0 };
 	unsigned int hitlist[MAX_MOVABLE], hits;
 
-	DARNIT_MAP_LAYER *layer = &(s->active_level->layer[entry->l]);
+	DARNIT_MAP_LAYER *layer = &(ss->active_level->layer[entry->l]);
 
 	d_sprite_hitbox(entry->sprite, &hit_x, &hit_y, &hit_w, &hit_h);
 	hit_w--;
@@ -294,7 +294,7 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 		p = delta_x * 1000 / (delta_y ? delta_y : 1);
 
 		while (delta_x || delta_y) {
-			if ((hits = d_bbox_test(s->movable.bbox, entry->x / 1000, entry->y / 1000, hit_w, hit_h, hitlist, MAX_MOVABLE)) > 0) {
+			if ((hits = d_bbox_test(ss->movable.bbox, entry->x / 1000, entry->y / 1000, hit_w, hit_h, hitlist, MAX_MOVABLE)) > 0) {
 				for (i = 0; i < hits; i++) {
 					if (collision_event[hitlist[i]])
 						continue;
@@ -304,17 +304,17 @@ int movableGravity(MOVABLE_ENTRY *entry) {
 						continue;
 					if (!entry->used)
 						return -990123;
-					if (!s->movable.movable[hitlist[i]].used)
+					if (!ss->movable.movable[hitlist[i]].used)
 						continue;
 					if (entry->callback.movable_collision)
 						entry->callback.movable_collision(entry->callback.user_pointer, entry->id, hitlist[i]);
 					
 					if (!entry->used)
 						return -123166;
-					if (!s->movable.movable[hitlist[i]].used)
+					if (!ss->movable.movable[hitlist[i]].used)
 						continue;
-					if (s->movable.movable[hitlist[i]].callback.movable_collision)
-						s->movable.movable[hitlist[i]].callback.movable_collision(s->movable.movable[hitlist[i]].callback.user_pointer, hitlist[i], entry->id);
+					if (ss->movable.movable[hitlist[i]].callback.movable_collision)
+						ss->movable.movable[hitlist[i]].callback.movable_collision(ss->movable.movable[hitlist[i]].callback.user_pointer, hitlist[i], entry->id);
 						
 
 				}
@@ -392,7 +392,7 @@ nogravity:
 	
 	
 	while (delta_x || delta_y) {
-		if ((hits = d_bbox_test(s->movable.bbox, entry->x / 1000, entry->y / 1000, hit_w, hit_h, hitlist, MAX_MOVABLE)) > 0) {
+		if ((hits = d_bbox_test(ss->movable.bbox, entry->x / 1000, entry->y / 1000, hit_w, hit_h, hitlist, MAX_MOVABLE)) > 0) {
 			for (i = 0; i < hits; i++) {
 				if (collision_event[hitlist[i]])
 					continue;
@@ -402,17 +402,17 @@ nogravity:
 					continue;
 				if (!entry->used)
 					return -990123;
-				if (!s->movable.movable[hitlist[i]].used)
+				if (!ss->movable.movable[hitlist[i]].used)
 					continue;
 				if (entry->callback.movable_collision)
 					entry->callback.movable_collision(entry->callback.user_pointer, entry->id, hitlist[i]);
 				
 				if (!entry->used)
 					return -123166;
-				if (!s->movable.movable[hitlist[i]].used)
+				if (!ss->movable.movable[hitlist[i]].used)
 					continue;
-				if (s->movable.movable[hitlist[i]].callback.movable_collision)
-					s->movable.movable[hitlist[i]].callback.movable_collision(s->movable.movable[hitlist[i]].callback.user_pointer, hitlist[i], entry->id);
+				if (ss->movable.movable[hitlist[i]].callback.movable_collision)
+					ss->movable.movable[hitlist[i]].callback.movable_collision(ss->movable.movable[hitlist[i]].callback.user_pointer, hitlist[i], entry->id);
 					
 
 			}
@@ -484,30 +484,30 @@ nogravity:
 
 void movableLoop() {
 	int i, j, h_x, h_y, h_w, h_h, players_active = 0, winning_player = -1;
-	bool master = s->is_host;
+	bool master = ss->is_host;
 
-	s->movable.in_loop = 1;
+	ss->movable.in_loop = 1;
 
 	for (j = 0; j < MAX_MOVABLE; j++) {
 		i = j;
-		if (!s->movable.movable[i].used)
+		if (!ss->movable.movable[i].used)
 			continue;
 
 		if (master) {
-			movableGravity(&s->movable.movable[i]);
-			if (!s->movable.movable[i].used)
+			movableGravity(&ss->movable.movable[i]);
+			if (!ss->movable.movable[i].used)
 				continue;
-			//printf("Player at %i %i\n", s->movable.movable[i].x / 1000, s->movable.movable[i].y / 1000);
+			//printf("Player at %i %i\n", ss->movable.movable[i].x / 1000, ss->movable.movable[i].y / 1000);
 		}
 
 
-		if (s->movable.movable[i].direction != d_sprite_direction_get(s->movable.movable[i].sprite))
-			d_sprite_direction_set(s->movable.movable[i].sprite, s->movable.movable[i].direction);
-		d_sprite_move(s->movable.movable[i].sprite, s->movable.movable[i].x / 1000, s->movable.movable[i].y / 1000);
-		d_sprite_hitbox(s->movable.movable[i].sprite, &h_x, &h_y, &h_w, &h_h);
-		d_sprite_rotate(s->movable.movable[i].sprite, s->movable.movable[i].angle);
-		d_bbox_move(s->movable.bbox, i, s->movable.movable[i].x / 1000 + h_x, s->movable.movable[i].y / 1000 + h_y);
-		d_bbox_resize(s->movable.bbox, i, h_w, h_h);
+		if (ss->movable.movable[i].direction != d_sprite_direction_get(ss->movable.movable[i].sprite))
+			d_sprite_direction_set(ss->movable.movable[i].sprite, ss->movable.movable[i].direction);
+		d_sprite_move(ss->movable.movable[i].sprite, ss->movable.movable[i].x / 1000, ss->movable.movable[i].y / 1000);
+		d_sprite_hitbox(ss->movable.movable[i].sprite, &h_x, &h_y, &h_w, &h_h);
+		d_sprite_rotate(ss->movable.movable[i].sprite, ss->movable.movable[i].angle);
+		d_bbox_move(ss->movable.bbox, i, ss->movable.movable[i].x / 1000 + h_x, ss->movable.movable[i].y / 1000 + h_y);
+		d_bbox_resize(ss->movable.bbox, i, h_w, h_h);
 	}
 
 	if (players_active <= 1 && master) {
@@ -516,12 +516,12 @@ void movableLoop() {
 	}
 
 	for (i = 0; i < MAX_MOVABLE; i++)
-		if (!s->movable.movable[i].used && s->movable.movable[i].req_cleanup) {
-			d_sprite_free(s->movable.movable[i].sprite);
-			d_bbox_delete(s->movable.bbox, i);
+		if (!ss->movable.movable[i].used && ss->movable.movable[i].req_cleanup) {
+			d_sprite_free(ss->movable.movable[i].sprite);
+			d_bbox_delete(ss->movable.bbox, i);
 		}
 
-	s->movable.in_loop = 0;
+	ss->movable.in_loop = 0;
 
 }
 
@@ -529,23 +529,25 @@ void movableLoop() {
 void movableFreezeSprites(int freeze) {
 	int i;
 
-	for (i = 0; i < s->movable.movables; i++)
-		(!freeze ? d_sprite_animate_start : d_sprite_animate_pause)(s->movable.movable[i].sprite);
+	for (i = 0; i < ss->movable.movables; i++)
+		(!freeze ? d_sprite_animate_start : d_sprite_animate_pause)(ss->movable.movable[i].sprite);
 	return;
 }
 
 
 void movableLoopRender(int layer) {
+	#if 0
 	int i, res;
-	unsigned int *arr = s->movable.coll_buf;
+	unsigned int *arr = ss->movable.coll_buf;
 
-	res = d_bbox_test(s->movable.bbox, s->camera.x - 128, s->camera.y - 128, d_platform_get().screen_w + 256, d_platform_get().screen_h + 256, s->movable.coll_buf, ~0);
+	res = d_bbox_test(ss->movable.bbox, ss->camera.x - 128, ss->camera.y - 128, d_platform_get().screen_w + 256, d_platform_get().screen_h + 256, ss->movable.coll_buf, ~0);
 
 	for (i = 0; i < res; i++) {
-		if (s->movable.movable[arr[i]].l != layer)
+		if (ss->movable.movable[arr[i]].l != layer)
 			continue;
-		d_sprite_draw(s->movable.movable[arr[i]].sprite);
+		d_sprite_draw(ss->movable.movable[arr[i]].sprite);
 	}
+	#endif
 }
 
 

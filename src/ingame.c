@@ -28,19 +28,24 @@ void ingame_init() {
 	int i;
 	//const char *playerid_str;
 	/* Leak *all* the memory */
-	s->active_level = d_map_load(util_binrel_path("map/map.ldmz"));
+	
+	if(ss->is_host) {
+		ss->active_level = d_map_load(util_binrel_path("map/map.ldmz"));
+		for(i = 0; i < TEAMS_CAP; i++) {
+			ss->team[i].money = MONEY_START;
+		}
+	}
+	
 	unit_init(); // XXX: Don't even dare running init before the map is loaded
-	s->camera.follow = me.movable;
-	s->camera.x = s->camera.y = 0;
+	cs->camera.follow = me.movable;
+	cs->camera.x = cs->camera.y = 0;
 
 //	bulletInit();
 //	movableLoad();
 //	healthbar_init();
 //	soundeffects_init();
 	
-	for(i = 0; i < TEAMS_CAP; i++) {
-		s->team[i].money = MONEY_START;
-	}
+	
 	
 	/*
 	char *prop;
@@ -52,6 +57,7 @@ void ingame_init() {
 	prop = d_map_prop(s->active_level->prop, "radius");
 	radius = atoi(prop);
 	* */
+	
 }
 
 
@@ -65,7 +71,7 @@ void ingame_loop() {
 	
 	movableLoop();
 	
-	if(s->is_host) {
+	if(ss->is_host) {
 		server_kick();
 		//s->time_left -= d_last_frame_time();
 		//ingame_timer_package_send(s->time_left / 1000);
@@ -85,16 +91,16 @@ void ingame_loop() {
 	}
 	
 	camera_work();
-	d_map_camera_move(s->active_level, s->camera.x, s->camera.y);
+	d_map_camera_move(cs->active_level, cs->camera.x, cs->camera.y);
 
-	d_render_offset(s->camera.x, s->camera.y);
+	d_render_offset(cs->camera.x, cs->camera.y);
 	
-	for (i = 0; i < s->active_level->layers; i++) {
+	for (i = 0; i < cs->active_level->layers; i++) {
 		d_render_offset(0, 0);
 		d_render_tint(255, 255, 255, 255);
 //		d_render_tile_blit(s->active_level->layer[i].ts, 0, 0, 1);
-		d_tilemap_draw(s->active_level->layer[i].tilemap);
-		d_render_offset(s->camera.x, s->camera.y);
+		d_tilemap_draw(cs->active_level->layer[i].tilemap);
+		d_render_offset(cs->camera.x, cs->camera.y);
 		movableLoopRender(i);
 		
 	}
@@ -112,9 +118,11 @@ void ingame_loop() {
 	
 	ingame_client_keyboard();
 	
-	for(i = 0; i < PLAYER_CAP; i++) {
-		if(s->player[i])
-			player_handle_keys(s->player[i]);
+	if(ss->is_host) {
+		for(i = 0; i < PLAYER_CAP; i++) {
+			if(ss->player[i])
+				player_handle_keys(ss->player[i]);
+		}
 	}
 }
 
@@ -162,7 +170,7 @@ void ingame_client_keyboard() {
 	kp.keypress = pressevent;
 	kp.keyrelease = releaseevent;
 
-	protocol_send_packet(s->server_sock, (void *) &kp);
+	protocol_send_packet(cs->server_sock, (void *) &kp);
 
 	oldstate = newstate;
 
@@ -183,17 +191,17 @@ void ingame_client_keyboard() {
 void ingame_network_handler() {
 	Packet pack;
 	
-	while(network_poll_tcp(s->server_sock)) {
+	while(network_poll_tcp(cs->server_sock)) {
 		
-		protocol_recv_packet(s->server_sock, &pack);
+		protocol_recv_packet(cs->server_sock, &pack);
 		
 		switch(pack.type) {
 			case PACKET_TYPE_MOVABLE_MOVE:
-				s->movable.movable[pack.movable_move.movable].x = pack.movable_move.x * 1000;
-				s->movable.movable[pack.movable_move.movable].y = pack.movable_move.y * 1000;
-				s->movable.movable[pack.movable_move.movable].direction = pack.movable_move.dir;
-				s->movable.movable[pack.movable_move.movable].angle = pack.movable_move.angle;
-				s->movable.movable[pack.movable_move.movable].angle *= (2 * 10);
+				cs->movable.movable[pack.movable_move.movable].x = pack.movable_move.x * 1000;
+				cs->movable.movable[pack.movable_move.movable].y = pack.movable_move.y * 1000;
+				cs->movable.movable[pack.movable_move.movable].direction = pack.movable_move.dir;
+				cs->movable.movable[pack.movable_move.movable].angle = pack.movable_move.angle;
+				cs->movable.movable[pack.movable_move.movable].angle *= (2 * 10);
 				break;
 			
 			case PACKET_TYPE_BULLET_ANNOUNCE:

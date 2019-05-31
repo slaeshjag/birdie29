@@ -14,10 +14,10 @@
 #define HANDLE_KEY(A) do { \
 		if(pack.keypress.keypress.A ) { \
 			printf("server: player %i press %s\n", cli->id, STR(A)); \
-			s->player[cli->id]->keystate.A = 1; \
+			ss->player[cli->id]->keystate.A = 1; \
 		} if(pack.keypress.keyrelease.A ) {\
 			printf("server: player %i release %s\n", cli->id, STR(A)); \
-			s->player[cli->id]->keystate.A = 0; \
+			ss->player[cli->id]->keystate.A = 0; \
 		} \
 	} while(0)
 
@@ -104,7 +104,7 @@ void server_handle_client(ClientList *cli) {
 							response.tile_update.x = x;
 							response.tile_update.y = y;
 							
-							response.tile_update.tile = s->active_level->layer[0].tilemap->data[y*pack.map_change.w + x];
+							response.tile_update.tile = ss->active_level->layer[0].tilemap->data[y*pack.map_change.w + x];
 							protocol_send_packet(cli->sock, &response);
 						}
 					}
@@ -119,7 +119,7 @@ void server_handle_client(ClientList *cli) {
 				HANDLE_KEY(down);
 				
 				if(pack.keypress.keypress.shoot) {
-					printf("server: shoot %i\n", bullet_spawn(BULLET_TYPE_WIMPY, s->player[cli->id]));
+					printf("server: shoot %i\n", bullet_spawn(BULLET_TYPE_WIMPY, ss->player[cli->id]));
 					
 				}
 				
@@ -221,16 +221,16 @@ int server_thread(void *arg) {
 				pack.type = PACKET_TYPE_MOVABLE_MOVE;
 				pack.size = sizeof(PacketMovableMove);
 				
-				for(i = 0; i < s->movable.movables; i++) {
-					if(!s->movable.movable[i].used)
+				for(i = 0; i < ss->movable.movables; i++) {
+					if(!ss->movable.movable[i].used)
 						continue;
 					
 					int angle;
-					pack.movable_move.x = s->movable.movable[i].x/1000;
-					pack.movable_move.y = s->movable.movable[i].y/1000;
-					pack.movable_move.dir = s->movable.movable[i].direction;
+					pack.movable_move.x = ss->movable.movable[i].x/1000;
+					pack.movable_move.y = ss->movable.movable[i].y/1000;
+					pack.movable_move.dir = ss->movable.movable[i].direction;
 					
-					angle = s->movable.movable[i].angle;
+					angle = ss->movable.movable[i].angle;
 					if (angle < 0)
 						angle += 3600;
 					pack.movable_move.angle = (angle / 10 / 2);
@@ -244,14 +244,14 @@ int server_thread(void *arg) {
 				for (i = 0; i < MAX_TEAM; i++) {
 					struct UnitEntry *ue;
 					
-					d_util_mutex_lock(s->team[i].unit.lock);
-					for (ue = s->team[i].unit.unit; ue; ue = ue->next) {
+					d_util_mutex_lock(ss->team[i].unit.lock);
+					for (ue = ss->team[i].unit.unit; ue; ue = ue->next) {
 						if (ue->create_flag); // Just created
 						if (ue->modify_flag); // Has been modified since last loop
 						if (ue->delete_flag); // Will be deleted at the end of the loop
 					}
 
-					d_util_mutex_unlock(s->team[i].unit.lock);
+					d_util_mutex_unlock(ss->team[i].unit.lock);
 				}
 				
 				for(tmp = client; tmp; tmp = tmp->next)
