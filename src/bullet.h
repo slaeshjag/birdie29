@@ -24,6 +24,7 @@ struct BulletProperties {
 	int ttl;
 	int cost;
 	int speed;
+	const char *sprite_name;
 	DARNIT_SPRITE *sprite;
 };
 

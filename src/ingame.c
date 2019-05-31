@@ -25,7 +25,7 @@
 } while(0)
 
 void ingame_init() {
-	//int i;
+	int i;
 	//const char *playerid_str;
 	/* Leak *all* the memory */
 	s->active_level = d_map_load(util_binrel_path("map/map.ldmz"));
@@ -37,7 +37,11 @@ void ingame_init() {
 //	movableLoad();
 //	healthbar_init();
 //	soundeffects_init();
-
+	
+	for(i = 0; i < TEAMS_CAP; i++) {
+		s->team[i].money = MONEY_START;
+	}
+	
 	/*
 	char *prop;
 	int center_x, center_y, radius;
@@ -127,6 +131,7 @@ void ingame_client_keyboard() {
 	newstate.up = d_keys_get().up;
 	newstate.down = d_keys_get().down;
 	newstate.suicide = d_keys_get().x;
+	newstate.shoot = d_keys_get().a;
 	
 	if (d_keys_get().lmb) {
 		DARNIT_KEYS keys;
@@ -144,6 +149,7 @@ void ingame_client_keyboard() {
 	KEYEVENT(right);
 	KEYEVENT(up);
 	KEYEVENT(down);
+	KEYEVENT(shoot);
 	
 
 	//if(newstate.left || newstate.right)

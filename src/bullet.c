@@ -11,6 +11,7 @@ BulletProperties bullet_properties[BULLET_TYPES] = {
 		.ttl = 200,
 		.cost = 1,
 		.speed = 10,
+		.sprite_name = "res/bullet_wimpy.spr",
 	},
 	
 	[BULLET_TYPE_BADASS] = {
@@ -18,8 +19,16 @@ BulletProperties bullet_properties[BULLET_TYPES] = {
 		.ttl = 60,
 		.cost = 10,
 		.speed = 2,
+		.sprite_name = "res/bullet_badass.spr",
 	},
 };
+
+void bullet_init() {
+	int i;
+	for(i = 0; i < BULLET_TYPES; i++) {
+		bullet_properties[i].sprite = d_sprite_load(bullet_properties[i].sprite_name, 0, DARNIT_PFORMAT_RGBA8);
+	}
+}
 
 
 int bullet_spawn(BulletType type, Player *owner) {
@@ -37,7 +46,9 @@ int bullet_spawn(BulletType type, Player *owner) {
 	
 	bullet->type = type;
 	bullet->ticks = bullet_properties[type].ttl;
-	//bullet->movable = movableSpawn(bullet_properties[type].sprite, x, y, 1);
+	bullet->movable = movableSpawnSprite(bullet_properties[type].sprite, 0, 0, 0);
+	s->movable.movable[bullet->movable].x = x;
+	s->movable.movable[bullet->movable].y = y;
 	s->movable.movable[bullet->movable].angle = angle;
 	s->movable.movable[bullet->movable].x_velocity = bullet_properties[type].speed * cos(((double) angle)*M_PI/180.0);
 	s->movable.movable[bullet->movable].y_velocity = bullet_properties[type].speed * sin(((double) angle)*M_PI/180.0);

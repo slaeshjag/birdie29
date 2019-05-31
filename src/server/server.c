@@ -89,7 +89,8 @@ void server_handle_client(ClientList *cli) {
 				HANDLE_KEY(down);
 				
 				if(pack.keypress.keypress.shoot) {
-					bullet_spawn(BULLET_TYPE_WIMPY, s->player[cli->id]);
+					printf("server: shoot %i\n", bullet_spawn(BULLET_TYPE_WIMPY, s->player[cli->id]));
+					
 				}
 				
 				break;

@@ -13,6 +13,9 @@
 
 #define TEAMS_CAP 4
 
+#define MONEY_START 100
+
+
 #define PANE_R 0xCD
 #define PANE_G 0xCD
 #define PANE_B 0xCD
