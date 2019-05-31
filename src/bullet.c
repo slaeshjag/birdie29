@@ -28,6 +28,19 @@ BulletProperties bullet_properties[BULLET_TYPES] = {
 	},
 };
 
+
+static _get_bullet_owner(int movable_remote) {
+	Bullet *next;
+
+	for (next = ss->bullet; next; next = next->next) {
+		if (next->movable == movable_remote)
+			return next->owner;
+	}
+
+	return -1;
+}
+
+
 void bullet_init() {
 	int i;
 	ss->bullet = NULL;
@@ -36,6 +49,25 @@ void bullet_init() {
 		bullet_properties[i].sprite = d_sprite_load(bullet_properties[i].sprite_name, 0, DARNIT_PFORMAT_RGBA8);
 	}
 	#endif
+}
+
+
+static int _bullet_movable_collision(void *ptr, int movable_self, int movable_remote) {
+	int remote_owner;
+
+	if ((remote_owner = _get_bullet_owner(movable_remote)) < 0) {
+		/* Är spelare */
+		if (movable_remote == _get_bullet_owner(movable_self)) {
+			printf("Passing through owner\n");
+		} else {
+			printf("Hit someone else!\n");
+		}
+	} else if (remote_owner == _get_bullet_owner(movable_self)) {
+		printf("Intersecting owner's bullet\n");
+	} else {
+		// Bullet of someone else
+	}
+	printf("movable collision! %i %i\n", movable_self, movable_remote);
 }
 
 
@@ -61,11 +93,12 @@ int bullet_spawn(BulletType type, Client *owner) {
 	ss->movable.movable[bullet->movable].angle = angle;
 	ss->movable.movable[bullet->movable].x_velocity = bullet_properties[type].speed * cos(((double) angle)*M_PI/180.0);
 	ss->movable.movable[bullet->movable].y_velocity = bullet_properties[type].speed * sin(((double) angle)*M_PI/180.0);
-	
+	ss->movable.movable[bullet->movable].callback.movable_collision = _bullet_movable_collision;
+
 	ss->team[owner->team].money -= bullet_properties[type].cost;
 	bullet->next = ss->bullet;
 	ss->bullet = bullet;
-	
+
 	return bullet->movable;
 }
 
