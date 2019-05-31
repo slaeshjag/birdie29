@@ -22,7 +22,6 @@ all: $(SUBDIRS)
 	@echo " [DTMX] map/map.ldmz"
 	@mkdir -p map
 	@darnit-tmxconv res-input/map.tmx map/map.ldmz
-	@cp res-input/tileset.png map/tileset.png
 	
 	@echo "Build complete."
 	@echo 
