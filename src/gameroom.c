@@ -173,6 +173,7 @@ void gameroom_network_handler() {
 			
 			case PACKET_TYPE_START:
 				me.id = pack.start.player_id;
+				me.movable = pack.start.movable;
 				printf("Started game as player %i\n", me.id);
 				game_state(GAME_STATE_GAME);
 				break;

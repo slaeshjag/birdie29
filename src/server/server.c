@@ -143,15 +143,13 @@ void server_handle_client(Client *cli) {
 				response.size = sizeof(PacketJoin);
 				if (cli->movable > -1)
 					movableDespawn(cli->movable);
-				cli->movable = movableSpawnSprite(ss->team[cli->team].spawn.x, ss->team[cli->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);
+				cli->movable = -1;
 				
 				for(tmp = client; tmp; tmp = tmp->next) {
 					memset(response.join.name, 0, NAME_LEN_MAX);
 					strcpy(response.join.name, tmp->name);
 					response.join.team = tmp->team;
 					response.join.id = tmp->id;
-					response.join.movable = tmp->movable;
-					cli->movable = response.join.movable;
 					protocol_send_packet(cli->sock, &response);
 					
 					if(tmp->sock != cli->sock) {
@@ -183,7 +181,7 @@ void server_handle_client(Client *cli) {
 				response.map_change.h = ss->active_level->layer[0].tilemap->h;
 					
 				for(tmp = client; tmp; tmp = tmp->next) {
-					protocol_send_packet(cli->sock, &response);
+					protocol_send_packet(tmp->sock, &response);
 				}
 				
 				response.type = PACKET_TYPE_TILE_UPDATE;
@@ -199,7 +197,7 @@ void server_handle_client(Client *cli) {
 							response.tile_update.y = y;
 							
 							response.tile_update.tile = ss->active_level->layer[0].tilemap->data[y*response.map_change.w + x];
-							protocol_send_packet(cli->sock, &response);
+							protocol_send_packet(tmp->sock, &response);
 						}
 					}
 				}
@@ -300,6 +298,7 @@ int server_thread(void *arg) {
 				printf("server: starting...\n");
 				for(tmp = client; tmp; tmp = tmp->next) {
 					/* teleport players to their spawning point */
+					tmp->movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);
 					ss->movable.movable[client->movable].x = ss->team[client->team].spawn.x * 1000;
 					ss->movable.movable[client->movable].y = ss->team[client->team].spawn.y * 1000;
 
@@ -307,6 +306,7 @@ int server_thread(void *arg) {
 					pack.size = sizeof(PacketStart);
 					
 					pack.start.player_id = tmp->id;
+					pack.start.movable = tmp->movable;
 					
 					protocol_send_packet(tmp->sock, (void *) &pack);
 				}
@@ -343,7 +343,8 @@ int server_thread(void *arg) {
 						protocol_send_packet(tmp->sock, &pack);
 					}
 				}
-
+				
+				#if 0
 				for (i = 0; i < MAX_TEAM; i++) {
 					struct UnitEntry *ue;
 					
@@ -353,10 +354,11 @@ int server_thread(void *arg) {
 						if (ue->delete_flag); // Will be deleted at the end of the loop
 					}
 				}
+				#endif
 				
 				for(tmp = client; tmp; tmp = tmp->next)
 					server_handle_client(tmp);
-				unit_housekeeping();
+				//unit_housekeeping();
 				break;
 		}
 	}

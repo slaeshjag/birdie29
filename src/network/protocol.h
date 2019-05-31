@@ -46,7 +46,6 @@ struct PacketJoin {
 	uint32_t id;
 	char name[NAME_LEN_MAX];
 	int team;
-	int movable;
 };
 
 typedef struct PacketStart PacketStart;
@@ -55,6 +54,7 @@ struct PacketStart {
 	uint16_t size;
 	
 	uint32_t player_id;
+	int32_t movable;
 };
 
 typedef struct PacketKeypress PacketKeypress;
