@@ -25,6 +25,14 @@
 
 #define MAP_NAME_LEN_MAX 255
 
-#define MAP_LAYERS 3
+typedef enum MapLayer MapLayer;
+enum MapLayer {
+	MAP_LAYER_TERRAIN,
+	MAP_LAYER_BUILDING_LOWER,
+	MAP_LAYER_BUILDING_UPPER,
+	MAP_LAYER_OVL_POWER,
+	MAP_LAYER_OVL_MISC,
+	MAP_LAYERS,
+};
 
 #endif

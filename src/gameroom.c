@@ -156,12 +156,11 @@ void gameroom_network_handler() {
 				break;
 			
 			case PACKET_TYPE_MAP_CHANGE:
-				d_tilemap_free(cs->map.layer[0]);
-				d_tilemap_free(cs->map.layer[1]);
-				d_tilemap_free(cs->map.layer[2]);
 				
-				for(i = 0; i < MAP_LAYERS; i++)
+				for(i = 0; i < MAP_LAYERS; i++) {
+					d_tilemap_free(cs->map.layer[i]);
 					cs->map.layer[i] = d_tilemap_new(0xFFF, gfx.map_tilesheet, 0xFFF, pack.map_change.w, pack.map_change.h);
+				}
 				
 				printf("client: map changed to %s (%ix%i)\n", pack.map_change.name, pack.map_change.w, pack.map_change.h);
 				

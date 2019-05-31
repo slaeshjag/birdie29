@@ -174,7 +174,7 @@ int main(int argc, char  **argv) {
 	gfx.font.large = d_font_load(font_path, 40, 256, 256);
 	gfx.font.small = d_font_load(font_path, 16, 256, 256);
 	
-	gfx.map_tilesheet = d_render_tilesheet_load("res/tileset.png", 48, 48, DARNIT_PFORMAT_RGBA8);
+	gfx.map_tilesheet = d_render_tilesheet_load("res/tiles.png", 48, 48, DARNIT_PFORMAT_RGBA8);
 	
 	ss = calloc(sizeof(*ss), 1);
 	cs = calloc(sizeof(*cs), 1);

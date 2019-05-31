@@ -86,7 +86,7 @@ void _client_highlight_cursor(Client *player) {
 	pack.x = player->highlight.x;
 	pack.y = player->highlight.y;
 	pack.tile = 0;
-	pack.layer = 2;
+	pack.layer = MAP_LAYER_OVL_MISC;
 	
 	protocol_send_packet(player->sock, (Packet *) &pack);
 	
@@ -96,7 +96,7 @@ void _client_highlight_cursor(Client *player) {
 	pack.x = player->highlight.x;
 	pack.y = player->highlight.y;
 	pack.tile = 69;
-	pack.layer = 2;
+	pack.layer = MAP_LAYER_OVL_MISC;
 	
 	protocol_send_packet(player->sock, (Packet *) &pack);
 }
@@ -186,18 +186,19 @@ void server_handle_client(Client *cli) {
 				
 				response.type = PACKET_TYPE_TILE_UPDATE;
 				response.size = sizeof(PacketTileUpdate);
-				response.tile_update.layer = 0;
 					
 				for(tmp = client; tmp; tmp = tmp->next) {
 					uint32_t x, y;
 					
 					for(x = 0; x < response.map_change.w; x++) {
 						for(y = 0; y < response.map_change.h; y++) {
-							response.tile_update.x = x;
-							response.tile_update.y = y;
-							
-							response.tile_update.tile = ss->active_level->layer[0].tilemap->data[y*response.map_change.w + x];
-							protocol_send_packet(tmp->sock, &response);
+							for(i = 0; i < MAP_LAYERS; i++) {
+								response.tile_update.x = x;
+								response.tile_update.y = y;
+								response.tile_update.layer = i;
+								response.tile_update.tile = ss->active_level->layer[i].tilemap->data[y*response.map_change.w + x];
+								protocol_send_packet(tmp->sock, &response);
+							}
 						}
 					}
 				}

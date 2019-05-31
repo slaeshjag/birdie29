@@ -1,8 +1,8 @@
 #ifndef UNIT_H_
 #define	UNIT_H_
 
-#define	TILESET_UNIT_BASE		60
-#define	TILESET_TEAM_STEP		10
+#define	TILESET_UNIT_BASE		96
+#define	TILESET_TEAM_STEP		8
 #define	TILESET_MASK			0xFFF
 
 #include <darnit/darnit.h>
