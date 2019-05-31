@@ -46,7 +46,6 @@ struct UnitEntry {
 	unsigned int			previous_tile;
 	UnitType			type;
 	UnitEntry		*next;
-	int				team;
 	int health;
 	struct PylonEntry		*pylon;
 
