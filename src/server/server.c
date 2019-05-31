@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <math.h>
 #include <darnit/darnit.h>
 #include "../main.h"
 #include "../bullet.h"
@@ -76,6 +77,9 @@ void _client_highlight_cursor(Client *player) {
 	highlight_x = ((ss->movable.movable[player->movable].x + (tile_size/2 - 1)*1000)/tile_size)/1000;
 	highlight_y = ((ss->movable.movable[player->movable].y + (tile_size/2 - 1)*1000)/tile_size)/1000;
 	//mouse.x
+	
+	highlight_x += cos(player->angle*M_PI/180.0) + 0.5;
+	highlight_y += sin(player->angle*M_PI/180.0) + 0.5;
 	
 	pack.x = player->highlight.x;
 	pack.y = player->highlight.y;
@@ -194,6 +198,8 @@ void server_handle_client(Client *cli) {
 					printf("server: shoot %i\n", bullet_spawn(BULLET_TYPE_WIMPY, cli));
 					
 				}
+				
+				cli->angle = pack.keypress.mouse_angle;
 				
 				break;
 			
