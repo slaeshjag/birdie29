@@ -38,6 +38,7 @@ typedef struct {
 	int			ignore;
 	int			used;
 	int			req_cleanup;
+	
 
 	DARNIT_SPRITE		*sprite;
 	int			x;

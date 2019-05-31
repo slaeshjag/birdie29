@@ -90,6 +90,6 @@ void unit_init() {
 		}
 
 	for (i = 0; i < MAX_TEAM; i++)
-		s->team[i].unit.lock = d_util_mutex_create();
+		s->team[i].unit.lock = d_util_mutex_create(), s->team[i].unit.unit = NULL;
 	return;
 }

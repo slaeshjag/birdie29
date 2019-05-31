@@ -137,6 +137,8 @@ int movableSpawnReal(DARNIT_SPRITE *spr, int x, int y, int l) {
 	d_bbox_resize(s->movable.bbox, idx, h_w, h_h);
 	d_sprite_animate_start(s->movable.movable[idx].sprite);
 
+	/* TODO: announce spawn */
+
 	return idx;
 }
 
@@ -159,6 +161,8 @@ void movableDespawn(int idx) {
 		d_bbox_delete(s->movable.bbox, idx);
 	}
 	s->movable.movable[idx].used = 0;
+
+	/* TODO: Announce despawn */
 }
 
 
@@ -538,7 +542,8 @@ void movableFreezeSprites(int freeze) {
 void movableLoopRender(int layer) {
 	int i, res;
 	unsigned int *arr = s->movable.coll_buf;
-
+	
+	#if 0
 	res = d_bbox_test(s->movable.bbox, s->camera.x - 128, s->camera.y - 128, d_platform_get().screen_w + 256, d_platform_get().screen_h + 256, s->movable.coll_buf, ~0);
 
 	for (i = 0; i < res; i++) {
@@ -546,6 +551,7 @@ void movableLoopRender(int layer) {
 			continue;
 		d_sprite_draw(s->movable.movable[arr[i]].sprite);
 	}
+	#endif
 }
 
 
