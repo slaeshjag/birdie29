@@ -13,7 +13,9 @@ enum PacketType {
 	PACKET_TYPE_JOIN,
 	PACKET_TYPE_TEAM,
 	PACKET_TYPE_START,
+	PACKET_TYPE_MOVABLE_SPAWN,
 	PACKET_TYPE_MOVABLE_MOVE,
+	PACKET_TYPE_MOVABLE_DESPAWN,
 	PACKET_TYPE_SOUND,
 	PACKET_TYPE_KEYPRESS,
 	PACKET_TYPE_TILE_UPDATE,
@@ -167,6 +169,22 @@ struct PacketChangeApple {
 };
 
 
+typedef struct PacketMovableSpawn PacketMovableSpawn;
+struct PacketMovableSpawn {
+	uint16_t type;
+	uint16_t size;
+
+	uint32_t movable;
+
+	int32_t x;
+	int32_t y;
+	uint16_t l;
+	uint16_t sprite_type;
+	int16_t angle;
+	int16_t dir;
+};
+
+
 typedef struct PacketMovableMove PacketMovableMove;
 struct PacketMovableMove {
 	uint16_t type;
@@ -179,6 +197,16 @@ struct PacketMovableMove {
 	int16_t angle;
 	int16_t dir;
 };
+
+
+typedef struct PacketMovableDespawn PacketMovableDespawn;
+struct PacketMovableDespawn {
+	uint16_t type;
+	uint16_t size;
+
+	uint32_t movable;
+};
+
 
 typedef struct PacketMapChange PacketMapChange;
 struct PacketMapChange {
@@ -223,7 +251,9 @@ union Packet {
 	PacketBulletAnnounce bullet_announce;
 	PacketBulletRemove bullet_remove;
 	PacketChangeApple change_apple;
+	PacketMovableSpawn movable_spawn;
 	PacketMovableMove movable_move;
+	PacketMovableDespawn movable_despawn;
 	PacketTileUpdate tile_update;
 	PacketMapChange map_change;
 };

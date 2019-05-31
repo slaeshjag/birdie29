@@ -46,7 +46,7 @@ int bullet_spawn(BulletType type, Player *owner) {
 	
 	bullet->type = type;
 	bullet->ticks = bullet_properties[type].ttl;
-	bullet->movable = movableSpawnSprite(bullet_properties[type].sprite, 0, 0, 0);
+	bullet->movable = movableSpawnSprite(bullet_properties[type].sprite, 0, 0, 0, 0 /* TODO: Replace with bullet index */);
 	ss->movable.movable[bullet->movable].x = x;
 	ss->movable.movable[bullet->movable].y = y;
 	ss->movable.movable[bullet->movable].angle = angle;

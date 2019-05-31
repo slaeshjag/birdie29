@@ -250,8 +250,7 @@ int server_thread(void *arg) {
 					pack.movable_move.angle = (angle / 10 / 2);
 					
 					for(tmp = client; tmp; tmp = tmp->next) {
-						if(tmp->id != me.id)
-							protocol_send_packet(tmp->sock, &pack);
+						protocol_send_packet(tmp->sock, &pack);
 					}
 				}
 
@@ -330,3 +329,11 @@ void server_shutdown() {
 	
 }
 
+
+
+void server_broadcast_packet(Packet *pack) {
+	ClientList *tmp;
+
+	for(tmp = client; tmp; tmp = tmp->next)
+		protocol_send_packet(tmp->sock, &pack);
+}
