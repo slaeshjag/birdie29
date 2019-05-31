@@ -216,6 +216,7 @@ int server_thread(void *arg) {
 				break;
 				
 			case SERVER_STATE_STARTING:
+				printf("server: starting...\n");
 				for(tmp = client; tmp; tmp = tmp->next) {
 					pack.type = PACKET_TYPE_START;
 					pack.size = sizeof(PacketStart);

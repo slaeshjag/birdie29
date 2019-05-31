@@ -122,62 +122,62 @@ void gameroom_network_handler() {
 	int i;
 	
 	
-	if(!network_poll_tcp(cs->server_sock))
-		return;
-	protocol_recv_packet(cs->server_sock, &pack);
-	
-	switch(pack.type) {
-		case PACKET_TYPE_JOIN:
-			printf("client: player %s team %i\n", pack.join.name, pack.join.team);
-			if(cs->player[pack.join.id]) {
-				/* Changed team */
-				int i;
-				MuilPropertyValue v;
-				v = gameroom.list->get_prop(gameroom.list, MUIL_LISTBOX_PROP_SIZE);
-				
-				player_set(pack.join.id, pack.join.name, pack.join.team);
-				
-				for(i = 0; i < v.i; i++) {
-					if(atoi(muil_listbox_get(gameroom.list, i)) == pack.join.id) {
-						asprintf(&tmp, "%i: %s [Team %s]", pack.join.id, pack.join.name, team_name[pack.join.team]);
-						muil_listbox_set(gameroom.list, i, tmp);
-						free(tmp);
-						break;
+	while(network_poll_tcp(cs->server_sock)) {
+		protocol_recv_packet(cs->server_sock, &pack);
+		
+		switch(pack.type) {
+			case PACKET_TYPE_JOIN:
+				printf("client: player %s team %i\n", pack.join.name, pack.join.team);
+				if(cs->player[pack.join.id]) {
+					/* Changed team */
+					int i;
+					MuilPropertyValue v;
+					v = gameroom.list->get_prop(gameroom.list, MUIL_LISTBOX_PROP_SIZE);
+					
+					player_set(pack.join.id, pack.join.name, pack.join.team);
+					
+					for(i = 0; i < v.i; i++) {
+						if(atoi(muil_listbox_get(gameroom.list, i)) == pack.join.id) {
+							asprintf(&tmp, "%i: %s [Team %s]", pack.join.id, pack.join.name, team_name[pack.join.team]);
+							muil_listbox_set(gameroom.list, i, tmp);
+							free(tmp);
+							break;
+						}
 					}
+					
+				} else {
+					/* New player joined */
+					asprintf(&tmp, "%i: %s [Team %s]", pack.join.id, pack.join.name, team_name[pack.join.team]);
+					muil_listbox_add(gameroom.list, tmp);
+					free(tmp);
+					
+					player_join(pack.join.id, pack.join.name, pack.join.team);
 				}
+				break;
+			
+			case PACKET_TYPE_MAP_CHANGE:
+				d_tilemap_free(cs->map.layer[0]);
+				d_tilemap_free(cs->map.layer[1]);
+				d_tilemap_free(cs->map.layer[2]);
 				
-			} else {
-				/* New player joined */
-				asprintf(&tmp, "%i: %s [Team %s]", pack.join.id, pack.join.name, team_name[pack.join.team]);
-				muil_listbox_add(gameroom.list, tmp);
-				free(tmp);
+				for(i = 0; i < MAP_LAYERS; i++)
+					cs->map.layer[i] = d_tilemap_new(0xFFF, gfx.map_tilesheet, 0xFFF, pack.map_change.w, pack.map_change.h);
 				
-				player_join(pack.join.id, pack.join.name, pack.join.team);
-			}
-			break;
-		
-		case PACKET_TYPE_MAP_CHANGE:
-			d_tilemap_free(cs->map.layer[0]);
-			d_tilemap_free(cs->map.layer[1]);
-			d_tilemap_free(cs->map.layer[2]);
+				printf("client: map changed to %s (%ix%i)\n", pack.map_change.name, pack.map_change.w, pack.map_change.h);
+				
+				break;
 			
-			for(i = 0; i < MAP_LAYERS; i++)
-				cs->map.layer[i] = d_tilemap_new(0xFFF, gfx.map_tilesheet, 0xFFF, pack.map_change.w, pack.map_change.h);
+			case PACKET_TYPE_TILE_UPDATE:
+				cs->map.layer[pack.tile_update.layer]->data[pack.tile_update.y * cs->map.layer[pack.tile_update.layer]->w + pack.tile_update.x] = pack.tile_update.tile;
+				break;
 			
-			printf("client: map changed to %s (%ix%i)\n", pack.map_change.name, pack.map_change.w, pack.map_change.h);
-			
-			break;
-		
-		case PACKET_TYPE_TILE_UPDATE:
-			cs->map.layer[pack.tile_update.layer]->data[pack.tile_update.y * cs->map.layer[pack.tile_update.layer]->w + pack.tile_update.x] = pack.tile_update.tile;
-			break;
-		
-		case PACKET_TYPE_START:
-			me.id = pack.start.player_id;
-			printf("Started game as player %i\n", me.id);
-			game_state(GAME_STATE_GAME);
-			break;
-		case PACKET_TYPE_MOVABLE_SPAWN:
-			break;
+			case PACKET_TYPE_START:
+				me.id = pack.start.player_id;
+				printf("Started game as player %i\n", me.id);
+				game_state(GAME_STATE_GAME);
+				break;
+			case PACKET_TYPE_MOVABLE_SPAWN:
+				break;
+		}
 	}
 }
