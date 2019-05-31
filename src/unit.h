@@ -7,6 +7,7 @@
 
 #include <darnit/darnit.h>
 
+typedef enum UnitType UnitType;
 enum UnitType {
 	UNIT_TYPE_GENERATOR,
 	UNIT_TYPE_PYLON,
@@ -18,6 +19,7 @@ enum UnitType {
 };
 
 
+typedef struct UnitTiles UnitTiles;
 struct UnitTiles {
 	unsigned int			bottom_left;
 	unsigned int			bottom_right;
@@ -25,27 +27,34 @@ struct UnitTiles {
 	unsigned int			top_right;
 };
 
+typedef struct UnitProperties UnitProperties;
+struct UnitProperties {
+	UnitTiles tiles;
+	
+	int cost;
+};
 
+typedef struct UnitEntry UnitEntry;
 struct UnitEntry {
 	int				map_index;
 	unsigned int			previous_tile;
-	enum UnitType			type;
-	struct UnitEntry		*next;
+	UnitType			type;
+	UnitEntry		*next;
 
 	int				create_flag;
 	int				modify_flag;
 	int				delete_flag;
 };
 
-
+typedef struct Unit unit;
 struct Unit {
-	struct UnitEntry		*unit;
+	UnitEntry		*unit;
 };
 
 
 void unit_init();
 void unit_prepare();
-int unit_add(int team, enum UnitType type, int x, int y);
+int unit_add(int team, UnitType type, int x, int y);
 void unit_delete(int team, int index);
 void unit_housekeeping();
 

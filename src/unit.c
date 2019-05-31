@@ -5,7 +5,7 @@
 #include "server/server.h"
 
 #define PLACE_TILE(X, Y, TYPE, TILE_POSITION, LAYER) do { \
-	int tile = _building_tiles[TYPE].TILE_POSITION + (TILESET_TEAM_STEP) * team; \
+	int tile = _unit_properties[TYPE].tiles.TILE_POSITION + (TILESET_TEAM_STEP) * team; \
 	if(tile > 0) { \
 		int index = (X) + (Y) * ss->active_level->layer[LAYER].tilemap->w; \
 		ss->active_level->layer[LAYER].tilemap->data[index] = tile; \
@@ -18,13 +18,13 @@
 } while(0)
 
 
-static struct UnitTiles _building_tiles[UNIT_TYPES] = {
-	[UNIT_TYPE_GENERATOR] = { 104, 105, 96, 97 },
-	[UNIT_TYPE_PYLON] = { 106, -1, 98, -1 },
-	[UNIT_TYPE_MINER] = { 107, -1, -1, -1 },
-	[UNIT_TYPE_TURRET] = { 108, -1, -1, -1 },
-	[UNIT_TYPE_WALL] = { 109, -1, 101, -1 },
-	[UNIT_TYPE_SPAWN] = { 110, -1, -1, -1 },
+static UnitProperties _unit_properties[UNIT_TYPES] = {
+	[UNIT_TYPE_GENERATOR] = {.tiles = { 104, 105, 96, 97 }, .cost = 100},
+	[UNIT_TYPE_PYLON] = {.tiles = { 106, -1, 98, -1 }, .cost = 10},
+	[UNIT_TYPE_MINER] = {.tiles = { 107, -1, -1, -1 }, .cost = 20},
+	[UNIT_TYPE_TURRET] = {.tiles = { 108, -1, -1, -1 }, .cost = 50},
+	[UNIT_TYPE_WALL] = {.tiles = { 109, -1, 101, -1 }, .cost = 5},
+	[UNIT_TYPE_SPAWN] = {.tiles = { 110, -1, -1, -1 }, .cost = -1},
 };
 
 
@@ -57,7 +57,7 @@ void unit_delete(int team, int index) {
 }
 
 
-int unit_add(int team, enum UnitType type, int x, int y) {
+int unit_add(int team, UnitType type, int x, int y) {
 	int index, id;
 	struct UnitEntry *e;
 	int success = 0;
@@ -66,7 +66,12 @@ int unit_add(int team, enum UnitType type, int x, int y) {
 		goto fail;
 	if (x >= ss->active_level->layer->tilemap->w || y >= ss->active_level->layer->tilemap->h)
 		goto fail;
-
+	
+	if(ss->team[team].money < _unit_properties[type].cost)
+		goto fail;
+	
+	ss->team[team].money -= _unit_properties[type].cost;
+	
 	//if ((ss->active_level->layer->tilemap->data[index] & TILESET_MASK) >= TILESET_UNIT_BASE)
 	//	goto fail; // Unit already there
 	e = malloc(sizeof(*e));
@@ -106,7 +111,7 @@ void unit_prepare() {
 			if (tile < TILESET_UNIT_BASE)
 				continue;
 			team = (tile - TILESET_UNIT_BASE) / TILESET_TEAM_STEP;
-			if (((tile) % TILESET_TEAM_STEP) == ((_building_tiles[UNIT_TYPE_SPAWN].bottom_left) % TILESET_TEAM_STEP)) {
+			if (((tile) % TILESET_TEAM_STEP) == ((_unit_properties[UNIT_TYPE_SPAWN].tiles.bottom_left) % TILESET_TEAM_STEP)) {
 				if (team >= MAX_TEAM)
 					continue;
 				ss->team[team].spawn.x = i * ss->active_level->layer->tile_w;
