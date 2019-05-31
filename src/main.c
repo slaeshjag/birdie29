@@ -123,6 +123,7 @@ void game_state(GameState state) {
 		case GAME_STATE_LOBBY:
 			gameroom.button.start->enabled = false;
 			ss->is_host = false;
+			gameroom_init();
 			//muil_listbox_clear(lobby.list);
 			break;
 		case GAME_STATE_ENTER_IP:
@@ -131,7 +132,8 @@ void game_state(GameState state) {
 		case GAME_STATE_HOST:
 			ss->is_host = true;
 			server_start();
-			gameroom.button.start->enabled = true;
+			gameroom_init();
+			gameroom.button.start->enabled = false;
 			
 			join_game(network_local_ip());
 			
@@ -167,12 +169,14 @@ int main(int argc, char  **argv) {
 	sprintf(font_path, "%s/res/font.ttf", tmp);
 	gfx.font.large = d_font_load(font_path, 40, 256, 256);
 	gfx.font.small = d_font_load(font_path, 16, 256, 256);
+	
+	gfx.map_tilesheet = d_render_tilesheet_load("res/tileset.png", 48, 48, DARNIT_PFORMAT_RGBA8);
+	
 	ss = calloc(sizeof(*ss), 1);
 	cs = calloc(sizeof(*cs), 1);
 
 	muil_init(4);
 	menu_init();
-	gameroom_init();
 	lobby_init();
 	movableInit();
 	bullet_init();

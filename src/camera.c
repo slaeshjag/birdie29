@@ -1,9 +1,12 @@
+#include <stddef.h>
 #include "main.h"
 #include "camera.h"
 
 
 void camera_work() {
 	int x, y;
+	
+	int tile_w, tile_h;
 
 	if (cs->camera.follow < 0)
 		return;
@@ -12,11 +15,13 @@ void camera_work() {
 
 	x -= d_platform_get().screen_w / 2;
 	y -= d_platform_get().screen_h / 2;
-
-	if (x + d_platform_get().screen_w > cs->active_level->layer->tilemap->w * cs->active_level->layer->tile_w)
-		x = cs->active_level->layer->tilemap->w * cs->active_level->layer->tile_w - d_platform_get().screen_w;
-	if (y + d_platform_get().screen_h > cs->active_level->layer->tilemap->h * cs->active_level->layer->tile_h)
-		y = cs->active_level->layer->tilemap->h * cs->active_level->layer->tile_h - d_platform_get().screen_h;
+	
+	d_render_tilesheet_geometrics(gfx.map_tilesheet, NULL, NULL, &tile_w, &tile_h);
+	
+	if (x + d_platform_get().screen_w > cs->map.layer[0]->w * tile_w)
+		x = cs->map.layer[0]->w * tile_w - d_platform_get().screen_w;
+	if (y + d_platform_get().screen_h > cs->map.layer[0]->h * tile_h)
+		y = cs->map.layer[0]->h * tile_h - d_platform_get().screen_h;
 	if (x < 0)
 		x = 0;
 	if (y < 0)

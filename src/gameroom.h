@@ -8,7 +8,7 @@ struct GameRoom {
 	MuilWidget *label;
 	MuilWidget *list;
 	MuilWidget *vbox;
-	MuilWidget *hbox_team;
+	MuilWidget *hbox;
 	MuilWidget *hbox_button;
 	struct {
 		MuilWidget *start;
@@ -16,9 +16,16 @@ struct GameRoom {
 	} button;
 	
 	struct {
+		MuilWidget *vbox;
 		MuilWidget *list;
 		MuilWidget *label;
 	} team;
+	
+	struct {
+		MuilWidget *vbox;
+		MuilWidget *list;
+		MuilWidget *label;
+	} map;
 	
 	DARNIT_SPRITE *sprite[4];
 };

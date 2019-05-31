@@ -42,6 +42,8 @@ struct Gfx {
 		DARNIT_FONT *small;
 		DARNIT_FONT *large;
 	} font;
+	
+	DARNIT_TILESHEET *map_tilesheet;
 };
 
 extern Gfx gfx;
@@ -64,7 +66,10 @@ struct ClientStateStruct {
 	struct Team team[MAX_TEAM];
 	int server_sock;
 	MOVABLE movable;
-	DARNIT_MAP *active_level;
+	//DARNIT_MAP *active_level;
+	struct {
+		DARNIT_TILEMAP *layer[MAP_LAYERS];
+	} map;
 	
 	struct {
 		int x;
