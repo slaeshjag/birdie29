@@ -137,8 +137,8 @@ void ingame_client_keyboard() {
 	newstate.up = d_keys_get().up;
 	newstate.down = d_keys_get().down;
 	newstate.suicide = d_keys_get().x;
-	newstate.shoot = d_keys_get().a;
-	newstate.build = d_keys_get().y;
+	//newstate.shoot = d_keys_get().a;
+	//newstate.build = d_keys_get().y;
 	
 
 	
@@ -147,7 +147,17 @@ void ingame_client_keyboard() {
 		keys = d_keys_zero();
 		keys.lmb = 1;
 		d_keys_set(keys);
-		//ingame_apple_bullet_fire();
+		
+		newstate.shoot = true;
+	}
+	
+	if (d_keys_get().rmb) {
+		DARNIT_KEYS keys;
+		keys = d_keys_zero();
+		keys.rmb = 1;
+		d_keys_set(keys);
+		
+		newstate.build = true;
 	}
 	
 	if(d_keys_get().select)
