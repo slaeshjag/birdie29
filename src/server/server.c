@@ -348,7 +348,7 @@ int server_thread(void *arg) {
 					}
 				}
 				
-				#if 0
+
 				for (i = 0; i < MAX_TEAM; i++) {
 					struct UnitEntry *ue;
 					
@@ -358,11 +358,10 @@ int server_thread(void *arg) {
 						if (ue->delete_flag); // Will be deleted at the end of the loop
 					}
 				}
-				#endif
 				
 				for(tmp = client; tmp; tmp = tmp->next)
 					server_handle_client(tmp);
-				//unit_housekeeping();
+				unit_housekeeping();
 				break;
 		}
 	}
