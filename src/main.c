@@ -21,7 +21,8 @@
 
 Gfx gfx;
 GameState gamestate;
-GameStateStruct *s;
+GameStateStruct *ss;
+ClientStateStruct *cs;
 
 Player me;
 
@@ -53,7 +54,7 @@ void restart_to_menu(const char *name) {
 	char buf[4096];
 	
 	server_shutdown();
-	network_close_tcp(s->server_sock);
+	network_close_tcp(cs->server_sock);
 	
 	sprintf(buf, "%s", d_fs_exec_path());
 	sprintf(buf, "%s", basename(buf));
@@ -66,7 +67,7 @@ void restart_to_menu(const char *name) {
 int join_game(unsigned long sip) {
 	PacketJoin join;
 	
-	if((s->server_sock = network_connect_tcp(sip, PORT + 1)) < 0) {
+	if((cs->server_sock = network_connect_tcp(sip, PORT + 1)) < 0) {
 		fprintf(stderr, "failed to join %lu\n", sip);
 		return -1;
 	}
@@ -78,7 +79,7 @@ int join_game(unsigned long sip) {
 	join.name[NAME_LEN_MAX - 1] = 0;
 	join.team = 0;
 
-	protocol_send_packet(s->server_sock, (void *) &join);
+	protocol_send_packet(cs->server_sock, (void *) &join);
 	return 0;
 }
 
@@ -121,14 +122,14 @@ void game_state(GameState state) {
 			break;
 		case GAME_STATE_LOBBY:
 			gameroom.button.start->enabled = false;
-			s->is_host = false;
+			ss->is_host = false;
 			//muil_listbox_clear(lobby.list);
 			break;
 		case GAME_STATE_ENTER_IP:
 			muil_selected_widget = enter_ip.entry;
 			break;
 		case GAME_STATE_HOST:
-			s->is_host = true;
+			ss->is_host = true;
 			server_start();
 			gameroom.button.start->enabled = true;
 			
@@ -166,7 +167,8 @@ int main(int argc, char  **argv) {
 	sprintf(font_path, "%s/res/font.ttf", tmp);
 	gfx.font.large = d_font_load(font_path, 40, 256, 256);
 	gfx.font.small = d_font_load(font_path, 16, 256, 256);
-	s = calloc(sizeof(*s), 1);
+	ss = calloc(sizeof(*ss), 1);
+	cs = calloc(sizeof(*cs), 1);
 
 	muil_init(4);
 	menu_init();

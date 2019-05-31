@@ -35,25 +35,25 @@ int bullet_spawn(BulletType type, Player *owner) {
 	int x, y, angle;
 	Bullet *bullet = NULL;
 	
-	if(s->team[owner->team].money - bullet_properties[type].cost < 0)
+	if(ss->team[owner->team].money - bullet_properties[type].cost < 0)
 		return -1;
 	
 	bullet = malloc(sizeof(Bullet));
 	
-	x = s->movable.movable[owner->movable].x;
-	y = s->movable.movable[owner->movable].y;
-	angle = s->movable.movable[owner->movable].angle;
+	x = ss->movable.movable[owner->movable].x;
+	y =ss->movable.movable[owner->movable].y;
+	angle = owner->angle;
 	
 	bullet->type = type;
 	bullet->ticks = bullet_properties[type].ttl;
 	bullet->movable = movableSpawnSprite(bullet_properties[type].sprite, 0, 0, 0);
-	s->movable.movable[bullet->movable].x = x;
-	s->movable.movable[bullet->movable].y = y;
-	s->movable.movable[bullet->movable].angle = angle;
-	s->movable.movable[bullet->movable].x_velocity = bullet_properties[type].speed * cos(((double) angle)*M_PI/180.0);
-	s->movable.movable[bullet->movable].y_velocity = bullet_properties[type].speed * sin(((double) angle)*M_PI/180.0);
+	ss->movable.movable[bullet->movable].x = x;
+	ss->movable.movable[bullet->movable].y = y;
+	ss->movable.movable[bullet->movable].angle = angle;
+	ss->movable.movable[bullet->movable].x_velocity = bullet_properties[type].speed * cos(((double) angle)*M_PI/180.0);
+	ss->movable.movable[bullet->movable].y_velocity = bullet_properties[type].speed * sin(((double) angle)*M_PI/180.0);
 	
-	s->team[owner->team].money -= bullet_properties[type].cost;
+	ss->team[owner->team].money -= bullet_properties[type].cost;
 	
 	return bullet->movable;
 }

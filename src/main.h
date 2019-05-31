@@ -51,11 +51,21 @@ struct GameStateStruct {
 	bool is_host;
 	Player *player[PLAYER_CAP];
 	struct Team team[MAX_TEAM];
-	int server_sock;
 	MOVABLE movable;
 	DARNIT_MAP *active_level;
 	
 	//SfxStruct sfx;
+	
+};
+
+typedef struct ClientStateStruct ClientStateStruct;
+struct ClientStateStruct {
+	Player *player[PLAYER_CAP];
+	struct Team team[MAX_TEAM];
+	int server_sock;
+	MOVABLE movable;
+	DARNIT_MAP *active_level;
+	
 	struct {
 		int x;
 		int y;
@@ -63,7 +73,8 @@ struct GameStateStruct {
 	} camera;
 };
 
-extern GameStateStruct *s;
+extern GameStateStruct *ss;
+extern ClientStateStruct *cs;
 extern Player me;
 
 extern char *team_name[TEAMS_CAP];

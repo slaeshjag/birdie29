@@ -20,6 +20,8 @@ struct Player {
 	int team;
 	int movable;
 	
+	int angle;
+	
 	InGameKeyStateEntry keystate;
 };
 

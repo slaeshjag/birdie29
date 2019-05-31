@@ -33,7 +33,7 @@ static void listbox_team_callback(MuilWidget *widget, unsigned int type, MuilEve
 	join.name[NAME_LEN_MAX - 1] = 0;
 	join.team = p.i;
 
-	protocol_send_packet(s->server_sock, (void *) &join);
+	protocol_send_packet(cs->server_sock, (void *) &join);
 }
 
 void gameroom_init() {
@@ -81,14 +81,14 @@ void gameroom_network_handler() {
 	int i;
 	
 	
-	if(!network_poll_tcp(s->server_sock))
+	if(!network_poll_tcp(cs->server_sock))
 		return;
-	protocol_recv_packet(s->server_sock, &pack);
+	protocol_recv_packet(cs->server_sock, &pack);
 	
 	switch(pack.type) {
 		case PACKET_TYPE_JOIN:
 			printf("client: player %s team %i\n", pack.join.name, pack.join.team);
-			if(s->player[pack.join.id]) {
+			if(cs->player[pack.join.id]) {
 				/* Changed team */
 				int i;
 				MuilPropertyValue v;

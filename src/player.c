@@ -4,8 +4,8 @@
 #include "main.h"
 
 void player_set(int id, const char *name, int team) {
-	strcpy(s->player[id]->name, name);
-	s->player[id]->team = team;
+	strcpy(cs->player[id]->name, name);
+	cs->player[id]->team = team;
 }
 
 void player_join(int id, const char *name, int team) {
@@ -19,18 +19,18 @@ void player_join(int id, const char *name, int team) {
 	
 	p->movable = movableSpawn("res/player.spr", 0, 0, 0);
 	
-	s->player[id] = p;
+	cs->player[id] = p;
 }
 
 void player_handle_keys(Player *player) {
-	MOVABLE_ENTRY *m = &s->movable.movable[player->movable];
+	MOVABLE_ENTRY *m = &ss->movable.movable[player->movable];
 	
 	if(player->keystate.up) {
-		printf("client: player %i hold up\n", player->id);
+		printf("server loop: player %i hold up\n", player->id);
 		m->y_velocity = -PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_UP;
 	} else if(player->keystate.down) {
-		printf("client: player %i hold down\n", player->id);
+		printf("server loop: player %i hold down\n", player->id);
 		m->y_velocity = PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_DOWN;
 	} else {
@@ -38,11 +38,11 @@ void player_handle_keys(Player *player) {
 	}
 	
 	if(player->keystate.left) {
-		printf("client: player %i hold left\n", player->id);
+		printf("server loop: player %i hold left\n", player->id);
 		m->x_velocity = -PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_LEFT;
 	} else if(player->keystate.right) {
-		printf("client: player %i hold right\n", player->id);
+		printf("server loop: player %i hold right\n", player->id);
 		m->x_velocity = PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_RIGHT;
 	} else {
