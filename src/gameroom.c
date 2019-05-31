@@ -176,5 +176,7 @@ void gameroom_network_handler() {
 			printf("Started game as player %i\n", me.id);
 			game_state(GAME_STATE_GAME);
 			break;
+		case PACKET_TYPE_MOVABLE_SPAWN:
+			break;
 	}
 }

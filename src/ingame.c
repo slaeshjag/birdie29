@@ -191,6 +191,8 @@ void ingame_network_handler() {
 		protocol_recv_packet(cs->server_sock, &pack);
 		
 		switch(pack.type) {
+			case PACKET_TYPE_MOVABLE_SPAWN:
+				break;
 			case PACKET_TYPE_MOVABLE_MOVE:
 				drawable_move(cs->drawable, pack.movable_move.movable, pack.movable_move.x, pack.movable_move.y, 20*pack.movable_move.angle, pack.movable_move.dir);
 				break;
