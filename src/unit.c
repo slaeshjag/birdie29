@@ -24,6 +24,7 @@ static struct UnitTiles _building_tiles[UNIT_TYPES] = {
 	[UNIT_TYPE_MINER] = { 107, -1, -1, -1 },
 	[UNIT_TYPE_TURRET] = { 108, -1, -1, -1 },
 	[UNIT_TYPE_WALL] = { 109, -1, 101, -1 },
+	[UNIT_TYPE_SPAWN] = { 110, -1, -1, -1 },
 };
 
 
@@ -105,7 +106,7 @@ void unit_prepare() {
 			if (tile < TILESET_UNIT_BASE)
 				continue;
 			team = (tile - TILESET_UNIT_BASE) / TILESET_TEAM_STEP;
-			if (((tile - TILESET_UNIT_BASE) % TILESET_TEAM_STEP) == UNIT_TYPE_SPAWN) {
+			if (((tile) % TILESET_TEAM_STEP) == ((_building_tiles[UNIT_TYPE_SPAWN].bottom_left) % TILESET_TEAM_STEP)) {
 				if (team >= MAX_TEAM)
 					continue;
 				ss->team[team].spawn.x = i * ss->active_level->layer->tile_w;
