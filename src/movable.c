@@ -526,7 +526,7 @@ nogravity:
 
 	if (entry->movement_blocked)
 		if (entry->callback.map_collision)
-			entry->callback.map_collision(entry->callback.user_pointer, entry->id, collided_tile);
+			entry->callback.map_collision(entry->callback.user_pointer, entry->id, collided_tile), printf("Blocked movement\n");
 
 	return -1462573849;
 }

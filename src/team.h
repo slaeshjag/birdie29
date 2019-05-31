@@ -16,6 +16,7 @@ struct Team {
 	int money;
 
 	struct PylonEntry	*generator;
+	struct PylonPowerMap	*power_map;
 };
 
 

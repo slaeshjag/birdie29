@@ -64,7 +64,8 @@ static void _unit_pylon_pulse() {
 	struct UnitEntry *next;
 
 	for (i = 0; i < MAX_TEAM; i++) {
-		_unit_pylon_pulse_climb(ss->team[i].generator);
+		if (ss->team[i].generator)
+			_unit_pylon_pulse_climb(ss->team[i].generator);
 	}
 
 	for (i = 0; i < MAX_TEAM; i++) {
@@ -74,12 +75,12 @@ static void _unit_pylon_pulse() {
 			if (next->pylon->pulse) {
 				if (!next->pylon->power) {
 					next->pylon->power= 1;
-					playerCalcSetPower(next->team, next->pylon->x, next->pylon->y, 1);
+					_pylon_recalc_diff(i, next->pylon->x, next->pylon->y, 1);
 				}
 			} else {
 				if (next->pylon->power) {
 					next->pylon->power = 0;
-					playerCalcSetPower(next->team, next->pylon->x, next->pylon->y, -1);
+					_pylon_recalc_diff(i, next->pylon->x, next->pylon->y, -1);
 				}
 			}
 
@@ -91,17 +92,21 @@ static void _unit_pylon_pulse() {
 }
 
 
-void _unit_pylon_delete(struct UnitEntry *unit) {
+void unit_pylon_delete(struct UnitEntry *unit) {
 	int i;
 
+	
 	if (unit->pylon->power)
-		playerCalcSetPower(unit->team, unit->pylon->x, unit->pylon->y, -1);
+		_pylon_recalc_diff(unit->team, unit->pylon->x, unit->pylon->y, -1);
 	
 	for (i = 0; i < unit->pylon->neighbours; i++)
 		if (unit->pylon->neighbour[i])
 			_unit_pylon_list_remove(unit->pylon->neighbour[i], unit->pylon);
 	free(unit->pylon->neighbour);
 	unit->pylon->neighbour = NULL;
+	free(unit->pylon);
+	unit->pylon = NULL;
+	_unit_pylon_pulse();
 
 	#if 0
 	list = &server->pylons;
@@ -152,10 +157,10 @@ void pylon_init(struct UnitEntry *unit, unsigned int x, unsigned int y) {
 		pos_y = next->map_index / ss->active_level->layer->tilemap->w;
 		dx = x - pos_x;
 		dy = y - pos_y;
-		if (dx*dx + dy*dy >= radius*radius)
+		if (dx*dx + dy*dy > radius*radius)
 			continue;
 		if (next->pylon->power && !unit->pylon->power) {
-			//playerCalcSetPower(team, x, y, 1);
+			_pylon_recalc_diff(unit->team, unit->pylon->x, unit->pylon->y, 1);
 			unit->pylon->power = 1;
 		}
 		
@@ -166,6 +171,7 @@ void pylon_init(struct UnitEntry *unit, unsigned int x, unsigned int y) {
 
 	
 	unit->pylon->power = (unit->type == UNIT_TYPE_GENERATOR) ? 1 : unit->pylon->power;
+	printf("pylon!\n");
 	_unit_pylon_pulse();
 	
 
@@ -184,7 +190,29 @@ struct PylonPowerEntry *pylonpower_map_new(int w, int h) {
 }
 
 
-void pylonpower_diff(struct PylonPowerMap *map, int x, int y, int diff) {
+void _pylon_recalc_diff(int team, int x, int y, int diff) {
+	/* TODO: Announce change to players */
 
-	//map->map[x + map->w * y];
+	pylonpower_diff(ss->team[team].power_map, x, y, diff);
+}
+
+
+
+void pylonpower_diff(struct PylonPowerMap *map, int x, int y, int diff) {
+	int i, j, k, index, range;
+	
+	range = _unit_range();
+
+	for (j = -1 * range; j <= range; j++) {
+		if (x + j < 0 || x + j >= map->w)
+			continue;
+		for (k = -1 * range; k <= range; k++) {
+			if (y + k < 0 || y + k >= map->h)
+				continue;
+			if (j*j + k*k > range*range)
+				continue;
+			index = (y + k) * map->w + (x + j);
+			map->map[index] += diff;
+		}
+	}
 }

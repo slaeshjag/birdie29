@@ -268,7 +268,7 @@ int server_thread(void *arg) {
 	Packet pack;
 	Client *tmp;
 	int i;
-	
+
 	for(;;) {
 		switch(server_state) {
 			case SERVER_STATE_LOBBY:
@@ -300,6 +300,8 @@ int server_thread(void *arg) {
 				
 			case SERVER_STATE_STARTING:
 				printf("server: starting...\n");
+				for (i = 0; i < MAX_TEAM; i++)
+					ss->team[i].power_map = pylonpower_map_new(ss->active_level->layer->tilemap->w, ss->active_level->layer->tilemap->h);
 				for(tmp = client; tmp; tmp = tmp->next) {
 					/* teleport players to their spawning point */
 					tmp->movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);
