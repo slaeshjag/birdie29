@@ -14,10 +14,10 @@
 #define HANDLE_KEY(A) do { \
 		if(pack.keypress.keypress.A ) { \
 			printf("server: player %i press %s\n", cli->id, STR(A)); \
-			ss->player[cli->id]->keystate.A = 1; \
+			cli->keystate.A = 1; \
 		} if(pack.keypress.keyrelease.A ) {\
 			printf("server: player %i release %s\n", cli->id, STR(A)); \
-			ss->player[cli->id]->keystate.A = 0; \
+			cli->keystate.A = 0; \
 		} \
 	} while(0)
 
@@ -31,28 +31,48 @@ enum ServerState {
 	SERVER_STATE_GAME,
 };
 
-typedef struct ClientList ClientList;
-struct ClientList {
-	int id;
-	int sock;
-	char name[NAME_LEN_MAX];
-	int team;
-	
-	ClientList *next;
-};
-
 static int listen_sock;
-static ClientList *client = NULL;
+static Client *client = NULL;
 static int clients = 0;
 static volatile ServerState server_state;
 
 DARNIT_SEMAPHORE *sem;
 
-void server_handle_client(ClientList *cli) {
+static void _client_handle_keys(Client *player) {
+	MOVABLE_ENTRY *m = &ss->movable.movable[player->movable];
+	
+	if(player->keystate.up) {
+		printf("server loop: player %i hold up\n", player->id);
+		m->y_velocity = -PLAYER_SPEED;
+		m->direction = PLAYER_DIRECTION_UP;
+	} else if(player->keystate.down) {
+		printf("server loop: player %i hold down\n", player->id);
+		m->y_velocity = PLAYER_SPEED;
+		m->direction = PLAYER_DIRECTION_DOWN;
+	} else {
+		m->y_velocity = 0;
+	}
+	
+	if(player->keystate.left) {
+		printf("server loop: player %i hold left\n", player->id);
+		m->x_velocity = -PLAYER_SPEED;
+		m->direction = PLAYER_DIRECTION_LEFT;
+	} else if(player->keystate.right) {
+		printf("server loop: player %i hold right\n", player->id);
+		m->x_velocity = PLAYER_SPEED;
+		m->direction = PLAYER_DIRECTION_RIGHT;
+	} else {
+		m->x_velocity = 0;
+	}
+}
+
+void server_handle_client(Client *cli) {
 	Packet pack;
 	Packet response;
-	ClientList *tmp;
+	Client *tmp;
 	int i;
+	
+	_client_handle_keys(cli);
 	
 	while(network_poll_tcp(cli->sock)) {
 		protocol_recv_packet(cli->sock, &pack);
@@ -132,7 +152,7 @@ void server_handle_client(ClientList *cli) {
 				HANDLE_KEY(down);
 				
 				if(pack.keypress.keypress.shoot) {
-					printf("server: shoot %i\n", bullet_spawn(BULLET_TYPE_WIMPY, ss->player[cli->id]));
+					printf("server: shoot %i\n", bullet_spawn(BULLET_TYPE_WIMPY, cli));
 					
 				}
 				
@@ -184,7 +204,7 @@ void server_handle_client(ClientList *cli) {
 
 int server_thread(void *arg) {
 	Packet pack;
-	ClientList *tmp;
+	Client *tmp;
 	int i;
 	
 	for(;;) {
@@ -195,7 +215,7 @@ int server_thread(void *arg) {
 					
 					sock = network_accept_tcp(listen_sock);
 					
-					tmp = malloc(sizeof(ClientList));
+					tmp = malloc(sizeof(Client));
 					tmp->sock = sock;
 					tmp->id = clients++;
 					tmp->next = client;
@@ -290,7 +310,7 @@ void server_start() {
 
 /*void server_sound(enum SoundeffectSound sound) {
 	PacketSound pack;
-	ClientList *tmp;
+	Client *tmp;
 
 	pack.type = PACKET_TYPE_SOUND;
 	pack.size = sizeof(pack);
@@ -310,7 +330,7 @@ void server_kick() {
 }
 
 bool server_player_is_present(int id) {
-	struct ClientList *next;
+	struct Client *next;
 
 	for (next = client; next; next = next->next)
 		if (next->id == id)
@@ -319,7 +339,7 @@ bool server_player_is_present(int id) {
 }
 
 void server_shutdown() {
-	ClientList *tmp;
+	Client *tmp;
 	
 	network_close_udp();
 	
@@ -333,8 +353,8 @@ void server_shutdown() {
 
 
 void server_broadcast_packet(Packet *pack) {
-	ClientList *tmp;
+	Client *tmp;
 
 	for(tmp = client; tmp; tmp = tmp->next)
-		protocol_send_packet(tmp->sock, &pack);
+		protocol_send_packet(tmp->sock, pack);
 }
