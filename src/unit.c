@@ -85,8 +85,8 @@ void unit_prepare() {
 			if (((tile - TILESET_UNIT_BASE) % TILESET_TEAM_STEP) == UNIT_TYPE_SPAWN) {
 				if (team >= MAX_TEAM)
 					continue;
-				ss->team[team].spawn.x = i;
-				ss->team[team].spawn.y = j;
+				ss->team[team].spawn.x = i * ss->active_level->layer->tile_w;
+				ss->team[team].spawn.y = j * ss->active_level->layer->tile_h;
 				printf("found team %i spawn point at %i, %i\n", team, i, j);
 			}
 		}
