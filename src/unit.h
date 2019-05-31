@@ -4,7 +4,7 @@
 #define	TILESET_UNIT_BASE		(96 + 8)
 #define	TILESET_TEAM_STEP		16
 #define	TILESET_MASK			0xFFF
-#define	TILESET_COLLISION_MASK (0xF << 12)
+#define	TILESET_COLLISION_MASK (0xF << 16)
 
 #include <darnit/darnit.h>
 

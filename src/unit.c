@@ -9,7 +9,9 @@
 	if(tile > 0) { \
 		int index = (X) + (Y) * ss->active_level->layer[LAYER].tilemap->w; \
 		ss->active_level->layer[LAYER].tilemap->data[index] = tile; \
-		ss->active_level->layer[0].tilemap->data[index] |= TILESET_COLLISION_MASK; \
+		if(LAYER == MAP_LAYER_BUILDING_LOWER) { \
+			ss->active_level->layer[0].tilemap->data[index] |= TILESET_COLLISION_MASK; \
+		} \
 		pack.x = (X); \
 		pack.y = (Y); \
 		pack.tile = tile; \
