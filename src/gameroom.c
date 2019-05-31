@@ -177,6 +177,7 @@ void gameroom_network_handler() {
 				game_state(GAME_STATE_GAME);
 				break;
 			case PACKET_TYPE_MOVABLE_SPAWN:
+				drawable_spawn(cs->drawable, pack.movable_spawn.sprite_type, pack.movable_spawn.movable, pack.movable_spawn.x, pack.movable_spawn.y, pack.movable_spawn.l, pack.movable_spawn.angle);
 				break;
 		}
 	}

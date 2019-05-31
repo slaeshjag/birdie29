@@ -21,7 +21,7 @@ struct Drawable {
 void drawable_move(struct Drawable *drw, int id, int x, int y, int angle, int dir);
 void drawable_render(struct Drawable *drw, int layer);
 void drawable_despawn(struct Drawable *drw, int id);
-void drawable_spawn(struct Drawable *drw, DARNIT_SPRITE *spr, int id, int x, int y, int l, int angle);
+void drawable_spawn(struct Drawable *drw, int sprite, int id, int x, int y, int l, int angle);
 struct Drawable *drawable_init();
 
 #endif

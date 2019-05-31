@@ -92,6 +92,7 @@ void server_handle_client(Client *cli) {
 					response.join.team = tmp->team;
 					response.join.id = tmp->id;
 					response.join.movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);
+					cli->movable = response.join.movable;
 					protocol_send_packet(cli->sock, &response);
 					
 					if(tmp->sock != cli->sock) {

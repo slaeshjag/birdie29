@@ -186,6 +186,7 @@ void ingame_network_handler() {
 		
 		switch(pack.type) {
 			case PACKET_TYPE_MOVABLE_SPAWN:
+				drawable_spawn(cs->drawable, pack.movable_spawn.sprite_type, pack.movable_spawn.movable, pack.movable_spawn.x, pack.movable_spawn.y, pack.movable_spawn.l, pack.movable_spawn.angle);
 				break;
 			case PACKET_TYPE_MOVABLE_MOVE:
 				drawable_move(cs->drawable, pack.movable_move.movable, pack.movable_move.x, pack.movable_move.y, 20*pack.movable_move.angle, pack.movable_move.dir);

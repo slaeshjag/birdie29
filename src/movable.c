@@ -157,7 +157,7 @@ int movableSpawnReal(DARNIT_SPRITE *spr, int x, int y, int l, int type_hint) {
 		pack.movable_spawn.dir = 0;
 		pack.movable_spawn.movable = idx;
 
-		//server_broadcast_packet(&pack);
+		server_broadcast_packet(&pack);
 	}
 
 	return idx;

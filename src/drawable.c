@@ -1,6 +1,7 @@
 #include <darnit/darnit.h>
 #include "drawable.h"
 #include "movable.h"
+#include "spritelist.h"
 
 struct Drawable *drawable_init() {
 	int i;
@@ -22,8 +23,8 @@ struct Drawable *drawable_init() {
 }
 
 
-void drawable_spawn(struct Drawable *drw, DARNIT_SPRITE *spr, int id, int x, int y, int l, int angle) {
-	drw->entry[id].sprite = d_sprite_copy(spr);
+void drawable_spawn(struct Drawable *drw, int sprite, int id, int x, int y, int l, int angle) {
+	drw->entry[id].sprite = spritelist_get(sprite);
 	drw->entry[id].x = x;
 	drw->entry[id].y = y;
 	drw->entry[id].l = l;
