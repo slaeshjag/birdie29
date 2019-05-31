@@ -1,4 +1,4 @@
-#include "main.h"
+#include <stdbool.h>
 #include "main.h"
 #include "unit.h"
 #include "network/protocol.h"
@@ -20,13 +20,29 @@
 	} \
 } while(0)
 
+#define UNPLACE_TILE(X, Y, TYPE, TILE_POSITION, LAYER) do { \
+	int tile = _unit_properties[TYPE].tiles.TILE_POSITION + (TILESET_TEAM_STEP) * team; \
+	if(tile > 0) { \
+		int index = (X) + (Y) * ss->active_level->layer[LAYER].tilemap->w; \
+		ss->active_level->layer[LAYER].tilemap->data[index] = 0; \
+		if(LAYER == MAP_LAYER_BUILDING_LOWER) { \
+			ss->active_level->layer[0].tilemap->data[index] &= ~TILESET_COLLISION_MASK; \
+		} \
+		pack.x = (X); \
+		pack.y = (Y); \
+		pack.tile = 0; \
+		pack.layer = LAYER; \
+		server_broadcast_packet((void *) &pack); \
+	} \
+} while(0)
+
 static UnitProperties _unit_properties[UNIT_TYPES] = {
-	[UNIT_TYPE_GENERATOR] = {.tiles = { 104, 105, 96, 97 }, .cost = 100},
-	[UNIT_TYPE_PYLON] = {.tiles = { 106, -1, 98, -1 }, .cost = 10},
-	[UNIT_TYPE_MINER] = {.tiles = { 107, -1, -1, -1 }, .cost = 20},
-	[UNIT_TYPE_TURRET] = {.tiles = { 108, -1, -1, -1 }, .cost = 50},
-	[UNIT_TYPE_WALL] = {.tiles = { 109, -1, 101, -1 }, .cost = 5},
-	[UNIT_TYPE_SPAWN] = {.tiles = { 110, -1, -1, -1 }, .cost = -1},
+	[UNIT_TYPE_GENERATOR] = {.tiles = { 104, 105, 96, 97 }, .cost = 100, .health = 100},
+	[UNIT_TYPE_PYLON] = {.tiles = { 106, -1, 98, -1 }, .cost = 10, .health = 50},
+	[UNIT_TYPE_MINER] = {.tiles = { 107, -1, -1, -1 }, .cost = 20, .health = 20},
+	[UNIT_TYPE_TURRET] = {.tiles = { 108, -1, -1, -1 }, .cost = 50, .health = 50},
+	[UNIT_TYPE_WALL] = {.tiles = { 109, -1, 101, -1 }, .cost = 5, .health = 50},
+	[UNIT_TYPE_SPAWN] = {.tiles = { 110, -1, -1, -1 }, .cost = -1, .health = -1},
 };
 
 
@@ -36,11 +52,32 @@ void unit_housekeeping() {
 	struct UnitEntry **e, *tmp;
 
 	for (i = 0; i < MAX_TEAM; i++) {
-		for (e = &ss->team[i].unit.unit; *e; e = &(*e)->next) {
+		for (e = &ss->team[i].unit.unit; *e; ) {
 			if ((*e)->delete_flag) {
 				tmp = *e;
 				*e = (*e)->next;
+				
+				PacketTileUpdate pack;
+				int x, y;
+				int type;
+				int team;
+	
+				pack.type = PACKET_TYPE_TILE_UPDATE;
+				pack.size = sizeof(PacketTileUpdate);
+				
+				x = tmp->x;
+				y = tmp->y;
+				type = tmp->type;
+				team = tmp->team;
+				
+				UNPLACE_TILE(x, y, type, bottom_left, MAP_LAYER_BUILDING_LOWER);
+				UNPLACE_TILE(x + 1, y, type, bottom_right, MAP_LAYER_BUILDING_LOWER);
+				UNPLACE_TILE(x, y - 1, type, top_left, MAP_LAYER_BUILDING_UPPER);
+				UNPLACE_TILE(x + 1, y - 1, type, top_right, MAP_LAYER_BUILDING_UPPER);
+				
 				free(tmp);
+			} else {
+				e = &(*e)->next;
 			}
 		}
 	}
@@ -58,6 +95,30 @@ void unit_delete(int team, int index) {
 	}
 }
 
+UnitEntry *unit_find_tile_owner(int x, int y) {
+	int team;
+	UnitEntry *e;
+	
+	for(team = 0; team < TEAMS_CAP; team++) {
+		for(e = ss->team[team].unit.unit; e; e = e->next) {
+			if(e->x == x && e->y == y) {
+				return e;
+			}
+		}
+	}
+	
+	return NULL;
+}
+
+void unit_damage(UnitEntry *unit, int damage) {
+	if(unit->health < 0)
+		return; //Probably invincible
+	
+	unit->health -= damage;
+	
+	if(unit->health < 0)
+		unit->delete_flag = true;
+}
 
 bool _collision_with_tile(int x, int y, UnitType type) {
 	int index = x + y * ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->w;
@@ -98,7 +159,13 @@ int unit_add(int team, UnitType type, int x, int y) {
 	e->delete_flag = 0;
 	
 	e->map_index = index;
+	e->x = x;
+	e->y = y;
 	e->type = type;
+	e->team = team;
+	
+	e->health = _unit_properties[type].health;
+	
 	e->next = ss->team[team].unit.unit;
 	ss->team[team].unit.unit = e;
 	success = 1;

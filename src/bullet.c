@@ -6,6 +6,7 @@
 #include "main.h"
 #include "config.h"
 #include "player.h"
+#include "unit.h"
 #include "bullet.h"
 
 BulletProperties bullet_properties[BULLET_TYPES] = {
@@ -117,6 +118,21 @@ static void _bullet_movable_collision(void *ptr, int movable_self, int movable_r
 	return;
 }
 
+static void _bullet_map_collision(void *usr_ptr, int movable_self, int tile_index) {
+	int x, y;
+	UnitEntry *u;
+	
+	x = tile_index % ss->active_level->layer->tilemap->w;
+	y = tile_index / ss->active_level->layer->tilemap->w;
+	
+	printf("bullet %i hit tile %i (%i %i)\n", movable_self, tile_index, x, y);
+	_bullet_kill(movable_self);
+	
+	if((u = unit_find_tile_owner(x, y))) {
+		unit_damage(u, 10);
+	}
+		
+}
 
 int bullet_spawn(BulletType type, Client *owner) {
 	int x, y, angle;
@@ -141,6 +157,7 @@ int bullet_spawn(BulletType type, Client *owner) {
 	ss->movable.movable[bullet->movable].x_velocity = bullet_properties[type].speed * cos(((double) angle)*M_PI/180.0);
 	ss->movable.movable[bullet->movable].y_velocity = bullet_properties[type].speed * sin(((double) angle)*M_PI/180.0);
 	ss->movable.movable[bullet->movable].callback.movable_collision = _bullet_movable_collision;
+	ss->movable.movable[bullet->movable].callback.map_collision = _bullet_map_collision;
 
 	ss->team[owner->team].money -= bullet_properties[type].cost;
 	bullet->next = ss->bullet;

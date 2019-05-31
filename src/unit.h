@@ -33,21 +33,27 @@ struct UnitProperties {
 	UnitTiles tiles;
 	
 	int cost;
+	int health;
 };
 
 typedef struct UnitEntry UnitEntry;
 struct UnitEntry {
 	int				map_index;
+	int				x;
+	int				y;
+	int				team;
 	unsigned int			previous_tile;
 	UnitType			type;
 	UnitEntry		*next;
-
+	
+	int health;
+	
 	int				create_flag;
 	int				modify_flag;
 	int				delete_flag;
 };
 
-typedef struct Unit unit;
+typedef struct Unit Unit;
 struct Unit {
 	UnitEntry		*unit;
 };
@@ -58,6 +64,8 @@ void unit_prepare();
 int unit_add(int team, UnitType type, int x, int y);
 void unit_delete(int team, int index);
 void unit_housekeeping();
+UnitEntry *unit_find_tile_owner(int x, int y);
+void unit_damage(UnitEntry *unit, int damage);
 
 
 #endif
