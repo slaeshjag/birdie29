@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "../ingame.h"
 #include "../main.h"
+#include "../config.h"
 
 
 typedef enum PacketType PacketType;
@@ -211,6 +212,8 @@ typedef struct PacketMapChange PacketMapChange;
 struct PacketMapChange {
 	uint16_t type;
 	uint16_t size;
+	
+	char name[MAP_NAME_LEN_MAX + 1];
 	
 	uint32_t w;
 	uint32_t h;

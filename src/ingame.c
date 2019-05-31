@@ -29,12 +29,6 @@ void ingame_init() {
 	//const char *playerid_str;
 	/* Leak *all* the memory */
 	
-	if(ss->is_host) {
-		ss->active_level = d_map_load(util_binrel_path("map/map.ldmz"));
-		for(i = 0; i < TEAMS_CAP; i++) {
-			ss->team[i].money = MONEY_START;
-		}
-	}
 	
 	unit_init(); // XXX: Don't even dare running init before the map is loaded
 	cs->camera.follow = me.movable;
@@ -90,15 +84,17 @@ void ingame_loop() {
 	}
 	
 	camera_work();
-	d_map_camera_move(cs->active_level, cs->camera.x, cs->camera.y);
+	for(i = 0; i < MAP_LAYERS; i++) {
+		d_tilemap_camera_move(cs->map.layer[i], cs->camera.x, cs->camera.y);
+	}
 
 	d_render_offset(cs->camera.x, cs->camera.y);
 	
-	for (i = 0; i < cs->active_level->layers; i++) {
+	for (i = 0; i < MAP_LAYERS; i++) {
 		d_render_offset(0, 0);
 		d_render_tint(255, 255, 255, 255);
 //		d_render_tile_blit(s->active_level->layer[i].ts, 0, 0, 1);
-		d_tilemap_draw(cs->active_level->layer[i].tilemap);
+		d_tilemap_draw(cs->map.layer[i]);
 		d_render_offset(cs->camera.x, cs->camera.y);
 		drawable_render(cs->drawable, i);
 		

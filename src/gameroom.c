@@ -36,6 +36,23 @@ static void listbox_team_callback(MuilWidget *widget, unsigned int type, MuilEve
 	protocol_send_packet(cs->server_sock, (void *) &join);
 }
 
+static void listbox_map_callback(MuilWidget *widget, unsigned int type, MuilEvent *e)  {
+	gameroom.button.start->enabled = true;
+	
+	MuilPropertyValue v;
+	
+	v = widget->get_prop(widget, MUIL_LISTBOX_PROP_SELECTED);
+	
+	PacketMapChange mc;
+	
+	mc.type = PACKET_TYPE_MAP_CHANGE;
+	mc.size = sizeof(PacketMapChange);
+	
+	snprintf(mc.name, MAP_NAME_LEN_MAX, "%s", muil_listbox_get(widget, v.i));
+	
+	protocol_send_packet(cs->server_sock, (void *) &mc);
+}
+
 void gameroom_init() {
 	int i;
 	gameroom.pane.pane = muil_pane_create(10, 10, DISPLAY_WIDTH - 20, DISPLAY_HEIGHT - 20, gameroom.vbox = muil_widget_create_vbox());
@@ -49,10 +66,32 @@ void gameroom_init() {
 	muil_vbox_add_child(gameroom.vbox, gameroom.list = muil_widget_create_listbox(gfx.font.small), 1);
 	
 	gameroom.hbox_button = muil_widget_create_hbox();
-	gameroom.hbox_team = muil_widget_create_hbox();
+	gameroom.hbox = muil_widget_create_hbox();
+	gameroom.team.vbox = muil_widget_create_vbox();
+	gameroom.map.vbox = muil_widget_create_vbox();
 	
-	muil_vbox_add_child(gameroom.hbox_team, gameroom.team.label = muil_widget_create_label(gfx.font.small, "Select team"), 0);
-	muil_vbox_add_child(gameroom.hbox_team, gameroom.team.list = muil_widget_create_listbox(gfx.font.small), 0);
+	muil_hbox_add_child(gameroom.hbox, gameroom.team.vbox, true);
+	muil_vbox_add_child(gameroom.team.vbox, gameroom.team.label = muil_widget_create_label(gfx.font.small, "Select team"), false);
+	muil_vbox_add_child(gameroom.team.vbox, gameroom.team.list = muil_widget_create_listbox(gfx.font.small), true);
+	
+	if(ss->is_host) {
+		struct DARNIT_DIR_LIST *dirlist, *d;
+		int entries;
+		
+		dirlist = d_file_list("map/", DARNIT_FILESYSTEM_TYPE_READ, &entries);
+		
+		muil_hbox_add_child(gameroom.hbox, gameroom.map.vbox, true);
+		muil_vbox_add_child(gameroom.map.vbox, gameroom.map.label = muil_widget_create_label(gfx.font.small, "Select map"), false);
+		muil_vbox_add_child(gameroom.map.vbox, gameroom.map.list = muil_widget_create_listbox(gfx.font.small), true);
+		
+		for(d = dirlist; d; d = d->next) {
+			if(d->file)
+				muil_listbox_add(gameroom.map.list, strdup(d->fname));
+		}
+		
+		d_file_list_free(dirlist);
+	}
+	
 	
 	for(i = 0; i < TEAMS_CAP; i++)
 		muil_listbox_add(gameroom.team.list, team_name[i]);
@@ -63,7 +102,7 @@ void gameroom_init() {
 	muil_vbox_add_child(gameroom.hbox_button, gameroom.button.back = muil_widget_create_button_text(gfx.font.small, "Back"), 0);
 	muil_vbox_add_child(gameroom.hbox_button, gameroom.button.start = muil_widget_create_button_text(gfx.font.small, "Start game"), 0);
 	
-	muil_vbox_add_child(gameroom.vbox, gameroom.hbox_team, 1);
+	muil_vbox_add_child(gameroom.vbox, gameroom.hbox, 1);
 	muil_vbox_add_child(gameroom.vbox, gameroom.hbox_button, 0);
 	
 	gameroom.button.start->enabled = false;
@@ -113,6 +152,21 @@ void gameroom_network_handler() {
 				
 				player_join(pack.join.id, pack.join.name, pack.join.team);
 			}
+			break;
+		
+		case PACKET_TYPE_MAP_CHANGE:
+			d_tilemap_free(cs->map.layer[0]);
+			d_tilemap_free(cs->map.layer[1]);
+			d_tilemap_free(cs->map.layer[2]);
+			
+			cs->map.layer[0] = d_tilemap_new(0xFFF, gfx.map_tilesheet, 0xFFF, pack.map_change.w, pack.map_change.h);
+			cs->map.layer[2] = d_tilemap_new(0xFFF, gfx.map_tilesheet, 0xFFF, pack.map_change.w, pack.map_change.h);
+			cs->map.layer[2] = d_tilemap_new(0xFFF, gfx.map_tilesheet, 0xFFF, pack.map_change.w, pack.map_change.h);
+			
+			break;
+		
+		case PACKET_TYPE_TILE_UPDATE:
+			cs->map.layer[pack.tile_update.layer]->data[pack.tile_update.y * cs->map.layer[pack.tile_update.layer]->w + pack.tile_update.x] = pack.tile_update.tile;
 			break;
 		
 		case PACKET_TYPE_START:

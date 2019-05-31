@@ -22,4 +22,8 @@
 
 #define PLAYER_SPEED 500
 
+#define MAP_NAME_LEN_MAX 255
+
+#define MAP_LAYERS 3
+
 #endif

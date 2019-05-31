@@ -52,6 +52,7 @@ void server_handle_client(ClientList *cli) {
 	Packet pack;
 	Packet response;
 	ClientList *tmp;
+	int i;
 	
 	while(network_poll_tcp(cli->sock)) {
 		protocol_recv_packet(cli->sock, &pack);
@@ -85,8 +86,16 @@ void server_handle_client(ClientList *cli) {
 			case PACKET_TYPE_MAP_CHANGE:
 				response.type = PACKET_TYPE_MAP_CHANGE;
 				response.size = sizeof(PacketMapChange);
-				response.map_change.w = pack.map_change.w;
-				response.map_change.h = pack.map_change.h;
+				
+				for(i = 0; i < TEAMS_CAP; i++) {
+					ss->team[i].money = MONEY_START;
+				}
+				
+				ss->active_level = d_map_load(pack.map_change.name);
+				
+				strcpy(response.map_change.name, pack.map_change.name);
+				response.map_change.w = ss->active_level->layer[0].tilemap->w;
+				response.map_change.h = ss->active_level->layer[0].tilemap->h;
 					
 				for(tmp = client; tmp; tmp = tmp->next) {
 					protocol_send_packet(cli->sock, &response);
