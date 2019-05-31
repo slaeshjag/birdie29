@@ -10,6 +10,7 @@
 
 #include "player.h"
 #include "movable.h"
+#include "drawable.h"
 #include "config.h"
 #include "team.h"
 
@@ -65,8 +66,7 @@ struct ClientStateStruct {
 	Player *player[PLAYER_CAP];
 	struct Team team[MAX_TEAM];
 	int server_sock;
-	MOVABLE movable;
-	//DARNIT_MAP *active_level;
+	struct Drawable *drawable;
 	struct {
 		DARNIT_TILEMAP *layer[MAP_LAYERS];
 	} map;

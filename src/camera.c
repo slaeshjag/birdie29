@@ -10,8 +10,8 @@ void camera_work() {
 
 	if (cs->camera.follow < 0)
 		return;
-	x = cs->movable.movable[cs->camera.follow].x / 1000;
-	y = cs->movable.movable[cs->camera.follow].y / 1000;
+	x = cs->drawable->entry[cs->camera.follow].x;
+	y = cs->drawable->entry[cs->camera.follow].y;
 
 	x -= d_platform_get().screen_w / 2;
 	y -= d_platform_get().screen_h / 2;

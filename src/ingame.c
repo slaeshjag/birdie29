@@ -62,8 +62,7 @@ void ingame_loop() {
 	d_render_clearcolor_set(0x88, 0xf2, 0xff);
 	
 	d_render_tint(255, 255, 255, 255);
-	
-	movableLoop();
+		
 	
 	if(ss->is_host) {
 		server_kick();
@@ -97,7 +96,7 @@ void ingame_loop() {
 //		d_render_tile_blit(s->active_level->layer[i].ts, 0, 0, 1);
 		d_tilemap_draw(cs->map.layer[i]);
 		d_render_offset(cs->camera.x, cs->camera.y);
-		movableLoopRender(i);
+		drawable_render(cs->drawable, i);
 		
 	}
 	
@@ -193,11 +192,7 @@ void ingame_network_handler() {
 		
 		switch(pack.type) {
 			case PACKET_TYPE_MOVABLE_MOVE:
-				cs->movable.movable[pack.movable_move.movable].x = pack.movable_move.x * 1000;
-				cs->movable.movable[pack.movable_move.movable].y = pack.movable_move.y * 1000;
-				cs->movable.movable[pack.movable_move.movable].direction = pack.movable_move.dir;
-				cs->movable.movable[pack.movable_move.movable].angle = pack.movable_move.angle;
-				cs->movable.movable[pack.movable_move.movable].angle *= (2 * 10);
+				drawable_move(cs->drawable, pack.movable_move.movable, pack.movable_move.x, pack.movable_move.y, 20*pack.movable_move.angle, pack.movable_move.dir);
 				break;
 			
 			case PACKET_TYPE_BULLET_ANNOUNCE:

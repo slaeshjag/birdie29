@@ -538,14 +538,14 @@ void movableFreezeSprites(int freeze) {
 void movableLoopRender(int layer) {
 	#if 0
 	int i, res;
-	unsigned int *arr = ss->movable.coll_buf;
+	unsigned int *arr = s->movable.coll_buf;
 
-	res = d_bbox_test(ss->movable.bbox, ss->camera.x - 128, ss->camera.y - 128, d_platform_get().screen_w + 256, d_platform_get().screen_h + 256, ss->movable.coll_buf, ~0);
+	res = d_bbox_test(s->movable.bbox, s->camera.x - 128, s->camera.y - 128, d_platform_get().screen_w + 256, d_platform_get().screen_h + 256, s->movable.coll_buf, ~0);
 
 	for (i = 0; i < res; i++) {
-		if (ss->movable.movable[arr[i]].l != layer)
+		if (s->movable.movable[arr[i]].l != layer)
 			continue;
-		d_sprite_draw(ss->movable.movable[arr[i]].sprite);
+		d_sprite_draw(s->movable.movable[arr[i]].sprite);
 	}
 	#endif
 }
