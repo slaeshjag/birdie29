@@ -15,7 +15,8 @@ enum PacketType {
 	PACKET_TYPE_MOVABLE_MOVE,
 	PACKET_TYPE_SOUND,
 	PACKET_TYPE_KEYPRESS,
-	PACKET_TYPE_BLOCK_PLACE,
+	PACKET_TYPE_TILE_UPDATE,
+	PACKET_TYPE_MAP_CHANGE,
 	PACKET_TYPE_PARTICLE,
 	PACKET_TYPE_EXPLOSION,
 	PACKET_TYPE_TIMER,
@@ -86,18 +87,6 @@ struct PacketSound {
 	uint16_t size;
 
 	uint8_t sound;
-};
-
-
-typedef struct PacketBlockPlace PacketBlockPlace;
-struct PacketBlockPlace {
-	uint16_t type;
-	uint16_t size;
-	
-	uint8_t team;
-	uint8_t	x;
-	uint8_t	y;
-	uint8_t block;
 };
 
 
@@ -190,6 +179,26 @@ struct PacketMovableMove {
 	int16_t dir;
 };
 
+typedef struct PacketMapChange PacketMapChange;
+struct PacketMapChange {
+	uint16_t type;
+	uint16_t size;
+	
+	uint32_t w;
+	uint32_t h;
+};
+
+typedef struct PacketTileUpdate PacketTileUpdate;
+struct PacketTileUpdate {
+	uint16_t type;
+	uint16_t size;
+	
+	uint32_t x;
+	uint32_t y;
+	uint32_t tile;
+	uint32_t layer;
+};
+
 typedef union Packet Packet;
 union Packet {
 	struct {
@@ -204,7 +213,6 @@ union Packet {
 	PacketSound sound;
 	PacketKeypress keypress;
 	PacketExit exit;
-	PacketBlockPlace block_place;
 	PacketExplosion explosion;
 	PacketParticle particle;
 	PacketTimer timer;
@@ -213,6 +221,8 @@ union Packet {
 	PacketBulletRemove bullet_remove;
 	PacketChangeApple change_apple;
 	PacketMovableMove movable_move;
+	PacketTileUpdate tile_update;
+	PacketMapChange map_change;
 };
 
 int protocol_send_packet(int sock, Packet *pack);

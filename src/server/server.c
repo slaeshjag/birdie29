@@ -82,6 +82,36 @@ void server_handle_client(ClientList *cli) {
 				
 				break;
 			
+			case PACKET_TYPE_MAP_CHANGE:
+				response.type = PACKET_TYPE_MAP_CHANGE;
+				response.size = sizeof(PacketMapChange);
+				response.map_change.w = pack.map_change.w;
+				response.map_change.h = pack.map_change.h;
+					
+				for(tmp = client; tmp; tmp = tmp->next) {
+					protocol_send_packet(cli->sock, &response);
+				}
+				
+				response.type = PACKET_TYPE_TILE_UPDATE;
+				response.size = sizeof(PacketTileUpdate);
+				response.tile_update.layer = 0;
+					
+				for(tmp = client; tmp; tmp = tmp->next) {
+					uint32_t x, y;
+					
+					for(x = 0; x < pack.map_change.w; x++) {
+						for(y = 0; y < pack.map_change.h; y++) {
+							response.tile_update.x = x;
+							response.tile_update.y = y;
+							
+							response.tile_update.tile = s->active_level->layer[0].tilemap->data[y*pack.map_change.w + x];
+							protocol_send_packet(cli->sock, &response);
+						}
+					}
+				}
+				
+				break;
+			
 			case PACKET_TYPE_KEYPRESS:
 				HANDLE_KEY(left);
 				HANDLE_KEY(right);
@@ -95,7 +125,7 @@ void server_handle_client(ClientList *cli) {
 				
 				break;
 			
-			case PACKET_TYPE_BLOCK_PLACE:
+			case PACKET_TYPE_TILE_UPDATE:
 				break;
 			
 			case PACKET_TYPE_PARTICLE:
