@@ -14,6 +14,7 @@
 #include "config.h"
 #include "team.h"
 #include "bullet.h"
+#include "particles.h"
 
 typedef struct Color Color;
 struct Color {
@@ -67,6 +68,7 @@ struct ClientStateStruct {
 	struct Team team[MAX_TEAM];
 	int server_sock;
 	struct Drawable *drawable;
+	struct Particle *particle;
 	struct {
 		DARNIT_TILEMAP *layer[MAP_LAYERS];
 	} map;
