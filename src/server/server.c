@@ -100,6 +100,22 @@ void _client_highlight_cursor(Client *player) {
 	protocol_send_packet(player->sock, (Packet *) &pack);
 }
 
+void _client_status_update(Client *player) {
+	Packet pack;
+	int i;
+	
+	pack.type = PACKET_TYPE_STATUS_UPDATE;
+	pack.size = sizeof(PacketStatusUpdate);
+	
+	for(i = 0; i < TEAMS_CAP; i++) {
+		pack.status.money[i] = ss->team[i].money;
+	}
+	
+	pack.status.time_left = 0;
+	
+	protocol_send_packet(player->sock, (Packet *) &pack);
+}
+
 void server_handle_client(Client *cli) {
 	Packet pack;
 	Packet response;
@@ -109,6 +125,7 @@ void server_handle_client(Client *cli) {
 	if(server_state == SERVER_STATE_GAME) {
 		_client_handle_keys(cli);
 		_client_highlight_cursor(cli);
+		_client_status_update(cli);
 	}
 	
 	while(network_poll_tcp(cli->sock)) {
@@ -214,15 +231,6 @@ void server_handle_client(Client *cli) {
 				response.particle.y = pack.particle.y;
 				response.particle.effect_type = pack.particle.effect_type;
 
-				for(tmp = client; tmp; tmp = tmp->next) {
-					protocol_send_packet(tmp->sock, &response);
-				}
-				break;
-			case PACKET_TYPE_TIMER:
-				response.type = PACKET_TYPE_TIMER;
-				response.size = sizeof(PacketTimer);
-				response.timer.time_left = pack.timer.time_left;
-				
 				for(tmp = client; tmp; tmp = tmp->next) {
 					protocol_send_packet(tmp->sock, &response);
 				}

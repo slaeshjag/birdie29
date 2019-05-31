@@ -214,6 +214,7 @@ void ingame_client_keyboard() {
 
 void ingame_network_handler() {
 	Packet pack;
+	int i;
 	
 	while(network_poll_tcp(cs->server_sock)) {
 		
@@ -234,6 +235,12 @@ void ingame_network_handler() {
 				cs->map.layer[pack.tile_update.layer]->data[pack.tile_update.y * cs->map.layer[pack.tile_update.layer]->w + pack.tile_update.x] = pack.tile_update.tile;
 				break;
 			
+			case PACKET_TYPE_STATUS_UPDATE:
+				for(i = 0; i < TEAMS_CAP; i++) {
+					cs->team[i].money = pack.status.money[i];
+				}
+				break;
+			
 			case PACKET_TYPE_BULLET_ANNOUNCE:
 //				if (s->is_host)
 					//bullet_add(pack.bullet_announce.bullet_type, pack.bullet_announce.id, pack.bullet_announce.x, pack.bullet_announce.y);
@@ -249,9 +256,6 @@ void ingame_network_handler() {
 				break;
 			case PACKET_TYPE_SOUND:
 	//			soundeffects_play(pack.sound.sound);
-				break;
-			case PACKET_TYPE_TIMER:
-				//s->time_left2 = pack.timer.time_left * 1000;
 				break;
 			case PACKET_TYPE_EXIT:
 				//game_over_set_team(pack.exit.team);
