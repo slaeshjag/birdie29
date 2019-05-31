@@ -83,6 +83,8 @@ void ingame_loop() {
 		
 	}
 	
+	hud_update();
+	
 	camera_work();
 	for(i = 0; i < MAP_LAYERS; i++) {
 		d_tilemap_camera_move(cs->map.layer[i], cs->camera.x, cs->camera.y);

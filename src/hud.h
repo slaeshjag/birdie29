@@ -14,6 +14,12 @@ struct Hud{
 	
 	DARNIT_TILESHEET *unit_tilesheet[UNIT_TYPES];
 	DARNIT_TILESHEET *selected_frame;
+	
+	struct {
+		struct MuilPaneList pane;
+		MuilWidget *vbox;
+		MuilWidget *label[TEAMS_CAP];
+	} scoreboard;
 };
 
 extern Hud hud;
