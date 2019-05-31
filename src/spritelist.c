@@ -4,6 +4,8 @@
 
 static char *_spritelist_path[SPRITELIST_ENTRY_INDICES] = {
 	"res/player.spr",
+	[SPRITELIST_ENTRY_INDEX_BULLET_WIMPY] = "res/bullet_wimpy.spr",
+	[SPRITELIST_ENTRY_INDEX_BULLET_BADASS] = "res/bullet_badass.spr",
 	NULL,
 };
 

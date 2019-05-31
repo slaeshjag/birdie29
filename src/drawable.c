@@ -24,6 +24,8 @@ struct Drawable *drawable_init() {
 
 
 void drawable_spawn(struct Drawable *drw, int sprite, int id, int x, int y, int l, int angle) {
+	if (id < 0 || id >= MAX_MOVABLE)
+		return;
 	drw->entry[id].sprite = spritelist_get(sprite);
 	drw->entry[id].x = x;
 	drw->entry[id].y = y;
@@ -39,6 +41,8 @@ void drawable_spawn(struct Drawable *drw, int sprite, int id, int x, int y, int 
 
 
 void drawable_despawn(struct Drawable *drw, int id) {
+	if (id < 0 || id >= MAX_MOVABLE)
+		return;
 	if (drw->entry[id].sprite)
 		d_sprite_free(drw->entry[id].sprite);
 	drw->entry[id].sprite = NULL;
@@ -59,6 +63,8 @@ void drawable_render(struct Drawable *drw, int layer) {
 
 
 void drawable_move(struct Drawable *drw, int id, int x, int y, int angle, int dir) {
+	if (id < 0 || id >= MAX_MOVABLE)
+		return;
 	if (!drw->entry[id].sprite)
 		return (void) fprintf(stderr, "Move non-existant movable %i\n", id);
 	if (drw->entry[id].dir != dir) 

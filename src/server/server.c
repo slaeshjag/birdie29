@@ -117,13 +117,16 @@ void server_handle_client(Client *cli) {
 				
 				response.type = PACKET_TYPE_JOIN;
 				response.size = sizeof(PacketJoin);
+				if (cli->movable > -1)
+					movableDespawn(cli->movable);
+				cli->movable = movableSpawnSprite(ss->team[cli->team].spawn.x, ss->team[cli->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);
 				
 				for(tmp = client; tmp; tmp = tmp->next) {
 					memset(response.join.name, 0, NAME_LEN_MAX);
 					strcpy(response.join.name, tmp->name);
 					response.join.team = tmp->team;
 					response.join.id = tmp->id;
-					response.join.movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);
+					response.join.movable = tmp->movable;
 					cli->movable = response.join.movable;
 					protocol_send_packet(cli->sock, &response);
 					
@@ -253,6 +256,7 @@ int server_thread(void *arg) {
 					tmp->sock = sock;
 					tmp->id = clients++;
 					tmp->next = client;
+					tmp->movable = -1;
 					client = tmp;
 				}
 				
@@ -298,7 +302,8 @@ int server_thread(void *arg) {
 					pack.movable_move.x = ss->movable.movable[i].x/1000;
 					pack.movable_move.y = ss->movable.movable[i].y/1000;
 					pack.movable_move.dir = ss->movable.movable[i].direction;
-					
+					pack.movable_move.movable = i;
+
 					angle = ss->movable.movable[i].angle;
 					if (angle < 0)
 						angle += 3600;

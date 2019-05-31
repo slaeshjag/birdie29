@@ -13,7 +13,8 @@ BulletProperties bullet_properties[BULLET_TYPES] = {
 		.ttl = 200,
 		.cost = 1,
 		.speed = 10,
-		.sprite_name = "res/bullet_wimpy.spr",
+		//.sprite_name = "res/bullet_wimpy.spr",
+		.sprite_type = SPRITELIST_ENTRY_INDEX_BULLET_WIMPY,
 	},
 	
 	[BULLET_TYPE_BADASS] = {
@@ -21,15 +22,18 @@ BulletProperties bullet_properties[BULLET_TYPES] = {
 		.ttl = 60,
 		.cost = 10,
 		.speed = 2,
-		.sprite_name = "res/bullet_badass.spr",
+		.sprite_type = SPRITELIST_ENTRY_INDEX_BULLET_BADASS,
+		//.sprite_name = "res/bullet_badass.spr",
 	},
 };
 
 void bullet_init() {
 	int i;
+	#if 0
 	for(i = 0; i < BULLET_TYPES; i++) {
 		bullet_properties[i].sprite = d_sprite_load(bullet_properties[i].sprite_name, 0, DARNIT_PFORMAT_RGBA8);
 	}
+	#endif
 }
 
 
@@ -48,7 +52,7 @@ int bullet_spawn(BulletType type, Client *owner) {
 	
 	bullet->type = type;
 	bullet->ticks = bullet_properties[type].ttl;
-	bullet->movable = movableSpawnSprite(0, 0, 0, 0 /* TODO: Replace with bullet index */);
+	bullet->movable = movableSpawnSprite(0, 0, 0, bullet_properties[type].sprite_type);
 	ss->movable.movable[bullet->movable].x = x;
 	ss->movable.movable[bullet->movable].y = y;
 	ss->movable.movable[bullet->movable].angle = angle;

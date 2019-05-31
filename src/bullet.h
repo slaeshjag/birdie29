@@ -4,6 +4,7 @@
 #include <darnit/darnit.h>
 #include "server/server.h"
 #include "player.h"
+#include "spritelist.h"
 
 typedef enum BulletType BulletType;
 enum BulletType {
@@ -25,6 +26,7 @@ struct BulletProperties {
 	int ttl;
 	int cost;
 	int speed;
+	enum SpritelistEntryIndex sprite_type;
 	const char *sprite_name;
 	DARNIT_SPRITE *sprite;
 };
