@@ -94,6 +94,7 @@ void ingame_loop() {
 		d_render_offset(0, 0);
 		d_render_tint(255, 255, 255, 255);
 //		d_render_tile_blit(s->active_level->layer[i].ts, 0, 0, 1);
+		d_tilemap_recalc(cs->map.layer[i]);
 		d_tilemap_draw(cs->map.layer[i]);
 		d_render_offset(cs->camera.x, cs->camera.y);
 		drawable_render(cs->drawable, i);
