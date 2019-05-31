@@ -9,6 +9,7 @@
 #include "../bullet.h"
 #include "../network/network.h"
 #include "../network/protocol.h"
+#include "../serverplayer.h"
 
 #define XSTR(s) STR(s)
 #define STR(s) #s
@@ -118,6 +119,7 @@ void server_handle_client(Client *cli) {
 			case PACKET_TYPE_JOIN:
 				strcpy(cli->name, pack.join.name);
 				cli->team = pack.join.team;
+				cli->hp = PLAYER_HP;
 				printf("server: join %s team %i\n", cli->name, cli->team);
 				
 				response.type = PACKET_TYPE_JOIN;
@@ -305,7 +307,8 @@ int server_thread(void *arg) {
 				
 				bullet_loop();
 				movableLoop();
-				
+				serverplayer_loop(client);
+
 				pack.type = PACKET_TYPE_MOVABLE_MOVE;
 				pack.size = sizeof(PacketMovableMove);
 				
