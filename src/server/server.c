@@ -112,12 +112,12 @@ void server_handle_client(ClientList *cli) {
 				for(tmp = client; tmp; tmp = tmp->next) {
 					uint32_t x, y;
 					
-					for(x = 0; x < pack.map_change.w; x++) {
-						for(y = 0; y < pack.map_change.h; y++) {
+					for(x = 0; x < response.map_change.w; x++) {
+						for(y = 0; y < response.map_change.h; y++) {
 							response.tile_update.x = x;
 							response.tile_update.y = y;
 							
-							response.tile_update.tile = ss->active_level->layer[0].tilemap->data[y*pack.map_change.w + x];
+							response.tile_update.tile = ss->active_level->layer[0].tilemap->data[y*response.map_change.w + x];
 							protocol_send_packet(cli->sock, &response);
 						}
 					}
