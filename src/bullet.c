@@ -28,8 +28,24 @@ BulletProperties bullet_properties[BULLET_TYPES] = {
 	},
 };
 
+void _delete_entry(Bullet *bullet) {
+	movableDespawn(bullet->movable);
+	free(bullet);
+}
 
-static _get_bullet_owner(int movable_remote) {
+
+static Client *_get_movable_client(int movable) {
+	Client *tmp;
+
+	for (tmp = server_get_client_list(); tmp; tmp = tmp->next)
+		if (tmp->movable == movable)
+			return tmp;
+
+	return NULL;
+}
+
+
+static int _get_bullet_owner(int movable_remote) {
 	Bullet *next;
 
 	for (next = ss->bullet; next; next = next->next) {
@@ -39,6 +55,19 @@ static _get_bullet_owner(int movable_remote) {
 
 	return -1;
 }
+
+
+static int _get_bullet_type(int movable_remote) {
+	Bullet *next;
+
+	for (next = ss->bullet; next; next = next->next) {
+		if (next->movable == movable_remote)
+			return next->type;
+	}
+
+	return 0;;
+}
+
 
 
 void bullet_init() {
@@ -52,22 +81,44 @@ void bullet_init() {
 }
 
 
-static int _bullet_movable_collision(void *ptr, int movable_self, int movable_remote) {
+static void _bullet_kill(int movable) {
+	/* *ONLY* CALL FROM A CALLBACK, NEVER FROM bullet_loop */
+	Bullet **next, *del;
+
+	for (next = &(ss->bullet); *next; next = &(*next)->next) {
+		(*next)->ticks -= d_last_frame_time();
+		if ((*next)->movable == movable) {
+			del = *next;
+			*next = (*next)->next;
+			_delete_entry(del);
+			return;
+		}
+	}
+}
+
+
+static void _bullet_movable_collision(void *ptr, int movable_self, int movable_remote) {
 	int remote_owner;
 
 	if ((remote_owner = _get_bullet_owner(movable_remote)) < 0) {
 		/* Är spelare */
 		if (movable_remote == _get_bullet_owner(movable_self)) {
-			printf("Passing through owner\n");
+			/* Passing through owner */
 		} else {
+			Client *target = _get_movable_client(movable_remote);
+			target->hp -= bullet_properties[_get_bullet_type(movable_self)].damage;
+			_bullet_kill(movable_self);
 			printf("Hit someone else!\n");
 		}
 	} else if (remote_owner == _get_bullet_owner(movable_self)) {
-		printf("Intersecting owner's bullet\n");
+		// Intersecting owners own bullets. meh.
 	} else {
 		// Bullet of someone else
+		_bullet_kill(movable_self);
+		_bullet_kill(movable_remote);
 	}
-	printf("movable collision! %i %i\n", movable_self, movable_remote);
+
+	return;
 }
 
 
@@ -103,11 +154,6 @@ int bullet_spawn(BulletType type, Client *owner) {
 }
 
 
-void _delete_entry(Bullet *bullet) {
-	movableDespawn(bullet->movable);
-	free(bullet);
-}
-
 
 int bullet_loop() {
 	Bullet **next, *del;
@@ -122,4 +168,6 @@ int bullet_loop() {
 				break;
 		}
 	}
+	
+	return 0;
 }

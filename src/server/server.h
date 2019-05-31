@@ -13,7 +13,8 @@ struct Client {
 	int team;
 	int movable;
 	int angle;
-	
+	int hp;
+
 	InGameKeyStateEntry keystate;
 	struct {
 		int x;
@@ -31,5 +32,6 @@ void server_announce_winner(int winning_player);
 void server_broadcast_packet(Packet *pack);
 bool server_player_is_present(int id);
 void server_shutdown();
+Client *server_get_client_list();
 
 #endif

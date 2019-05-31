@@ -44,11 +44,11 @@ static void _client_handle_keys(Client *player) {
 	MOVABLE_ENTRY *m = &ss->movable.movable[player->movable];
 	
 	if(player->keystate.up) {
-		printf("server loop: player %i hold up\n", player->id);
+		//printf("server loop: player %i hold up\n", player->id);
 		m->y_velocity = -PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_UP;
 	} else if(player->keystate.down) {
-		printf("server loop: player %i hold down\n", player->id);
+		//printf("server loop: player %i hold down\n", player->id);
 		m->y_velocity = PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_DOWN;
 	} else {
@@ -56,11 +56,11 @@ static void _client_handle_keys(Client *player) {
 	}
 	
 	if(player->keystate.left) {
-		printf("server loop: player %i hold left\n", player->id);
+		//printf("server loop: player %i hold left\n", player->id);
 		m->x_velocity = -PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_LEFT;
 	} else if(player->keystate.right) {
-		printf("server loop: player %i hold right\n", player->id);
+		//printf("server loop: player %i hold right\n", player->id);
 		m->x_velocity = PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_RIGHT;
 	} else {
@@ -408,4 +408,9 @@ void server_broadcast_packet(Packet *pack) {
 
 	for(tmp = client; tmp; tmp = tmp->next)
 		protocol_send_packet(tmp->sock, pack);
+}
+
+
+Client *server_get_client_list() {
+	return client;
 }
