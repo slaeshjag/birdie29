@@ -17,7 +17,7 @@ void player_join(int id, const char *name, int team) {
 	p->id = id;
 	p->team = team;
 	
-	p->movable = movableSpawn("res/player.spr", 0, 0, 0, 0 /* TODO: Replace with sprite index */);
+	//p->movable = movableSpawn("res/player.spr", 0, 0, 0, 0 /* TODO: Replace with sprite index */);
 	
 	cs->player[id] = p;
 }
