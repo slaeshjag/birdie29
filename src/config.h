@@ -28,7 +28,7 @@
 
 #define PLAYER_SPEED 500
 #define	PLAYER_SPEED_SLOW 300
-#define	PLAYER_HP 50
+#define	PLAYER_HP 30
 
 #define MAP_NAME_LEN_MAX 255
 
