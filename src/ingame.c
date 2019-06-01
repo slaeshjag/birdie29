@@ -194,7 +194,7 @@ void ingame_client_keyboard() {
 	//if(newstate.left || newstate.right)
 	//	sfx_play(SFX_WALK);
 
-	PacketKeypress kp;
+	PacketKeypress kp = {};
 
 	kp.size = sizeof(kp);
 	kp.type = PACKET_TYPE_KEYPRESS;

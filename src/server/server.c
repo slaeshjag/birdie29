@@ -293,7 +293,7 @@ void server_handle_client(Client *cli) {
 }
 
 int server_thread(void *arg) {
-	Packet pack;
+	Packet pack = {};
 	Client *tmp;
 	int i;
 
@@ -305,7 +305,7 @@ int server_thread(void *arg) {
 					
 					sock = network_accept_tcp(listen_sock);
 					
-					tmp = malloc(sizeof(Client));
+					tmp = calloc(1, sizeof(Client));
 					tmp->sock = sock;
 					tmp->id = clients++;
 					tmp->next = client;

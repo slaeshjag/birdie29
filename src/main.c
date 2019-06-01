@@ -68,7 +68,7 @@ void restart_to_menu(const char *name) {
 }
  
 int join_game(unsigned long sip) {
-	PacketJoin join;
+	PacketJoin join = {};
 	
 	if((cs->server_sock = network_connect_tcp(sip, PORT + 1)) < 0) {
 		fprintf(stderr, "failed to join %lu\n", sip);

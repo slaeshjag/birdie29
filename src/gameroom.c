@@ -25,7 +25,7 @@ static void listbox_team_callback(MuilWidget *widget, unsigned int type, MuilEve
 	
 	p = widget->get_prop(widget, MUIL_LISTBOX_PROP_SELECTED);
 	
-	PacketJoin join;
+	PacketJoin join = {};
 
 	join.type = PACKET_TYPE_JOIN;
 	join.size = sizeof(PacketJoin);
@@ -44,7 +44,7 @@ static void listbox_map_callback(MuilWidget *widget, unsigned int type, MuilEven
 	
 	v = widget->get_prop(widget, MUIL_LISTBOX_PROP_SELECTED);
 	
-	PacketMapChange mc;
+	PacketMapChange mc = {};
 	
 	mc.type = PACKET_TYPE_MAP_CHANGE;
 	mc.size = sizeof(PacketMapChange);
