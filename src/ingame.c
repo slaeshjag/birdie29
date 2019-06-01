@@ -85,7 +85,6 @@ void ingame_loop() {
 	}
 	
 	hud_update();
-	particle_loop();
 	
 	camera_work();
 	for(i = 0; i < MAP_LAYERS; i++) {
@@ -122,6 +121,7 @@ void ingame_loop() {
 	ingame_client_keyboard();
 	
 	hud_render();
+	particle_loop();
 }
 
 

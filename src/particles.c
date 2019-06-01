@@ -36,11 +36,12 @@ void particle_add(enum ParticleType type, int x, int y, int angle) {
 		pe->particle = d_particle_new(1000, DARNIT_PARTICLE_TYPE_POINT);
 		d_particle_color_start(pe->particle, 200, 200, 0, 255);
 		d_particle_color_target(pe->particle, 255, 0, 0, 0);
+		d_particle_emitter_move(pe->particle, x, y);
 		d_particle_emitter_angle(pe->particle, angle - 30, angle + 30);
 		d_particle_emitter_velocity(pe->particle, 20, 2000);
-		d_particle_life(pe->particle, 400);
+		d_particle_life(pe->particle, 100);
 		d_particle_mode(pe->particle, DARNIT_PARTICLE_MODE_PULSAR);
-		d_particle_point_size(pe->particle, 10);
+		d_particle_point_size(pe->particle, 5);
 		d_particle_pulse(pe->particle);
 	} else {
 		free(pe);
