@@ -32,10 +32,10 @@ enum UnitType {
 
 
 struct UnitTiles {
-	unsigned int			bottom_left;
-	unsigned int			bottom_right;
-	unsigned int			top_left;
-	unsigned int			top_right;
+	int bottom_left;
+	int bottom_right;
+	int top_left;
+	int top_right;
 };
 
 

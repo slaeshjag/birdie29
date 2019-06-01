@@ -133,11 +133,13 @@ void unit_damage(UnitEntry *unit, int damage) {
 bool _collision_with_tile(int x, int y, UnitType type) {
 	int index = x + y * ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->w;
 	
-	if(ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->data[index] && _unit_properties[type].tiles.bottom_left)
+	if(ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->data[index] && (_unit_properties[type].tiles.bottom_left >= 0))
 		return true;
 	
-	if(ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->data[index + 1] && _unit_properties[type].tiles.bottom_right)
+	if(ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->data[index + 1] && (_unit_properties[type].tiles.bottom_right >= 0)) {
+		printf("arne\n");
 		return true;
+	}
 	
 	
 	return false;
