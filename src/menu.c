@@ -62,8 +62,8 @@ void menu_select_name_init() {
 	muil_vbox_add_child(select_name.vbox, select_name.picture = muil_widget_create_imageview_raw(48, 48, DARNIT_PFORMAT_RGBA8), 0);
 	muil_vbox_add_child(select_name.vbox, select_name.listbox = muil_widget_create_listbox(gfx.font.small), 1);
 	
-	muil_listbox_add(select_name.listbox, "Tom");
-	muil_listbox_add(select_name.listbox, "Dick");
+	muil_listbox_add(select_name.listbox, "Com-Rad");
+	muil_listbox_add(select_name.listbox, "DBS-52-74");
 	muil_listbox_add(select_name.listbox, "Bruce");
 	
 	v.i = 0;
