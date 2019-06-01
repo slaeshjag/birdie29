@@ -3,6 +3,7 @@
 
 #include <darnit/darnit.h>
 //#include "server/server.h"
+#include "server.h"
 #include "../spritelist.h"
 
 typedef enum BulletType BulletType;
@@ -37,5 +38,7 @@ extern BulletProperties bullet_properties[BULLET_TYPES];
 //int bullet_spawn(BulletType type, Client *owner);
 int bullet_loop();
 void bullet_init();
+int bullet_spawn(BulletType type, Client *owner);
+int bullet_spawn_from_movable(BulletType, int x, int y, int angle, int owner);
 
 #endif

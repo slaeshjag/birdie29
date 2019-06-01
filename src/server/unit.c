@@ -3,6 +3,8 @@
 #include "unit.h"
 #include "../network/protocol.h"
 #include "server.h"
+#include "unit/miner.h"
+#include "unit/turret.h"
 
 #define PLACE_TILE(X, Y, TYPE, TILE_POSITION, LAYER) do { \
 	int tile = _unit_properties[TYPE].tiles.TILE_POSITION + (TILESET_TEAM_STEP) * team; \
@@ -42,35 +44,11 @@ static int _special_func_turret(UnitEntry *unit);
 static UnitProperties _unit_properties[UNIT_TYPES] = {
 	[UNIT_TYPE_GENERATOR] = {.tiles = { 104, 105, 96, 97 }, .cost = 100, .health = 100},
 	[UNIT_TYPE_PYLON] = {.tiles = { 106, -1, 98, -1 }, .cost = 10, .health = 50},
-	[UNIT_TYPE_MINER] = {.tiles = { 107, -1, -1, -1 }, .cost = 20, .health = 20, .special_function = _special_func_miner},
-	[UNIT_TYPE_TURRET] = {.tiles = { 108, -1, -1, -1 }, .cost = 50, .health = 50, .special_function = _special_func_turret},
+	[UNIT_TYPE_MINER] = {.tiles = { 107, -1, -1, -1 }, .cost = 20, .health = 20, .special_function = unit_miner_special_function},
+	[UNIT_TYPE_TURRET] = {.tiles = { 108, -1, -1, -1 }, .cost = 50, .health = 50, .special_function = unit_turret_special_function},
 	[UNIT_TYPE_WALL] = {.tiles = { 109, -1, 101, -1 }, .cost = 5, .health = 50},
 	[UNIT_TYPE_SPAWN] = {.tiles = { 110, -1, -1, -1 }, .cost = -1, .health = -1},
 };
-
-static int _special_func_miner(UnitEntry *unit) {
-	/* Add money for miners */
-	if(unit->powered) {
-		if(ss->team[unit->team].miner_income_counter++ >= INCOME_PER_MONEY) {
-			ss->team[unit->team].money++;
-			ss->team[unit->team].miner_income_counter = 0;
-		}
-	}
-	
-	return 0;
-}
-
-static int _special_func_turret(UnitEntry *unit) {
-	int team;
-	
-	for(team = 0; team < TEAMS_CAP; team++) {
-		if(team == unit->team)
-			continue;
-		
-	}
-	
-	return 0;
-}
 
 void unit_housekeeping() {
 	int i;
@@ -231,6 +209,7 @@ int unit_add(int team, UnitType type, int x, int y, bool force) {
 	e->health = _unit_properties[type].health;
 	
 	e->special_function = _unit_properties[type].special_function;
+	e->special_data = NULL;
 	
 	e->next = ss->team[team].unit.unit;
 	ss->team[team].unit.unit = e;

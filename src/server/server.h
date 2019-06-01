@@ -1,3 +1,6 @@
+typedef struct Client Client;
+typedef struct GameStateStruct GameStateStruct;
+
 #ifndef SERVER_H_
 #define SERVER_H_
 
@@ -8,7 +11,6 @@
 #include "team.h"
 #include "bullet.h"
 
-typedef struct Client Client;
 struct Client {
 	int id;
 	int sock;
@@ -27,7 +29,6 @@ struct Client {
 	Client *next;
 };
 
-typedef struct GameStateStruct GameStateStruct;
 struct GameStateStruct {
 	bool is_host;
 	struct Team team[MAX_TEAM];

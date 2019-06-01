@@ -2,6 +2,7 @@
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <libgen.h>
 #include <darnit/darnit.h>
 
@@ -28,6 +29,10 @@ int util_sprite_yoff(DARNIT_SPRITE *sprite) {
 	int x, y, w, h;
 	d_sprite_hitbox(sprite, &x, &y, &w, &h);
 	return y;
+}
+
+double util_distance(double x1, double y1, double x2, double y2) {
+	return sqrt(x1*x2 + y1*y2);
 }
 
 
