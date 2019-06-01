@@ -176,12 +176,14 @@ void server_handle_client(Client *cli) {
 					strcpy(response.join.name, tmp->name);
 					response.join.team = tmp->team;
 					response.join.id = tmp->id;
+					response.join.movable = cli->movable;
 					protocol_send_packet(cli->sock, &response);
 					
 					if(tmp->sock != cli->sock) {
 						response.join.id = cli->id;
 						strcpy(response.join.name, cli->name);
 						response.join.team = cli->team;
+						response.join.movable = cli->movable;
 						protocol_send_packet(tmp->sock, &response);
 					}
 				}
@@ -340,13 +342,29 @@ int server_thread(void *arg) {
 
 				ss->grace_counter = TIMER_GRACE;
 				unit_prepare();
-
+				
+				
 				for(tmp = client; tmp; tmp = tmp->next) {
 					/* teleport players to their spawning point */
 					tmp->movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);
 					ss->movable.movable[client->movable].x = ss->team[client->team].spawn.x * 1000;
 					ss->movable.movable[client->movable].y = ss->team[client->team].spawn.y * 1000;
-
+					
+					/* Send join packets to update movable ID */
+					Client *joinclient;
+					
+					pack.type = PACKET_TYPE_JOIN;
+					pack.size = sizeof(PacketJoin);
+					
+					for(joinclient = client; joinclient; joinclient = joinclient->next) {
+						memset(pack.join.name, 0, NAME_LEN_MAX);
+						strcpy(pack.join.name, joinclient->name);
+						pack.join.team = joinclient->team;
+						pack.join.id = joinclient->id;
+						pack.join.movable = joinclient->movable;
+						protocol_send_packet(tmp->sock, &pack);
+					}
+					
 					pack.type = PACKET_TYPE_START;
 					pack.size = sizeof(PacketStart);
 					
