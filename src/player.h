@@ -22,6 +22,7 @@ struct Player {
 	
 	int angle;
 	int selected_building;
+	DARNIT_PARTICLE *power_effect;
 };
 
 void player_set(int id, const char *name, int team, int movable);

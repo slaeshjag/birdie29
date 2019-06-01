@@ -9,6 +9,21 @@
 
 Hud hud;
 
+
+static void _timer_blit(int time_left, int mode, int pos) {
+	int minute, deka, second;
+
+	minute = time_left / 60;
+	deka = (time_left % 60) / 10;
+	second = time_left % 10;
+	d_render_tile_blit(s->_7seg, minute + 11*mode, pos, 568);
+	d_render_tile_blit(s->_7seg, 10 + 11*mode, pos+24, 568);
+	d_render_tile_blit(s->_7seg, deka + 11*mode, pos+48, 568);
+	d_render_tile_blit(s->_7seg, second + 11*mode, pos+72, 568);
+}
+
+
+
 void hud_init() {
 	int i;
 	MuilPropertyValue v;
@@ -59,6 +74,10 @@ void hud_update() {
 }
 
 void hud_render() {
+	int i;
+
+	if (c
+
 	if(cs->player[me.id]->selected_building >= 0) {
 		int x, y;
 		
