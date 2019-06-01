@@ -94,23 +94,24 @@ void hud_render() {
 	}
 
 	d_render_offset(0, 0);
+	max_money = -1;
+	for (i = 0; i < MAX_TEAM; i++)
+		if (max_money < cs->team[i].money)
+			max_money = cs->team[i].money;
+	if (max_money == 0)
+		max_money = 1;
 	if (cs->grace_timer > 0) {
 		_timer_blit(cs->grace_timer/1000, 9, 592);
 	} else {
-		max_money = -1;
-		for (i = 0; i < MAX_TEAM; i++)
-			if (max_money < cs->team[i].money)
-				max_money = cs->team[i].money;
-		if (max_money == 0)
-			max_money = 1;
 		_timer_blit(cs->team[0].time_to_win/1000, cs->team[0].money == max_money ? 1 : 0, 0);
 		_timer_blit(cs->team[1].time_to_win/1000, cs->team[1].money == max_money ? 3 : 2, 320);
 		_timer_blit(cs->team[2].time_to_win/1000, cs->team[2].money == max_money ? 5 : 4, 640);
 		_timer_blit(cs->team[3].time_to_win/1000, cs->team[3].money == max_money ? 7 : 6, 960);
-		healthbar_set(0, 100.f * cs->team[0].money / max_money);
-		healthbar_set(1, 100.f * cs->team[1].money / max_money);
-		healthbar_set(2, 100.f * cs->team[2].money / max_money);
-		healthbar_set(3, 100.f * cs->team[3].money / max_money);
-		healthbar_draw();
 	}
+	
+	healthbar_set(0, 100.f * cs->team[0].money / max_money);
+	healthbar_set(1, 100.f * cs->team[1].money / max_money);
+	healthbar_set(2, 100.f * cs->team[2].money / max_money);
+	healthbar_set(3, 100.f * cs->team[3].money / max_money);
+	healthbar_draw();
 }
