@@ -8,6 +8,7 @@
 
 #define TILE_RESOURCE (160)
 
+#include <stdbool.h>
 #include <darnit/darnit.h>
 #include "powerpylon.h"
 
@@ -67,7 +68,7 @@ struct Unit {
 
 void unit_init();
 void unit_prepare();
-int unit_add(int team, UnitType type, int x, int y);
+int unit_add(int team, UnitType type, int x, int y, bool force);
 void unit_delete(int team, int index);
 void unit_housekeeping();
 UnitEntry *unit_find_tile_owner(int x, int y);

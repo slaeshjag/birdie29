@@ -157,28 +157,42 @@ bool _miner_on_resource(int x, int y, UnitType type) {
 	return false;
 }
 
-int unit_add(int team, UnitType type, int x, int y) {
+bool _is_powered(int x, int y, int team) {
+	int index = x + y * ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->w;
+	
+	if(ss->team[team].power_map->map[index])
+		return true;
+	
+	return false;
+}
+
+int unit_add(int team, UnitType type, int x, int y, bool force) {
 	int index, id;
 	struct UnitEntry *e;
 	int success = 0;
 
-	if (x < 2 || y < 2)
-		goto fail;
-	if (x >= (ss->active_level->layer->tilemap->w - 2) || y >= (ss->active_level->layer->tilemap->h - 2))
-		goto fail;
-	
-	if(ss->team[team].money < _unit_properties[type].cost)
-		goto fail;
-	
-	if(_collision_with_tile(x, y, type)) {
-		if(!_miner_on_resource(x, y, type))
+	if(!force) {
+		if (x < 2 || y < 2)
 			goto fail;
-	} else {
-		if(type == UNIT_TYPE_MINER)
+		if (x >= (ss->active_level->layer->tilemap->w - 2) || y >= (ss->active_level->layer->tilemap->h - 2))
 			goto fail;
+		
+		if(ss->team[team].money < _unit_properties[type].cost)
+			goto fail;
+		
+		if(_collision_with_tile(x, y, type)) {
+			if(!_miner_on_resource(x, y, type))
+				goto fail;
+		} else {
+			if(type == UNIT_TYPE_MINER)
+				goto fail;
+		}
+		
+		if(!_is_powered(x, y, team))
+			goto fail;
+		
+		ss->team[team].money -= _unit_properties[type].cost;
 	}
-	
-	ss->team[team].money -= _unit_properties[type].cost;
 	
 	//if ((ss->active_level->layer->tilemap->data[index] & TILESET_MASK) >= TILESET_UNIT_BASE)
 	//	goto fail; // Unit already there
@@ -257,8 +271,7 @@ void unit_prepare() {
 				ss->active_level->layer->tilemap->data[j * ss->active_level->layer->tilemap->w + i + 1] &= ~TILESET_MASK;
 				ss->active_level->layer->tilemap->data[j * ss->active_level->layer->tilemap->w + i + 1] |= 2;
 				
-				ss->team[team].money += _unit_properties[UNIT_TYPE_GENERATOR].cost;
-				unit_add(team, UNIT_TYPE_GENERATOR, i, j);
+				unit_add(team, UNIT_TYPE_GENERATOR, i, j, true);
 				
 				PacketTileUpdate pack;
 				int x, y;

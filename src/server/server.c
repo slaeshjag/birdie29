@@ -261,7 +261,7 @@ void server_handle_client(Client *cli) {
 			case PACKET_TYPE_BUILD_UNIT:
 				printf("server: building %i at (%i, %i)\n", pack.build.unit, cli->highlight.x, cli->highlight.y);
 				
-				unit_add(cli->team, pack.build.unit, cli->highlight.x, cli->highlight.y);
+				unit_add(cli->team, pack.build.unit, cli->highlight.x, cli->highlight.y, false);
 				
 				break;
 			default:
