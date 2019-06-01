@@ -189,6 +189,8 @@ void gameroom_network_handler() {
 					cs->power_map = pylonpower_map_new(cs->map.layer[0]->w, cs->map.layer[0]->h);
 				if (pack.power_event.team == me.team) {
 					pylonpower_diff(cs->power_map, pack.power_event.x, pack.power_event.y, pack.power_event.sign);
+					for (i = 0; i < cs->power_map->w * cs->power_map->h; i++)
+						cs->map.layer[MAP_LAYER_OVL_POWER] = cs->power_map->map[i] ? 3 : 0;
 					printf("power event at %i, %i: %i\n", pack.power_event.x, pack.power_event.y, pack.power_event.sign);
 				}
 
