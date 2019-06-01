@@ -15,6 +15,7 @@
 #include "team.h"
 #include "bullet.h"
 #include "particles.h"
+#include "powerpylon.h"
 
 typedef struct Color Color;
 struct Color {
@@ -72,7 +73,9 @@ struct ClientStateStruct {
 	struct {
 		DARNIT_TILEMAP *layer[MAP_LAYERS];
 	} map;
-	
+
+	struct PylonPowerMap *power_map;
+
 	struct {
 		int x;
 		int y;

@@ -27,6 +27,7 @@ enum PacketType {
 	PACKET_TYPE_BULLET_UPDATE,
 	PACKET_TYPE_BULLET_REMOVE,
 	PACKET_TYPE_BUILD_UNIT,
+	PACKET_TYPE_POWER_EVENT,
 	PACKET_TYPE_EXIT,
 };
 
@@ -215,6 +216,19 @@ struct PacketBuildUnit {
 	uint32_t unit;
 };
 
+
+typedef struct PacketPowerEvent PacketPowerEvent;
+struct PacketPowerEvent {
+	uint16_t type;
+	uint16_t size;
+
+	uint16_t x;
+	uint16_t y;
+	int16_t sign;
+	int16_t team;
+};
+
+
 typedef union Packet Packet;
 union Packet {
 	struct {
@@ -241,6 +255,7 @@ union Packet {
 	PacketTileUpdate tile_update;
 	PacketMapChange map_change;
 	PacketBuildUnit build;
+	PacketPowerEvent power_event;
 };
 
 int protocol_send_packet(int sock, Packet *pack);
