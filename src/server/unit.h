@@ -61,6 +61,7 @@ struct UnitEntry {
 	int				powered;
 	
 	int (*special_function)(UnitEntry *unit);
+	void *special_data;
 	
 	int				create_flag;
 	int				modify_flag;

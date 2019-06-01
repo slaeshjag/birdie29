@@ -133,36 +133,36 @@ static void _bullet_map_collision(void *usr_ptr, int movable_self, int tile_inde
 		
 }
 
-int bullet_spawn(BulletType type, Client *owner) {
-	int x, y, angle;
+int bullet_spawn_from_movable(BulletType type, int x, int y, int angle, int owner) {
 	Bullet *bullet = NULL;
 	
-	if(ss->team[owner->team].money - bullet_properties[type].cost < 0)
-		return -1;
-	
 	bullet = malloc(sizeof(Bullet));
-	
-	x = ss->movable.movable[owner->movable].x;
-	y =ss->movable.movable[owner->movable].y;
-	angle = owner->angle;
 	
 	bullet->type = type;
 	bullet->ticks = bullet_properties[type].ttl;
 	bullet->movable = movableSpawnSprite(0, 0, 0, bullet_properties[type].sprite_type);
-	bullet->owner = owner->movable;
-	ss->movable.movable[bullet->movable].x = x;
-	ss->movable.movable[bullet->movable].y = y;
-	ss->movable.movable[bullet->movable].angle = angle;
+	bullet->owner = owner;
+	ss->movable.movable[bullet->movable].x = x*1000;
+	ss->movable.movable[bullet->movable].y = y*1000;
+	ss->movable.movable[bullet->movable].angle = angle*10;
 	ss->movable.movable[bullet->movable].x_velocity = bullet_properties[type].speed * cos(((double) angle)*M_PI/180.0);
 	ss->movable.movable[bullet->movable].y_velocity = bullet_properties[type].speed * sin(((double) angle)*M_PI/180.0);
 	ss->movable.movable[bullet->movable].callback.movable_collision = _bullet_movable_collision;
 	ss->movable.movable[bullet->movable].callback.map_collision = _bullet_map_collision;
-
-	ss->team[owner->team].money -= bullet_properties[type].cost;
+	
 	bullet->next = ss->bullet;
 	ss->bullet = bullet;
-
+	
 	return bullet->movable;
+}
+
+int bullet_spawn(BulletType type, Client *owner) {
+	if(ss->team[owner->team].money - bullet_properties[type].cost < 0)
+		return -1;
+	
+	ss->team[owner->team].money -= bullet_properties[type].cost;
+	
+	return bullet_spawn_from_movable(type, ss->movable.movable[owner->movable].x/1000, ss->movable.movable[owner->movable].y/1000, owner->angle, owner->movable);
 }
 
 

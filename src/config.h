@@ -19,6 +19,8 @@
 #define	TIMER_GRACE 90000
 #define	TIMER_WIN 90000
 
+#define TURRET_DISTANCE 10
+
 #define PANE_R 0xCD
 #define PANE_G 0xCD
 #define PANE_B 0xCD
