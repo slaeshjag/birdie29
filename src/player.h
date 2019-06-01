@@ -6,10 +6,10 @@
 
 typedef enum PlayerDirection PlayerDirection;
 enum PlayerDirection {
-	PLAYER_DIRECTION_DOWN,
-	PLAYER_DIRECTION_UP,
 	PLAYER_DIRECTION_LEFT,
 	PLAYER_DIRECTION_RIGHT,
+	PLAYER_DIRECTION_DOWN,
+	PLAYER_DIRECTION_UP,
 };
 
 typedef struct Player Player;

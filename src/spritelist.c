@@ -3,7 +3,22 @@
 
 
 static char *_spritelist_path[SPRITELIST_ENTRY_INDICES] = {
-	"res/player.spr",
+	[SPRITELIST_ENTRY_INDEX_TEAM_0_TYPE_0] = "res/team0_var0.spr",
+	[SPRITELIST_ENTRY_INDEX_TEAM_0_TYPE_1] = "res/team0_var1.spr",
+	[SPRITELIST_ENTRY_INDEX_TEAM_0_TYPE_2] = "res/team0_var2.spr",
+
+	[SPRITELIST_ENTRY_INDEX_TEAM_1_TYPE_0] = "res/team1_var0.spr",
+	[SPRITELIST_ENTRY_INDEX_TEAM_1_TYPE_1] = "res/team1_var1.spr",
+	[SPRITELIST_ENTRY_INDEX_TEAM_1_TYPE_2] = "res/team1_var2.spr",
+
+	[SPRITELIST_ENTRY_INDEX_TEAM_2_TYPE_0] = "res/team2_var0.spr",
+	[SPRITELIST_ENTRY_INDEX_TEAM_2_TYPE_1] = "res/team2_var1.spr",
+	[SPRITELIST_ENTRY_INDEX_TEAM_2_TYPE_2] = "res/team2_var2.spr",
+
+	[SPRITELIST_ENTRY_INDEX_TEAM_3_TYPE_0] = "res/team3_var0.spr",
+	[SPRITELIST_ENTRY_INDEX_TEAM_3_TYPE_1] = "res/team3_var1.spr",
+	[SPRITELIST_ENTRY_INDEX_TEAM_3_TYPE_2] = "res/team3_var2.spr",
+
 	[SPRITELIST_ENTRY_INDEX_BULLET_WIMPY] = "res/bullet_wimpy.spr",
 	[SPRITELIST_ENTRY_INDEX_BULLET_BADASS] = "res/bullet_badass.spr",
 	NULL,
