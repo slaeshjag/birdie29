@@ -14,10 +14,10 @@
 #define TEAMS_CAP 4
 
 #define MONEY_START 400
+#define INCOME_PER_MONEY 20
 
 #define	TIMER_GRACE 90
 #define	TIMER_WIN 90
-#define MONEY_PER_MINER 1
 
 #define PANE_R 0xCD
 #define PANE_G 0xCD
