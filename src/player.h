@@ -1,6 +1,7 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
+#include <darnit/darnit.h>
 #include "config.h"
 #include "ingame.h"
 

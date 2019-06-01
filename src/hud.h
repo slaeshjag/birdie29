@@ -14,6 +14,7 @@ struct Hud{
 	
 	DARNIT_TILESHEET *unit_tilesheet[UNIT_TYPES];
 	DARNIT_TILESHEET *selected_frame;
+	DARNIT_TILESHEET *_7seg;
 	
 	struct {
 		struct MuilPaneList pane;

@@ -183,7 +183,7 @@ void gameroom_network_handler() {
 				cs->player[me.id]->power_effect = d_particle_new(200, DARNIT_PARTICLE_TYPE_POINT);
 				d_particle_color_target(cs->player[me.id]->power_effect, 127, 127, 127, 127);
 				d_particle_color_start(cs->player[me.id]->power_effect, 127, 160, 255, 255);
-				d_particle_angle_emitter_angle(cs->player[me.id]->power_effect, 0, 3599);
+				d_particle_emitter_angle(cs->player[me.id]->power_effect, 0, 3599);
 				d_particle_life(cs->player[me.id]->power_effect, 400);
 				d_particle_point_size(cs->player[me.id]->power_effect, 3);
 				d_particle_emitter_velocity(cs->player[me.id]->power_effect, 100, 500);
