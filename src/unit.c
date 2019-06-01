@@ -57,6 +57,9 @@ void unit_housekeeping() {
 				tmp = *e;
 				*e = (*e)->next;
 				
+				if (tmp->pylon)
+					unit_pylon_delete(tmp);
+
 				PacketTileUpdate pack;
 				int x, y;
 				int type;
