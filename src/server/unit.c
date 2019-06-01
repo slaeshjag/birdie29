@@ -155,6 +155,18 @@ bool _miner_on_resource(int x, int y, UnitType type) {
 	return false;
 }
 
+bool _manual_mining(int x, int y, UnitType type) {
+	int index = x + y * ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->w;
+	
+	if(type != UNIT_TYPE_GENERATOR)
+		return false;
+	
+	if(ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->data[index] == TILE_RESOURCE)
+		return true;
+	
+	return false;
+}
+
 bool _is_powered(int x, int y, int team) {
 	int index = x + y * ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->w;
 	
@@ -175,16 +187,21 @@ int unit_add(int team, UnitType type, int x, int y, bool force) {
 		if (x >= (ss->active_level->layer->tilemap->w - 2) || y >= (ss->active_level->layer->tilemap->h - 2))
 			goto fail;
 		
-		if(ss->team[team].money < _unit_properties[type].cost)
-			goto fail;
-		
 		if(_collision_with_tile(x, y, type)) {
-			if(!_miner_on_resource(x, y, type))
+			if(!_miner_on_resource(x, y, type)) {
+				if(_manual_mining(x, y, type)) {
+					/* Manually mine a resource */
+					ss->team[team].money++;
+				}
 				goto fail;
+			}
 		} else {
-			if(type == UNIT_TYPE_MINER)
+			if(type == UNIT_TYPE_MINER || type == UNIT_TYPE_GENERATOR)
 				goto fail;
 		}
+		
+		if(ss->team[team].money < _unit_properties[type].cost)
+			goto fail;
 		
 		if(!_is_powered(x, y, team))
 			goto fail;
