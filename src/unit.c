@@ -36,16 +36,41 @@
 	} \
 } while(0)
 
+static int _special_func_miner(UnitEntry *unit);
+static int _special_func_turret(UnitEntry *unit);
+
 static UnitProperties _unit_properties[UNIT_TYPES] = {
 	[UNIT_TYPE_GENERATOR] = {.tiles = { 104, 105, 96, 97 }, .cost = 100, .health = 100},
 	[UNIT_TYPE_PYLON] = {.tiles = { 106, -1, 98, -1 }, .cost = 10, .health = 50},
-	[UNIT_TYPE_MINER] = {.tiles = { 107, -1, -1, -1 }, .cost = 20, .health = 20},
-	[UNIT_TYPE_TURRET] = {.tiles = { 108, -1, -1, -1 }, .cost = 50, .health = 50},
+	[UNIT_TYPE_MINER] = {.tiles = { 107, -1, -1, -1 }, .cost = 20, .health = 20, .special_function = _special_func_miner},
+	[UNIT_TYPE_TURRET] = {.tiles = { 108, -1, -1, -1 }, .cost = 50, .health = 50, .special_function = _special_func_turret},
 	[UNIT_TYPE_WALL] = {.tiles = { 109, -1, 101, -1 }, .cost = 5, .health = 50},
 	[UNIT_TYPE_SPAWN] = {.tiles = { 110, -1, -1, -1 }, .cost = -1, .health = -1},
 };
 
+static int _special_func_miner(UnitEntry *unit) {
+	/* Add money for miners */
+	if(unit->powered) {
+		if(ss->team[unit->team].miner_income_counter++ >= INCOME_PER_MONEY) {
+			ss->team[unit->team].money++;
+			ss->team[unit->team].miner_income_counter = 0;
+		}
+	}
+	
+	return 0;
+}
 
+static int _special_func_turret(UnitEntry *unit) {
+	int team;
+	
+	for(team = 0; team < TEAMS_CAP; team++) {
+		if(team == unit->team)
+			continue;
+		
+	}
+	
+	return 0;
+}
 
 void unit_housekeeping() {
 	int i;
@@ -81,14 +106,8 @@ void unit_housekeeping() {
 				
 				free(tmp);
 			} else {
-				
-				/* Add money for miners */
-				if((*e)->type == UNIT_TYPE_MINER) {
-					if(ss->team[(*e)->team].miner_income_counter++ >= INCOME_PER_MONEY) {
-						ss->team[(*e)->team].money++;
-						ss->team[(*e)->team].miner_income_counter = 0;
-					}
-				}
+				if((*e)->special_function)
+					(*e)->special_function((*e));
 				
 				e = &(*e)->next;
 			}
@@ -158,28 +177,42 @@ bool _miner_on_resource(int x, int y, UnitType type) {
 	return false;
 }
 
-int unit_add(int team, UnitType type, int x, int y) {
+bool _is_powered(int x, int y, int team) {
+	int index = x + y * ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->w;
+	
+	if(ss->team[team].power_map->map[index])
+		return true;
+	
+	return false;
+}
+
+int unit_add(int team, UnitType type, int x, int y, bool force) {
 	int index, id;
 	struct UnitEntry *e;
 	int success = 0;
 
-	if (x < 2 || y < 2)
-		goto fail;
-	if (x >= (ss->active_level->layer->tilemap->w - 2) || y >= (ss->active_level->layer->tilemap->h - 2))
-		goto fail;
-	
-	if(ss->team[team].money < _unit_properties[type].cost)
-		goto fail;
-	
-	if(_collision_with_tile(x, y, type)) {
-		if(!_miner_on_resource(x, y, type))
+	if(!force) {
+		if (x < 2 || y < 2)
 			goto fail;
-	} else {
-		if(type == UNIT_TYPE_MINER)
+		if (x >= (ss->active_level->layer->tilemap->w - 2) || y >= (ss->active_level->layer->tilemap->h - 2))
 			goto fail;
+		
+		if(ss->team[team].money < _unit_properties[type].cost)
+			goto fail;
+		
+		if(_collision_with_tile(x, y, type)) {
+			if(!_miner_on_resource(x, y, type))
+				goto fail;
+		} else {
+			if(type == UNIT_TYPE_MINER)
+				goto fail;
+		}
+		
+		if(!_is_powered(x, y, team))
+			goto fail;
+		
+		ss->team[team].money -= _unit_properties[type].cost;
 	}
-	
-	ss->team[team].money -= _unit_properties[type].cost;
 	
 	//if ((ss->active_level->layer->tilemap->data[index] & TILESET_MASK) >= TILESET_UNIT_BASE)
 	//	goto fail; // Unit already there
@@ -196,6 +229,8 @@ int unit_add(int team, UnitType type, int x, int y) {
 	e->team = team;
 	
 	e->health = _unit_properties[type].health;
+	
+	e->special_function = _unit_properties[type].special_function;
 	
 	e->next = ss->team[team].unit.unit;
 	ss->team[team].unit.unit = e;
@@ -258,8 +293,7 @@ void unit_prepare() {
 				ss->active_level->layer->tilemap->data[j * ss->active_level->layer->tilemap->w + i + 1] &= ~TILESET_MASK;
 				ss->active_level->layer->tilemap->data[j * ss->active_level->layer->tilemap->w + i + 1] |= 2;
 				
-				ss->team[team].money += _unit_properties[UNIT_TYPE_GENERATOR].cost;
-				unit_add(team, UNIT_TYPE_GENERATOR, i, j);
+				unit_add(team, UNIT_TYPE_GENERATOR, i, j, true);
 				
 				PacketTileUpdate pack;
 				int x, y;
