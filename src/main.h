@@ -59,6 +59,7 @@ struct GameStateStruct {
 	MOVABLE movable;
 	DARNIT_MAP *active_level;
 	Bullet *bullet;
+	int grace_counter;
 	//SfxStruct sfx;
 	
 };

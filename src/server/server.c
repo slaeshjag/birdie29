@@ -69,6 +69,12 @@ static void _client_handle_keys(Client *player) {
 	}
 }
 
+
+static void _handle_timers() {
+	
+}
+
+
 void _client_highlight_cursor(Client *player) {
 	PacketTileUpdate pack = {.type = PACKET_TYPE_TILE_UPDATE, .size = sizeof(PacketTileUpdate)};
 	int tile_size = ss->active_level->layer[0].tile_w;
@@ -307,10 +313,14 @@ int server_thread(void *arg) {
 				
 			case SERVER_STATE_STARTING:
 				printf("server: starting...\n");
-				for (i = 0; i < MAX_TEAM; i++)
+				for (i = 0; i < MAX_TEAM; i++) {
 					ss->team[i].power_map = pylonpower_map_new(ss->active_level->layer->tilemap->w, ss->active_level->layer->tilemap->h);
+					ss->team[i].time_to_win = TIMER_WIN;
+				}
+
+				ss->grace_counter = TIMER_GRACE;
 				unit_prepare();
-				
+
 				for(tmp = client; tmp; tmp = tmp->next) {
 					/* teleport players to their spawning point */
 					tmp->movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);
@@ -332,6 +342,7 @@ int server_thread(void *arg) {
 			case SERVER_STATE_GAME:
 				d_util_semaphore_wait(sem);
 				
+				_handle_timers();
 				bullet_loop();
 				movableLoop();
 				serverplayer_loop(client);

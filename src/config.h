@@ -16,8 +16,8 @@
 #define MONEY_START 400
 #define INCOME_PER_MONEY 20
 
-#define	TIMER_GRACE 90
-#define	TIMER_WIN 90
+#define	TIMER_GRACE 90000
+#define	TIMER_WIN 90000
 
 #define PANE_R 0xCD
 #define PANE_G 0xCD

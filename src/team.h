@@ -15,6 +15,7 @@ struct Team {
 	} spawn;
 	int money;
 	int miner_income_counter;
+	int time_to_win;
 
 	struct PylonEntry	*generator;
 	struct PylonPowerMap	*power_map;
