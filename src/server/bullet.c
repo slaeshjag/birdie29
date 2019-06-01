@@ -165,7 +165,7 @@ int bullet_spawn(BulletType type, Client *owner) {
 	
 	ss->team[owner->team].money -= bullet_properties[type].cost;
 	
-	return bullet_spawn_from_movable(type, ss->movable.movable[owner->movable].x/1000, ss->movable.movable[owner->movable].y/1000, owner->angle, owner->movable);
+	return bullet_spawn_from_movable(type, ss->movable.movable[owner->movable].x/1000 + 20, ss->movable.movable[owner->movable].y/1000 + 20, owner->angle, owner->movable);
 }
 
 
