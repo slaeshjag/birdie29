@@ -248,7 +248,10 @@ void ingame_network_handler() {
 			case PACKET_TYPE_STATUS_UPDATE:
 				for(i = 0; i < TEAMS_CAP; i++) {
 					cs->team[i].money = pack.status.money[i];
+					cs->team[i].time_to_win = pack.status.time_to_win[i];
 				}
+
+				cs->grace_timer = pack.status.grace_timer;
 				break;
 			
 			case PACKET_TYPE_BULLET_ANNOUNCE:

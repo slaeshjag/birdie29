@@ -73,6 +73,23 @@ static void _client_handle_keys(Client *player) {
 
 
 static void _handle_timers() {
+	int i, max_money = -1, max_player = -1;
+
+	if (ss->grace_counter > 0) {
+			ss->grace_counter -= d_last_frame_time();
+		if (ss->grace_counter < 0)
+			ss->grace_counter = 0;
+	} else {
+		for (i = 0; i < MAX_TEAM; i++) {
+			if (ss->team[i].money > max_money)
+				max_money = ss->team[i].money, max_player = i;
+		}
+
+		ss->team[max_player].time_to_win -= d_last_frame_time();
+		if (ss->team[max_player].time_to_win < 0) {
+			/* TODO: You're winner */
+		}
+	}
 	
 }
 
@@ -118,9 +135,10 @@ void _client_status_update(Client *player) {
 	
 	for(i = 0; i < TEAMS_CAP; i++) {
 		pack.status.money[i] = ss->team[i].money;
+		pack.status.time_to_win[i] = ss->team[i].time_to_win;
 	}
 	
-	pack.status.time_left = 0;
+	pack.status.grace_timer = ss->grace_counter;
 	
 	protocol_send_packet(player->sock, (Packet *) &pack);
 }
