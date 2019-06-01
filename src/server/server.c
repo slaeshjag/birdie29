@@ -430,6 +430,17 @@ int server_thread(void *arg) {
 					
 					protocol_send_packet(tmp->sock, (void *) &pack);
 				}
+
+				for (i = 0; i < MAX_TEAM; i++) {
+					for (tmp = client; tmp; tmp = tmp->next) {
+						if (client->team == i)
+							goto good;
+					}
+
+					ss->team[i].money = 0;
+
+					good:;
+				}
 				
 				server_state = SERVER_STATE_GAME;
 				break;
