@@ -433,7 +433,7 @@ int server_thread(void *arg) {
 
 				for (i = 0; i < MAX_TEAM; i++) {
 					for (tmp = client; tmp; tmp = tmp->next) {
-						if (client->team == i)
+						if (tmp->team == i)
 							goto good;
 					}
 
