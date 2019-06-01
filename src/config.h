@@ -14,7 +14,7 @@
 #define TEAMS_CAP 4
 
 #define MONEY_START 400
-#define MONEY_PER_MINER 1
+#define INCOME_PER_MONEY 20
 
 #define PANE_R 0xCD
 #define PANE_G 0xCD
