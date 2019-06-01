@@ -133,6 +133,18 @@ bool _collision_with_tile(int x, int y, UnitType type) {
 	return false;
 }
 
+bool _miner_on_resource(int x, int y, UnitType type) {
+	int index = x + y * ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->w;
+	
+	if(type != UNIT_TYPE_MINER)
+		return false;
+	
+	if(ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->data[index] == TILE_RESOURCE)
+		return true;
+	
+	return false;
+}
+
 int unit_add(int team, UnitType type, int x, int y) {
 	int index, id;
 	struct UnitEntry *e;
@@ -146,8 +158,13 @@ int unit_add(int team, UnitType type, int x, int y) {
 	if(ss->team[team].money < _unit_properties[type].cost)
 		goto fail;
 	
-	if(_collision_with_tile(x, y, type))
-		goto fail;
+	if(_collision_with_tile(x, y, type)) {
+		if(!_miner_on_resource(x, y, type))
+			goto fail;
+	} else {
+		if(type == UNIT_TYPE_MINER)
+			goto fail;
+	}
 	
 	ss->team[team].money -= _unit_properties[type].cost;
 	
