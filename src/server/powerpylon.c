@@ -205,6 +205,8 @@ struct PylonPowerEntry *pylonpower_map_new(int w, int h) {
 void _pylon_recalc_diff(int team, int x, int y, int diff) {
 	/* TODO: Announce change to players */
 	Packet pack;
+	Client *tmp = server_get_client_list();
+
 
 	pack.type = PACKET_TYPE_POWER_EVENT;
 	pack.size = sizeof(PacketPowerEvent);
@@ -214,7 +216,9 @@ void _pylon_recalc_diff(int team, int x, int y, int diff) {
 	pack.power_event.x = x;
 	pack.power_event.y = y;
 
-	server_broadcast_packet(&pack);
+	for (tmp = server_get_client_list(); tmp; tmp = tmp->next)
+		if (team == tmp->team)
+			protocol_send_packet(tmp->sock, &pack);
 
 	pylonpower_diff(ss->team[team].power_map, x, y, diff);
 }

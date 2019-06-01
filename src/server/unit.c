@@ -203,6 +203,7 @@ int unit_add(int team, UnitType type, int x, int y, bool force) {
 	e->map_index = x + y*ss->active_level->layer->tilemap->w;;
 	e->x = x;
 	e->y = y;
+	e->team = team;
 	e->type = type;
 	e->team = team;
 	
