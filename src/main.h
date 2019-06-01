@@ -62,6 +62,7 @@ struct ClientStateStruct {
 	} map;
 
 	struct PylonPowerMap *power_map;
+	int grace_timer;
 
 	struct {
 		int x;
