@@ -74,7 +74,7 @@ static void _client_handle_keys(Client *player) {
 
 
 static void _handle_timers() {
-	int i, max_money = -1, max_player = -1;
+	int i, max_money = -1;
 
 	if (ss->grace_counter > 0) {
 			ss->grace_counter -= d_last_frame_time();
@@ -83,12 +83,22 @@ static void _handle_timers() {
 	} else {
 		for (i = 0; i < MAX_TEAM; i++) {
 			if (ss->team[i].money > max_money)
-				max_money = ss->team[i].money, max_player = i;
+				max_money = ss->team[i].money;
 		}
 
-		ss->team[max_player].time_to_win -= d_last_frame_time();
-		if (ss->team[max_player].time_to_win < 0) {
-			/* TODO: You're winner */
+		for (i = 0; i < MAX_TEAM; i++) {
+			if (ss->team[i].money == max_money)
+				ss->team[i].time_to_win -= d_last_frame_time();
+			if (ss->team[i].time_to_win < 0) {
+				Packet pack;
+
+				pack.type = PACKET_TYPE_EXIT;
+				pack.size = sizeof(PacketExit);
+
+				server_broadcast_packet(&pack);
+				/* TODO: You're winner */
+			}
+
 		}
 	}
 	
