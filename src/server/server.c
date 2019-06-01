@@ -135,9 +135,10 @@ void _client_status_update(Client *player) {
 	
 	for(i = 0; i < TEAMS_CAP; i++) {
 		pack.status.money[i] = ss->team[i].money;
+		pack.status.time_to_win[i] = ss->team[i].time_to_win;
 	}
 	
-	pack.status.time_left = 0;
+	pack.status.grace_timer = ss->grace_counter;
 	
 	protocol_send_packet(player->sock, (Packet *) &pack);
 }

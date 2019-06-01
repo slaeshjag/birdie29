@@ -135,7 +135,8 @@ struct PacketStatusUpdate {
 	
 	uint32_t money[TEAMS_CAP];
 	
-	uint32_t time_left;
+	uint16_t grace_timer;
+	uint16_t time_to_win[TEAMS_CAP];
 };
 
 
