@@ -195,6 +195,7 @@ void server_handle_client(Client *cli) {
 			case PACKET_TYPE_JOIN:
 				strcpy(cli->name, pack.join.name);
 				cli->team = pack.join.team;
+				cli->sprite_variant = pack.join.sprite_variant;
 				cli->hp = PLAYER_HP;
 				printf("server: join %s team %i\n", cli->name, cli->team);
 				
@@ -398,7 +399,7 @@ int server_thread(void *arg) {
 				
 				for(tmp = client; tmp; tmp = tmp->next) {
 					/* teleport players to their spawning point */
-					tmp->movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);
+					tmp->movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, client->team*PLAYER_VARIANTS + client->sprite_variant);
 					ss->movable.movable[client->movable].x = ss->team[client->team].spawn.x * 1000;
 					ss->movable.movable[client->movable].y = ss->team[client->team].spawn.y * 1000;
 				}

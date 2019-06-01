@@ -9,7 +9,7 @@
 
 #define NAME_LEN_MAX 64
 #define PLAYER_CAP 32
-#define PLAYER_VARIANTS 4
+#define PLAYER_VARIANTS 3
 
 #define TEAMS_CAP 4
 

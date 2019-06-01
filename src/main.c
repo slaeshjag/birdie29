@@ -81,6 +81,7 @@ int join_game(unsigned long sip) {
 	memcpy(join.name, me.name, NAME_LEN_MAX);
 	join.name[NAME_LEN_MAX - 1] = 0;
 	join.team = 0;
+	join.sprite_variant = me.sprite_variant;
 
 	protocol_send_packet(cs->server_sock, (void *) &join);
 	return 0;
