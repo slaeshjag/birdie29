@@ -272,7 +272,7 @@ int movableMoveDo(DARNIT_MAP_LAYER *layer, int *pos, int *delta, int *vel, int s
 				*tile_index = i;
 		} else if (map_d[i_2] & col) {
 			if (tile_index)
-				*tile_index = i;
+				*tile_index = i_2;
 		}
 
 		(*vel) = vel_r;
