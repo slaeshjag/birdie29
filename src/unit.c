@@ -83,7 +83,7 @@ void unit_housekeeping() {
 			} else {
 				
 				/* Add money for miners */
-				if((*e)->type == UNIT_TYPE_MINER) {
+				if((*e)->type == UNIT_TYPE_MINER && (*e)->powered) {
 					if(ss->team[(*e)->team].miner_income_counter++ >= INCOME_PER_MONEY) {
 						ss->team[(*e)->team].money++;
 						ss->team[(*e)->team].miner_income_counter = 0;
