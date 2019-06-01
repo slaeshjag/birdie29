@@ -3,8 +3,7 @@
 
 #include <darnit/darnit.h>
 //#include "server/server.h"
-#include "player.h"
-#include "spritelist.h"
+#include "../spritelist.h"
 
 typedef enum BulletType BulletType;
 enum BulletType {

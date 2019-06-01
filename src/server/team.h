@@ -2,7 +2,7 @@
 #define	TEAM_H_
 
 #include "unit.h"
-#include "config.h"
+#include "../config.h"
 #include "powerpylon.h"
 
 #define	MAX_TEAM TEAMS_CAP

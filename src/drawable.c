@@ -1,6 +1,6 @@
 #include <darnit/darnit.h>
 #include "drawable.h"
-#include "movable.h"
+#include "server/movable.h"
 #include "spritelist.h"
 
 struct Drawable *drawable_init() {

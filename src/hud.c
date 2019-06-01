@@ -5,7 +5,7 @@
 #include "hud.h"
 #include "config.h"
 #include "main.h"
-#include "unit.h"
+#include "server/unit.h"
 
 Hud hud;
 

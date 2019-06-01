@@ -1,6 +1,6 @@
 #include "serverplayer.h"
-#include "server/server.h"
-#include "main.h"
+#include "server.h"
+#include "../main.h"
 
 void serverplayer_loop(Client *client) {
 	Client *next;

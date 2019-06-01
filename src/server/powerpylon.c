@@ -1,9 +1,9 @@
 #include "powerpylon.h"
-#include "main.h"
+#include "../main.h"
 #include "team.h"
 
-#include "server/server.h"
-#include "network/protocol.h"
+#include "server.h"
+#include "../network/protocol.h"
 
 int static _unit_range() {
 	return PYLON_RANGE;

@@ -1,19 +1,19 @@
 #include <darnit/darnit.h>
 #include <math.h>
-#include "main.h"
+#include "../main.h"
 #include <string.h>
 //#include "network/protocol.h"
 //#include "server/server.h"
-#include "util.h"
+#include "../util.h"
 //#include "block.h"
-#include "spritelist.h"
+#include "../spritelist.h"
 #include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "network/network.h"
-#include "network/protocol.h"
-#include "server/server.h"
+#include "../network/network.h"
+#include "../network/protocol.h"
+#include "server.h"
 
 
 int movableInit() {

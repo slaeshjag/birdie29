@@ -9,13 +9,11 @@
 //#include "effect.h"
 
 #include "player.h"
-#include "movable.h"
 #include "drawable.h"
 #include "config.h"
-#include "team.h"
-#include "bullet.h"
 #include "particles.h"
-#include "powerpylon.h"
+#include "server/team.h"
+
 
 typedef struct Color Color;
 struct Color {
@@ -52,22 +50,10 @@ struct Gfx {
 
 extern Gfx gfx;
 
-typedef struct GameStateStruct GameStateStruct;
-struct GameStateStruct {
-	bool is_host;
-	struct Team team[MAX_TEAM];
-	MOVABLE movable;
-	DARNIT_MAP *active_level;
-	Bullet *bullet;
-	int grace_counter;
-	//SfxStruct sfx;
-	
-};
-
 typedef struct ClientStateStruct ClientStateStruct;
 struct ClientStateStruct {
 	Player *player[PLAYER_CAP];
-	struct Team team[MAX_TEAM];
+	struct Team team[TEAMS_CAP];
 	int server_sock;
 	struct Drawable *drawable;
 	struct ParticleEntry *particle;
@@ -84,7 +70,6 @@ struct ClientStateStruct {
 	} camera;
 };
 
-extern GameStateStruct *ss;
 extern ClientStateStruct *cs;
 extern Player me;
 
