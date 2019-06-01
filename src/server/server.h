@@ -16,6 +16,7 @@ struct Client {
 	int sock;
 	char name[NAME_LEN_MAX];
 	int team;
+	int sprite_variant;
 	int movable;
 	int angle;
 	int hp;

@@ -33,6 +33,7 @@ static void listbox_team_callback(MuilWidget *widget, unsigned int type, MuilEve
 	memcpy(join.name, me.name, NAME_LEN_MAX);
 	join.name[NAME_LEN_MAX - 1] = 0;
 	join.team = p.i;
+	join.sprite_variant = me.sprite_variant;
 
 	protocol_send_packet(cs->server_sock, (void *) &join);
 }
