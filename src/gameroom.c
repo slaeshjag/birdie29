@@ -7,6 +7,7 @@
 #include "network/network.h"
 #include "network/protocol.h"
 #include "gameroom.h"
+#include "server/server.h"
 #include "main.h"
 
 GameRoom gameroom;

@@ -4,7 +4,7 @@
 #include <muil/muil.h>
 #include <darnit/darnit.h>
 #include "config.h"
-#include "unit.h"
+#include "server/unit.h"
 
 typedef struct Hud Hud;
 struct Hud{

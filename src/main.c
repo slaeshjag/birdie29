@@ -18,14 +18,13 @@
 //#include "gameover.h"
 #include "menu.h"
 #include "main.h"
-#include "team.h"
+#include "server/team.h"
 #include "hud.h"
 #include "spritelist.h"
 
 
 Gfx gfx;
 GameState gamestate;
-GameStateStruct *ss;
 ClientStateStruct *cs;
 
 Player me;

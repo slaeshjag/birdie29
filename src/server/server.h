@@ -4,6 +4,9 @@
 #include "../config.h"
 #include "../ingame.h"
 #include "../network/protocol.h"
+#include "movable.h"
+#include "team.h"
+#include "bullet.h"
 
 typedef struct Client Client;
 struct Client {
@@ -23,6 +26,20 @@ struct Client {
 	
 	Client *next;
 };
+
+typedef struct GameStateStruct GameStateStruct;
+struct GameStateStruct {
+	bool is_host;
+	struct Team team[MAX_TEAM];
+	MOVABLE movable;
+	DARNIT_MAP *active_level;
+	Bullet *bullet;
+	int grace_counter;
+	//SfxStruct sfx;
+	
+};
+
+extern GameStateStruct *ss;
 
 void server_start();
 void server_start_game();

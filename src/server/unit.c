@@ -1,8 +1,8 @@
 #include <stdbool.h>
-#include "main.h"
+#include "../main.h"
 #include "unit.h"
-#include "network/protocol.h"
-#include "server/server.h"
+#include "../network/protocol.h"
+#include "server.h"
 
 #define PLACE_TILE(X, Y, TYPE, TILE_POSITION, LAYER) do { \
 	int tile = _unit_properties[TYPE].tiles.TILE_POSITION + (TILESET_TEAM_STEP) * team; \

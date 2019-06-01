@@ -6,10 +6,10 @@
 #include <darnit/darnit.h>
 #include "server.h"
 #include "../main.h"
-#include "../bullet.h"
+#include "bullet.h"
 #include "../network/network.h"
 #include "../network/protocol.h"
-#include "../serverplayer.h"
+#include "serverplayer.h"
 
 #define XSTR(s) STR(s)
 #define STR(s) #s
@@ -38,6 +38,8 @@ static int listen_sock;
 static Client *client = NULL;
 static int clients = 0;
 static volatile ServerState server_state;
+
+GameStateStruct *ss;
 
 DARNIT_SEMAPHORE *sem;
 

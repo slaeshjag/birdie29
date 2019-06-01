@@ -1,11 +1,10 @@
 #include <math.h>
 
-#include "server/server.h"
-#include "network/protocol.h"
+#include "server.h"
+#include "../network/protocol.h"
 
-#include "main.h"
-#include "config.h"
-#include "player.h"
+#include "../main.h"
+#include "../config.h"
 #include "unit.h"
 #include "bullet.h"
 
