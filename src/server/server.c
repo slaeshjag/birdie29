@@ -44,16 +44,32 @@ GameStateStruct *ss;
 
 DARNIT_SEMAPHORE *sem;
 
+
+static int _get_movable_index(int movable) {
+	int tilew, tileh;
+
+	tilew = ss->active_level->layer->tile_w;
+	tileh = ss->active_level->layer->tile_h;
+
+	return ss->movable.movable[movable].x/1000/tilew + ss->movable.movable[movable].y/1000/tileh * ss->active_level->layer->tilemap->w;
+}
+
 static void _client_handle_keys(Client *player) {
 	MOVABLE_ENTRY *m = &ss->movable.movable[player->movable];
 	
 	if(player->keystate.up) {
+		if (ss->team[player->team].power_map->map[_get_movable_index(player->movable)])
+			m->y_velocity = -PLAYER_SPEED;
+		else
+			m->y_velocity = -PLAYER_SPEED_SLOW;
 		//printf("server loop: player %i hold up\n", player->id);
-		m->y_velocity = -PLAYER_SPEED;
 		m->direction = PLAYER_DIRECTION_UP;
 	} else if(player->keystate.down) {
 		//printf("server loop: player %i hold down\n", player->id);
-		m->y_velocity = PLAYER_SPEED;
+		if (ss->team[player->team].power_map->map[_get_movable_index(player->movable)])
+			m->y_velocity = PLAYER_SPEED;
+		else
+			m->y_velocity = PLAYER_SPEED_SLOW;
 		m->direction = PLAYER_DIRECTION_DOWN;
 	} else {
 		m->y_velocity = 0;
@@ -61,11 +77,17 @@ static void _client_handle_keys(Client *player) {
 	
 	if(player->keystate.left) {
 		//printf("server loop: player %i hold left\n", player->id);
-		m->x_velocity = -PLAYER_SPEED;
+		if (ss->team[player->team].power_map->map[_get_movable_index(player->movable)])
+			m->x_velocity = -PLAYER_SPEED;
+		else
+			m->x_velocity = -PLAYER_SPEED_SLOW;
 		m->direction = PLAYER_DIRECTION_LEFT;
 	} else if(player->keystate.right) {
 		//printf("server loop: player %i hold right\n", player->id);
-		m->x_velocity = PLAYER_SPEED;
+		if (ss->team[player->team].power_map->map[_get_movable_index(player->movable)])
+			m->x_velocity = PLAYER_SPEED;
+		else
+			m->x_velocity = PLAYER_SPEED_SLOW;
 		m->direction = PLAYER_DIRECTION_RIGHT;
 	} else {
 		m->x_velocity = 0;
