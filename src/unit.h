@@ -6,6 +6,8 @@
 #define	TILESET_MASK			0xFFF
 #define	TILESET_COLLISION_MASK (0xF << 16)
 
+#define TILE_RESOURCE (160)
+
 #include <darnit/darnit.h>
 #include "powerpylon.h"
 

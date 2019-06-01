@@ -195,6 +195,12 @@ void unit_prepare() {
 
 	for (j = 0; j < ss->active_level->layer->tilemap->h; j++)
 		for (i = 0; i < ss->active_level->layer->tilemap->w; i++) {
+			if((ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->data[j * ss->active_level->layer->tilemap->w + i] & TILESET_MASK) == TILE_RESOURCE) {
+				printf("found resource %i at (%i %i)\n", ss->active_level->layer[MAP_LAYER_BUILDING_LOWER].tilemap->data[j * ss->active_level->layer->tilemap->w + i] & TILESET_MASK, i, j);
+				ss->active_level->layer[MAP_LAYER_TERRAIN].tilemap->data[j * ss->active_level->layer->tilemap->w + i] |= TILESET_COLLISION_MASK;
+				continue;
+			}
+			
 			tile = ss->active_level->layer->tilemap->data[j * ss->active_level->layer->tilemap->w + i] & TILESET_MASK;
 			if (tile < TILESET_UNIT_BASE)
 				continue;
@@ -202,12 +208,14 @@ void unit_prepare() {
 			if (team >= MAX_TEAM)
 				continue;
 			
+			/* Spawn plate */
 			if (((tile) % TILESET_TEAM_STEP) == ((_unit_properties[UNIT_TYPE_SPAWN].tiles.bottom_left) % TILESET_TEAM_STEP)) {
 				ss->team[team].spawn.x = i * ss->active_level->layer->tile_w;
 				ss->team[team].spawn.y = j * ss->active_level->layer->tile_h;
 				printf("found team %i spawn point at %i, %i\n", team, i, j);
 			}
 			
+			/* Generator */
 			if (((tile) % TILESET_TEAM_STEP) == 15) {
 				printf("found generator for team at %i, %i\n", team, i, j);
 				
