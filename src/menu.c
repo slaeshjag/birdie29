@@ -15,7 +15,7 @@ static void button_callback_name(MuilWidget *widget, unsigned int type, MuilEven
 	v = select_name.entry->get_prop(select_name.entry, MUIL_ENTRY_PROP_TEXT);
 	snprintf(me.name, NAME_LEN_MAX, "%s", (char *) v.p);
 	
-	v = select_name.slider->get_prop(select_name.slider, MUIL_SLIDER_PROP_VALUE);
+	v = select_name.listbox->get_prop(select_name.listbox, MUIL_LISTBOX_PROP_SELECTED);
 	me.sprite_variant = v.i;
 	
 	game_state(GAME_STATE_MENU);
@@ -36,10 +36,10 @@ static void button_callback_menu(MuilWidget *widget, unsigned int type, MuilEven
 		d_quit();
 }
 
-static void slider_callback_picture(MuilWidget *widget, unsigned int type, MuilEvent *e) {
+static void listbox_callback_picture(MuilWidget *widget, unsigned int type, MuilEvent *e) {
 	MuilPropertyValue v;
 	
-	v = widget->get_prop(widget, MUIL_SLIDER_PROP_VALUE);
+	v = widget->get_prop(widget, MUIL_LISTBOX_PROP_SELECTED);
 	
 	v.p = select_name.variant_tilesheet[v.i];
 	select_name.picture->set_prop(select_name.picture, MUIL_IMAGEVIEW_PROP_TILESHEET, v);
@@ -49,7 +49,7 @@ static void slider_callback_picture(MuilWidget *widget, unsigned int type, MuilE
 void menu_select_name_init() {
 	MuilPropertyValue v;
 	
-	select_name.pane.pane = muil_pane_create(DISPLAY_WIDTH/2 - 200, DISPLAY_HEIGHT/2 - 300/2, 400, 300, select_name.vbox = muil_widget_create_vbox());
+	select_name.pane.pane = muil_pane_create(DISPLAY_WIDTH/2 - 200, DISPLAY_HEIGHT/2 - 400/2, 400, 400, select_name.vbox = muil_widget_create_vbox());
 	select_name.pane.next = NULL;
 	
 	select_name.pane.pane->background_color.r = PANE_R;
@@ -60,7 +60,14 @@ void menu_select_name_init() {
 	muil_vbox_add_child(select_name.vbox, select_name.entry = muil_widget_create_entry(gfx.font.small), 0);
 	
 	muil_vbox_add_child(select_name.vbox, select_name.picture = muil_widget_create_imageview_raw(48, 48, DARNIT_PFORMAT_RGBA8), 0);
-	muil_vbox_add_child(select_name.vbox, select_name.slider = muil_widget_create_slider(4), 0);
+	muil_vbox_add_child(select_name.vbox, select_name.listbox = muil_widget_create_listbox(gfx.font.small), 1);
+	
+	muil_listbox_add(select_name.listbox, "Tom");
+	muil_listbox_add(select_name.listbox, "Dick");
+	muil_listbox_add(select_name.listbox, "Bruce");
+	
+	v.i = 0;
+	select_name.listbox->set_prop(select_name.listbox, MUIL_LISTBOX_PROP_SELECTED, v);
 	
 	select_name.hbox = muil_widget_create_hbox();
 	muil_vbox_add_child(select_name.hbox, select_name.button.ok = muil_widget_create_button_text(gfx.font.small, "OK"), 0);
@@ -77,12 +84,12 @@ void menu_select_name_init() {
 	select_name.button.ok->event_handler->add(select_name.button.ok, button_callback_name, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
 	select_name.button.quit->event_handler->add(select_name.button.quit, button_callback_name, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
 	
-	select_name.slider->event_handler->add(select_name.slider, slider_callback_picture, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
+	select_name.listbox->event_handler->add(select_name.listbox, listbox_callback_picture, MUIL_EVENT_TYPE_UI_WIDGET_ACTIVATE);
 	
 	select_name.variant_tilesheet[0] = d_render_tilesheet_load("res/player_var0.png", 48, 48, DARNIT_PFORMAT_RGBA8);
 	select_name.variant_tilesheet[1] = d_render_tilesheet_load("res/player_var1.png", 48, 48, DARNIT_PFORMAT_RGBA8);
 	select_name.variant_tilesheet[2] = d_render_tilesheet_load("res/player_var2.png", 48, 48, DARNIT_PFORMAT_RGBA8);
-	select_name.variant_tilesheet[3] = d_render_tilesheet_load("res/player_var3.png", 48, 48, DARNIT_PFORMAT_RGBA8);
+	//select_name.variant_tilesheet[3] = d_render_tilesheet_load("res/player_var3.png", 48, 48, DARNIT_PFORMAT_RGBA8);
 	
 	v.p = select_name.variant_tilesheet[0];
 	select_name.picture->set_prop(select_name.picture, MUIL_IMAGEVIEW_PROP_TILESHEET, v);
