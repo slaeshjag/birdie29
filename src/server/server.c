@@ -214,8 +214,8 @@ void server_handle_client(Client *cli) {
 								/* Specific part of the tilesheet is collision tiles */
 								tile = ss->active_level->layer[i].tilemap->data[y*map_w + x];
 								if(tile >= TILESHEET_COLLISION_TILE_LOW && tile <= TILESHEET_COLLISION_TILE_HIGH) {
-									tile |= TILESET_COLLISION_MASK;
-									ss->active_level->layer[0].tilemap->data[y*map_w + x] = tile;
+									//tile |= TILESET_COLLISION_MASK;
+									ss->active_level->layer[0].tilemap->data[y*map_w + x] |= TILESET_COLLISION_MASK;
 								}
 							}
 						}
