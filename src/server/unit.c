@@ -126,7 +126,7 @@ void unit_damage(UnitEntry *unit, int damage) {
 	
 	unit->health -= damage;
 	
-	if(unit->health < 0)
+	if(unit->health <= 0)
 		unit->delete_flag = true;
 }
 

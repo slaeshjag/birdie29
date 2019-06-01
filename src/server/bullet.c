@@ -121,6 +121,7 @@ static void _bullet_movable_collision(void *ptr, int movable_self, int movable_r
 static void _bullet_map_collision(void *usr_ptr, int movable_self, int tile_index) {
 	int x, y;
 	UnitEntry *u;
+	BulletProperties *prop = usr_ptr;
 	
 	x = tile_index % ss->active_level->layer->tilemap->w;
 	y = tile_index / ss->active_level->layer->tilemap->w;
@@ -129,7 +130,7 @@ static void _bullet_map_collision(void *usr_ptr, int movable_self, int tile_inde
 	_bullet_kill(movable_self);
 	
 	if((u = unit_find_tile_owner(x, y))) {
-		unit_damage(u, 10);
+		unit_damage(u, prop->damage);
 	}
 		
 }
@@ -150,6 +151,7 @@ int bullet_spawn_from_movable(BulletType type, int x, int y, int angle, int owne
 	ss->movable.movable[bullet->movable].y_velocity = bullet_properties[type].speed * sin(((double) angle)*M_PI/180.0);
 	ss->movable.movable[bullet->movable].callback.movable_collision = _bullet_movable_collision;
 	ss->movable.movable[bullet->movable].callback.map_collision = _bullet_map_collision;
+	ss->movable.movable[bullet->movable].callback.user_pointer = &bullet_properties[type];
 	
 	bullet->next = ss->bullet;
 	ss->bullet = bullet;
