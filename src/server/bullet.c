@@ -103,9 +103,9 @@ static void _bullet_movable_collision(void *ptr, int movable_self, int movable_r
 			/* Passing through owner */
 		} else {
 			Client *target = _get_movable_client(movable_remote);
-			target->hp -= bullet_properties[_get_bullet_type(movable_self)].damage;
+			if (target)
+				target->hp -= bullet_properties[_get_bullet_type(movable_self)].damage;
 			_bullet_kill(movable_self);
-			printf("Hit someone else! hp=%i\n", target->hp);
 		}
 	} else if (remote_owner == _get_bullet_owner(movable_self)) {
 		// Intersecting owners own bullets. meh.
