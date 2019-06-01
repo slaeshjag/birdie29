@@ -31,7 +31,7 @@ void hud_init() {
 	MuilPropertyValue v;
 	
 	hud.pane.pane = muil_pane_create(DISPLAY_WIDTH/2 - 150, DISPLAY_HEIGHT - 96, 300, 64, hud.hbox = muil_widget_create_hbox());
-	////hud.pane.next = &hud.scoreboard.pane;
+	hud.pane.next = &hud.scoreboard.pane;
 	
 	hud.pane.pane->background_color.r = PANE_R;
 	hud.pane.pane->background_color.g = PANE_G;
@@ -46,18 +46,19 @@ void hud_init() {
 	
 	hud.selected_frame = d_render_tilesheet_load("res/selected.png", 48, 48, DARNIT_PFORMAT_RGBA8);
 	
-	//hud.scoreboard.pane.pane = muil_pane_create(4, 4, 128, 128, hud.scoreboard.vbox = muil_widget_create_vbox());
-	//hud.scoreboard.pane.next = NULL;
+	hud.scoreboard.pane.pane = muil_pane_create(4, 64, 128, 128, hud.scoreboard.vbox = muil_widget_create_vbox());
+	hud.scoreboard.pane.next = NULL;
 	
-	//hud.scoreboard.pane.pane->background_color.r = PANE_R;
-	//hud.scoreboard.pane.pane->background_color.g = PANE_G;
-	//hud.scoreboard.pane.pane->background_color.b = PANE_B;
+	hud.scoreboard.pane.pane->background_color.r = PANE_R;
+	hud.scoreboard.pane.pane->background_color.g = PANE_G;
+	hud.scoreboard.pane.pane->background_color.b = PANE_B;
+	hud.scoreboard.pane.pane->background_color.a = 128;
 	
-	//muil_vbox_add_child(hud.scoreboard.vbox, hud.scoreboard.title = muil_widget_create_label(gfx.font.small, "Fuel Stocks"), 0);
+	muil_vbox_add_child(hud.scoreboard.vbox, hud.scoreboard.title = muil_widget_create_label(gfx.font.small, "Fuel Stocks"), 0);
 	
-	//for(i = 0; i < TEAMS_CAP; i++) {
-	//	muil_vbox_add_child(hud.scoreboard.vbox, hud.scoreboard.label[i] = muil_widget_create_label(gfx.font.small, strdup("lol")), 0);
-	//}
+	for(i = 0; i < TEAMS_CAP; i++) {
+		muil_vbox_add_child(hud.scoreboard.vbox, hud.scoreboard.label[i] = muil_widget_create_label(gfx.font.small, strdup("lol")), 0);
+	}
 
 	hud._7seg = d_render_tilesheet_load("res/7seg.png", 24, 32, DARNIT_PFORMAT_RGB5A1);
 	healthbar_init();
@@ -66,7 +67,7 @@ void hud_init() {
 void hud_update() {
 	int i;
 	MuilPropertyValue v;
-	/*
+	
 	//cs->player[me.id];
 	for(i = 0; i < TEAMS_CAP; i++) {
 		char buf[256];
@@ -77,7 +78,7 @@ void hud_update() {
 		
 		v.p = strdup(buf);
 		hud.scoreboard.label[i]->set_prop(hud.scoreboard.label[i], MUIL_LABEL_PROP_TEXT, v);
-	}*/
+	}
 }
 
 void hud_render() {
