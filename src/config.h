@@ -5,7 +5,7 @@
 #define DISPLAY_HEIGHT 720
 #define PORT 1341
 
-#define GAME_TITLE "The Game"
+#define GAME_TITLE "Radioaktiva Dystopimaskinerna 3000™"
 
 #define NAME_LEN_MAX 64
 #define PLAYER_CAP 32
@@ -19,8 +19,8 @@
 #define	TIMER_GRACE 90000
 #define	TIMER_WIN 90000
 
-#define TURRET_DISTANCE 200
-#define TURRET_COOLDOWN 200
+#define TURRET_DISTANCE 512
+#define TURRET_COOLDOWN 150
 
 #define PANE_R 0xCD
 #define PANE_G 0xCD

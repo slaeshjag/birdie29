@@ -6,13 +6,13 @@ BEGIN
 	BEGIN
 		BLOCK "080904E4"
 		BEGIN
-			VALUE "FileDescription", "The Game"
-			VALUE "FileVersion", "1.0"
-			VALUE "InternalName", "The Game"
+			VALUE "FileDescription", "Radioaktiva Dystopimaskinerna 3000"
+			VALUE "FileVersion", "13.37"
+			VALUE "InternalName", "Radioaktiva Dystopimaskinerna 3000"
 			VALUE "LegalCopyright", "//actung fulkod"
-			VALUE "OriginalFilename", "thegame.exe"
-			VALUE "ProductName", "The Game"
-			VALUE "ProductVersion", "1.0"
+			VALUE "OriginalFilename", "Radioaktiva Dystopimaskinerna 3000.exe"
+			VALUE "ProductName", "Radioaktiva Dystopimaskinerna 3000"
+			VALUE "ProductVersion", "13.37"
 		END
 	END
 
