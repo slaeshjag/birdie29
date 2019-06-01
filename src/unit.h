@@ -51,7 +51,7 @@ struct UnitEntry {
 	UnitEntry		*next;
 	int health;
 	struct PylonEntry		*pylon;
-
+	int				powered;
 	
 	
 	

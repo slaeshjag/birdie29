@@ -53,6 +53,7 @@ void unit_housekeeping() {
 	
 	for (i = 0; i < MAX_TEAM; i++) {
 		for (e = &ss->team[i].unit.unit; *e; ) {
+			(*e)->powered = !!ss->team[(*e)->team].power_map->map[(*e)->map_index];
 			if ((*e)->delete_flag) {
 				tmp = *e;
 				*e = (*e)->next;
