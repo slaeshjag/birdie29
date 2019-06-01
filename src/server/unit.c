@@ -7,8 +7,9 @@
 #include "unit/turret.h"
 
 #define PLACE_TILE(X, Y, TYPE, TILE_POSITION, LAYER) do { \
-	int tile = _unit_properties[TYPE].tiles.TILE_POSITION + (TILESET_TEAM_STEP) * team; \
+	int tile = _unit_properties[TYPE].tiles.TILE_POSITION; \
 	if(tile > 0) { \
+		tile += (TILESET_TEAM_STEP) * team; \
 		int index = (X) + (Y) * ss->active_level->layer[LAYER].tilemap->w; \
 		ss->active_level->layer[LAYER].tilemap->data[index] = tile; \
 		if(LAYER == MAP_LAYER_BUILDING_LOWER) { \
@@ -23,8 +24,9 @@
 } while(0)
 
 #define UNPLACE_TILE(X, Y, TYPE, TILE_POSITION, LAYER) do { \
-	int tile = _unit_properties[TYPE].tiles.TILE_POSITION + (TILESET_TEAM_STEP) * team; \
+	int tile = _unit_properties[TYPE].tiles.TILE_POSITION; \
 	if(tile > 0) { \
+		 tile += (TILESET_TEAM_STEP) * team; \
 		int index = (X) + (Y) * ss->active_level->layer[LAYER].tilemap->w; \
 		ss->active_level->layer[LAYER].tilemap->data[index] = 0; \
 		if(LAYER == MAP_LAYER_BUILDING_LOWER) { \
