@@ -75,6 +75,7 @@ struct PacketParticle {
 	uint32_t x;
 	uint32_t y;
 	uint32_t effect_type;
+	int32_t angle;
 };
 
 typedef struct PacketExplosion PacketExplosion;

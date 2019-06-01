@@ -276,6 +276,8 @@ void ingame_network_handler() {
 				break;
 
 			case PACKET_TYPE_PARTICLE:
+				printf("particle\n");
+				particle_add(pack.particle.effect_type, pack.particle.x, pack.particle.y, pack.particle.angle);
 				//d_particle_emitter_move(s->particle_effect[pack.particle.effect_type], pack.particle.x, pack.particle.y);
 				//d_particle_pulse(s->particle_effect[pack.particle.effect_type]);
 				//sfx_play(SFX_APPLE);

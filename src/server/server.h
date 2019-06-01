@@ -50,5 +50,6 @@ void server_broadcast_packet(Packet *pack);
 bool server_player_is_present(int id);
 void server_shutdown();
 Client *server_get_client_list();
+void server_particle_spawn(int x, int y, int angle, enum ParticleType type);
 
 #endif

@@ -88,6 +88,7 @@ static void _bullet_kill(int movable) {
 	for (next = (&ss->bullet); *next; next = &(*next)->next) {
 		if ((*next)->movable == movable) {
 			(*next)->ticks = 0;
+			server_particle_spawn(ss->movable.movable[(*next)->movable].x / 1000, ss->movable.movable[(*next)->movable].y / 1000, ss->movable.movable[(*next)->movable].angle, 0);
 		}
 	}
 }

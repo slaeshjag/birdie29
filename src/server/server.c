@@ -10,6 +10,7 @@
 #include "../network/network.h"
 #include "../network/protocol.h"
 #include "serverplayer.h"
+#include "../particles.h"
 
 #define XSTR(s) STR(s)
 #define STR(s) #s
@@ -475,4 +476,18 @@ void server_broadcast_packet(Packet *pack) {
 
 Client *server_get_client_list() {
 	return client;
+}
+
+
+void server_particle_spawn(int x, int y, int angle, enum ParticleType type) {
+	Packet pack;
+
+	pack.type = PACKET_TYPE_PARTICLE;
+	pack.size = sizeof(PacketParticle);
+	pack.particle.x = x;
+	pack.particle.y = y;
+	pack.particle.angle = angle;
+	pack.particle.type = type;
+
+	server_broadcast_packet(&pack);
 }
