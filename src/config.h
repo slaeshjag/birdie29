@@ -20,6 +20,7 @@
 #define	TIMER_WIN 90000
 
 #define TURRET_DISTANCE 10
+#define TURRET_COOLDOWN 200
 
 #define PANE_R 0xCD
 #define PANE_G 0xCD
