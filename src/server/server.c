@@ -242,8 +242,11 @@ void server_handle_client(Client *cli) {
 				HANDLE_KEY(down);
 				
 				if(pack.keypress.keypress.shoot) {
-					printf("server: shoot %i\n", bullet_spawn(BULLET_TYPE_WIMPY, cli));
-					
+					bullet_spawn(BULLET_TYPE_WIMPY, cli);
+				}
+				
+				if(pack.keypress.keypress.shoot_special) {
+					bullet_spawn(BULLET_TYPE_BADASS, cli);
 				}
 				
 				cli->angle = pack.keypress.mouse_angle;

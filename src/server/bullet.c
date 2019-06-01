@@ -11,18 +11,18 @@
 BulletProperties bullet_properties[BULLET_TYPES] = {
 	[BULLET_TYPE_WIMPY] = {
 		.damage = 1,
-		.ttl = 2000,
+		.ttl = 1000,
 		.cost = 1,
-		.speed = 100,
+		.speed = 1000,
 		//.sprite_name = "res/bullet_wimpy.spr",
 		.sprite_type = SPRITELIST_ENTRY_INDEX_BULLET_WIMPY,
 	},
 	
 	[BULLET_TYPE_BADASS] = {
 		.damage = 10,
-		.ttl = 60,
+		.ttl = 1000,
 		.cost = 10,
-		.speed = 2,
+		.speed = 500,
 		.sprite_type = SPRITELIST_ENTRY_INDEX_BULLET_BADASS,
 		//.sprite_name = "res/bullet_badass.spr",
 	},

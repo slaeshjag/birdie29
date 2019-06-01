@@ -143,7 +143,9 @@ void ingame_client_keyboard() {
 	newstate.down = d_keys_get().down;
 	newstate.suicide = d_keys_get().x;
 	newstate.shoot = d_keys_get().lmb;
-	newstate.build = d_keys_get().rmb;
+	newstate.shoot_special = d_keys_get().rmb;
+	newstate.build = d_keys_get().a;
+	newstate.cycle_building = d_keys_get().b;
 	
 	
 	if(d_keys_get().select)
@@ -154,7 +156,9 @@ void ingame_client_keyboard() {
 	KEYEVENT(up);
 	KEYEVENT(down);
 	KEYEVENT(shoot);
+	KEYEVENT(shoot_special);
 	KEYEVENT(build);
+	KEYEVENT(cycle_building);
 	
 	if(pressevent.build) {
 		PacketBuildUnit buildunit;
@@ -178,11 +182,15 @@ void ingame_client_keyboard() {
 	
 	angle = atan2(y, x)*180/M_PI + 180;
 	
-	if(mouse.wheel != 0) {
-		if(mouse.wheel > 0)
+	if(mouse.wheel != 0 || pressevent.cycle_building) {
+		if(mouse.wheel != 0) {
+			if(mouse.wheel > 0)
+				cs->player[me.id]->selected_building += 1;
+			else
+				cs->player[me.id]->selected_building -= 1;
+		} else if(pressevent.cycle_building) {
 			cs->player[me.id]->selected_building += 1;
-		else
-			cs->player[me.id]->selected_building -= 1;
+		}
 		
 		if(cs->player[me.id]->selected_building >= UNIT_TYPES - 1)
 			cs->player[me.id]->selected_building = -1;

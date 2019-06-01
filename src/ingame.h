@@ -16,6 +16,8 @@ struct InGameKeyStateEntry {
 	bool			up;
 	bool			down;
 	bool			shoot;
+	bool			shoot_special;
+	bool			cycle_building;
 	bool			build;
 	bool			suicide;
 };
