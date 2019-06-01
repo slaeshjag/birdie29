@@ -27,6 +27,7 @@
 #define PANE_B 0xCD
 
 #define PLAYER_SPEED 500
+#define	PLAYER_SPEED_SLOW 300
 #define	PLAYER_HP 50
 
 #define MAP_NAME_LEN_MAX 255
