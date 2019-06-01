@@ -14,10 +14,14 @@ struct UnitTurretData {
 int unit_turret_special_function(UnitEntry *unit) {
 	UnitTurretData *data;
 	int team;
+	int tilew, tileh;
 	
 	if(!unit->powered)
 		return;
 	
+	tilew = ss->active_level->layer->tile_w;
+	tileh = ss->active_level->layer->tile_h;
+
 	if(!unit->special_data)
 		unit->special_data = calloc(1, sizeof(UnitTurretData));
 	
@@ -35,10 +39,10 @@ int unit_turret_special_function(UnitEntry *unit) {
 			x = ss->movable.movable[c->movable].x/1000;
 			y = ss->movable.movable[c->movable].y/1000;
 			
-			if(util_distance(x, y, unit->x, unit->y) < TURRET_DISTANCE) {
-				int angle = atan2(y - unit->y, x - unit->x)*180/M_PI + 180;
-				
-				bullet_spawn_from_movable(BULLET_TYPE_WIMPY, unit->x, unit->y, angle, -1);
+			if(util_distance(x, y, unit->x*tilew, unit->y*tileh) < TURRET_DISTANCE) {
+				int angle = atan2(y - unit->y*tileh, x - unit->x*tilew)*180/M_PI/* + 180*/;
+			
+				bullet_spawn_from_movable(BULLET_TYPE_WIMPY, unit->x*tilew, unit->y*tileh, angle, -1);
 				return 0;
 			}
 		}
