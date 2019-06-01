@@ -36,6 +36,8 @@ void hud_init() {
 	hud.scoreboard.pane.pane->background_color.g = PANE_G;
 	hud.scoreboard.pane.pane->background_color.b = PANE_B;
 	
+	muil_vbox_add_child(hud.scoreboard.vbox, hud.scoreboard.title = muil_widget_create_label(gfx.font.small, "Fuel Stocks"), 0);
+	
 	for(i = 0; i < TEAMS_CAP; i++) {
 		muil_vbox_add_child(hud.scoreboard.vbox, hud.scoreboard.label[i] = muil_widget_create_label(gfx.font.small, strdup("lol")), 0);
 	}
@@ -48,7 +50,7 @@ void hud_update() {
 	//cs->player[me.id];
 	for(i = 0; i < TEAMS_CAP; i++) {
 		char buf[256];
-		sprintf(buf, "%s: $%i", team_name[i], cs->team[i].money);
+		sprintf(buf, "%s: %i", team_name[i], cs->team[i].money);
 		
 		v = hud.scoreboard.label[i]->get_prop(hud.scoreboard.label[i], MUIL_LABEL_PROP_TEXT);
 		free(v.p);
