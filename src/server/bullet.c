@@ -141,7 +141,7 @@ int bullet_spawn_from_movable(BulletType type, int x, int y, int angle, int owne
 	
 	bullet->type = type;
 	bullet->ticks = bullet_properties[type].ttl;
-	bullet->movable = movableSpawnSprite(0, 0, 0, bullet_properties[type].sprite_type);
+	bullet->movable = movableSpawnSprite(x, y, 0, bullet_properties[type].sprite_type);
 	bullet->owner = owner;
 	ss->movable.movable[bullet->movable].x = x*1000;
 	ss->movable.movable[bullet->movable].y = y*1000;
