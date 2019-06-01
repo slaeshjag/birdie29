@@ -399,7 +399,7 @@ int server_thread(void *arg) {
 				
 				for(tmp = client; tmp; tmp = tmp->next) {
 					/* teleport players to their spawning point */
-					tmp->movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, client->team*PLAYER_VARIANTS + client->sprite_variant);
+					tmp->movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, tmp->team*PLAYER_VARIANTS + tmp->sprite_variant);
 					ss->movable.movable[client->movable].x = ss->team[client->team].spawn.x * 1000;
 					ss->movable.movable[client->movable].y = ss->team[client->team].spawn.y * 1000;
 				}
