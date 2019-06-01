@@ -60,7 +60,7 @@ struct UnitEntry {
 	struct PylonEntry		*pylon;
 	int				powered;
 	
-	
+	int (*special_function)(UnitEntry *unit);
 	
 	int				create_flag;
 	int				modify_flag;

@@ -61,6 +61,14 @@ static int _special_func_miner(UnitEntry *unit) {
 }
 
 static int _special_func_turret(UnitEntry *unit) {
+	int team;
+	
+	for(team = 0; team < TEAMS_CAP; team++) {
+		if(team == unit->team)
+			continue;
+		
+	}
+	
 	return 0;
 }
 
@@ -221,6 +229,8 @@ int unit_add(int team, UnitType type, int x, int y, bool force) {
 	e->team = team;
 	
 	e->health = _unit_properties[type].health;
+	
+	e->special_function = _unit_properties[type].special_function;
 	
 	e->next = ss->team[team].unit.unit;
 	ss->team[team].unit.unit = e;
