@@ -177,12 +177,14 @@ void server_handle_client(Client *cli) {
 					strcpy(response.join.name, tmp->name);
 					response.join.team = tmp->team;
 					response.join.id = tmp->id;
+					response.join.movable = cli->movable;
 					protocol_send_packet(cli->sock, &response);
 					
 					if(tmp->sock != cli->sock) {
 						response.join.id = cli->id;
 						strcpy(response.join.name, cli->name);
 						response.join.team = cli->team;
+						response.join.movable = cli->movable;
 						protocol_send_packet(tmp->sock, &response);
 					}
 				}
@@ -201,44 +203,26 @@ void server_handle_client(Client *cli) {
 					char name[MAP_NAME_LEN_MAX + 10];
 					snprintf(name, MAP_NAME_LEN_MAX + 10, "map/%s", pack.map_change.name);
 					ss->active_level = d_map_load(name);
-				}
-				
-				strcpy(response.map_change.name, pack.map_change.name);
-				response.map_change.w = ss->active_level->layer[0].tilemap->w;
-				response.map_change.h = ss->active_level->layer[0].tilemap->h;
 					
-				for(tmp = client; tmp; tmp = tmp->next) {
-					protocol_send_packet(tmp->sock, &response);
-				}
-				
-				response.type = PACKET_TYPE_TILE_UPDATE;
-				response.size = sizeof(PacketTileUpdate);
+					int map_w = pack.map_change.w = ss->active_level->layer[0].tilemap->w;
+					int map_h = pack.map_change.h = ss->active_level->layer[0].tilemap->h;
 					
-				for(tmp = client; tmp; tmp = tmp->next) {
-					uint32_t x, y;
-					
-					for(x = 0; x < response.map_change.w; x++) {
-						for(y = 0; y < response.map_change.h; y++) {
+					/* Process map collision layer */
+					for(int x = 0; x < map_w; x++) {
+						for(int y = 0; y < map_h; y++) {
 							for(i = 0; i < MAP_LAYERS; i++) {
 								uint32_t tile;
 								/* Specific part of the tilesheet is collision tiles */
-								tile = ss->active_level->layer[i].tilemap->data[y*response.map_change.w + x];
+								tile = ss->active_level->layer[i].tilemap->data[y*map_w + x];
 								if(tile >= TILESHEET_COLLISION_TILE_LOW && tile <= TILESHEET_COLLISION_TILE_HIGH) {
-									tile |= TILESET_COLLISION_MASK;
-									ss->active_level->layer[0].tilemap->data[y*response.map_change.w + x] = tile;
+									//tile |= TILESET_COLLISION_MASK;
+									ss->active_level->layer[0].tilemap->data[y*map_w + x] |= TILESET_COLLISION_MASK;
 								}
-								
-								response.tile_update.x = x;
-								response.tile_update.y = y;
-								response.tile_update.layer = i;
-								response.tile_update.tile = ss->active_level->layer[i].tilemap->data[y*response.map_change.w + x] & TILESET_MASK;
-								protocol_send_packet(tmp->sock, &response);
 							}
 						}
 					}
 				}
 				
-
 				break;
 			
 			case PACKET_TYPE_KEYPRESS:
@@ -340,17 +324,71 @@ int server_thread(void *arg) {
 				}
 
 				ss->grace_counter = TIMER_GRACE;
+				
+				/* Send map change packets to clients */
+				pack.type = PACKET_TYPE_MAP_CHANGE;
+				pack.size = sizeof(PacketMapChange);
+				
+				memset(pack.map_change.name, 0, MAP_NAME_LEN_MAX);
+				int map_h, map_w;
+				
+				map_w = pack.map_change.w = ss->active_level->layer[0].tilemap->w;
+				map_h = pack.map_change.h = ss->active_level->layer[0].tilemap->h;
+					
+				for(tmp = client; tmp; tmp = tmp->next) {
+					protocol_send_packet(tmp->sock, &pack);
+				}
+				
+				/* Update client maps */
+				pack.type = PACKET_TYPE_TILE_UPDATE;
+				pack.size = sizeof(PacketTileUpdate);
+				
+				for(tmp = client; tmp; tmp = tmp->next) {
+					uint32_t x, y;
+					
+					for(x = 0; x < map_w; x++) {
+						for(y = 0; y < map_h; y++) {
+							for(i = 0; i < MAP_LAYERS; i++) {
+								pack.tile_update.x = x;
+								pack.tile_update.y = y;
+								pack.tile_update.layer = i;
+								pack.tile_update.tile = ss->active_level->layer[i].tilemap->data[map_w*y + x] & TILESET_MASK;
+								protocol_send_packet(tmp->sock, &pack);
+							}
+						}
+					}
+				}
+				
 				unit_prepare();
-
+				
 				for(tmp = client; tmp; tmp = tmp->next) {
 					/* teleport players to their spawning point */
 					tmp->movable = movableSpawnSprite(ss->team[tmp->team].spawn.x, ss->team[tmp->team].spawn.y, 0, /*TODO: Replace with sprite type */ 0);
 					ss->movable.movable[client->movable].x = ss->team[client->team].spawn.x * 1000;
 					ss->movable.movable[client->movable].y = ss->team[client->team].spawn.y * 1000;
-
-					pack.type = PACKET_TYPE_START;
-					pack.size = sizeof(PacketStart);
+				}
+				
+				for(tmp = client; tmp; tmp = tmp->next) {
+					/* Send join packets to update movable ID */
+					Client *joinclient;
 					
+					pack.type = PACKET_TYPE_JOIN;
+					pack.size = sizeof(PacketJoin);
+					
+					for(joinclient = client; joinclient; joinclient = joinclient->next) {
+						memset(pack.join.name, 0, NAME_LEN_MAX);
+						strcpy(pack.join.name, joinclient->name);
+						pack.join.team = joinclient->team;
+						pack.join.id = joinclient->id;
+						pack.join.movable = joinclient->movable;
+						protocol_send_packet(tmp->sock, &pack);
+					}
+				}
+				
+				pack.type = PACKET_TYPE_START;
+				pack.size = sizeof(PacketStart);
+				
+				for(tmp = client; tmp; tmp = tmp->next) {	
 					pack.start.player_id = tmp->id;
 					pack.start.movable = tmp->movable;
 					

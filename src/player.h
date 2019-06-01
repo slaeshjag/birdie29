@@ -24,8 +24,8 @@ struct Player {
 	int selected_building;
 };
 
-void player_set(int id, const char *name, int team);
-void player_join(int id, const char *name, int team);
+void player_set(int id, const char *name, int team, int movable);
+void player_join(int id, const char *name, int team, int movable);
 
 
 #endif

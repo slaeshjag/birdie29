@@ -135,7 +135,8 @@ void gameroom_network_handler() {
 					MuilPropertyValue v;
 					v = gameroom.list->get_prop(gameroom.list, MUIL_LISTBOX_PROP_SIZE);
 					
-					player_set(pack.join.id, pack.join.name, pack.join.team);
+					player_set(pack.join.id, pack.join.name, pack.join.team, pack.join.movable);
+					printf("set player %i %s %i\n", pack.join.id, pack.join.name, pack.join.movable);
 					
 					for(i = 0; i < v.i; i++) {
 						if(atoi(muil_listbox_get(gameroom.list, i)) == pack.join.id) {
@@ -152,7 +153,7 @@ void gameroom_network_handler() {
 					muil_listbox_add(gameroom.list, tmp);
 					free(tmp);
 					
-					player_join(pack.join.id, pack.join.name, pack.join.team);
+					player_join(pack.join.id, pack.join.name, pack.join.team, pack.join.movable);
 				}
 				break;
 			
