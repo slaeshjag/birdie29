@@ -50,7 +50,7 @@ static UnitProperties _unit_properties[UNIT_TYPES] = {
 void unit_housekeeping() {
 	int i;
 	struct UnitEntry **e, *tmp;
-
+	
 	for (i = 0; i < MAX_TEAM; i++) {
 		for (e = &ss->team[i].unit.unit; *e; ) {
 			if ((*e)->delete_flag) {
@@ -77,6 +77,12 @@ void unit_housekeeping() {
 				
 				free(tmp);
 			} else {
+				
+				/* Add money for miners */
+				if((*e)->type == UNIT_TYPE_MINER) {
+					ss->team[(*e)->team].money += MONEY_PER_MINER;
+				}
+				
 				e = &(*e)->next;
 			}
 		}
