@@ -39,7 +39,7 @@ struct SelectName{
 	MuilWidget *label;
 	MuilWidget *entry;
 	MuilWidget *picture;
-	MuilWidget *slider;
+	MuilWidget *listbox;
 	struct {
 		MuilWidget *ok;
 		MuilWidget *quit;

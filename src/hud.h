@@ -18,6 +18,7 @@ struct Hud{
 	struct {
 		struct MuilPaneList pane;
 		MuilWidget *vbox;
+		MuilWidget *title;
 		MuilWidget *label[TEAMS_CAP];
 	} scoreboard;
 };
