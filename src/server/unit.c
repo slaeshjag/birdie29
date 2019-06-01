@@ -65,6 +65,8 @@ void unit_housekeeping() {
 				
 				if (tmp->pylon)
 					unit_pylon_delete(tmp);
+				
+				server_particle_spawn(tmp->x * ss->active_level->layer->tile_w, tmp->y * ss->active_level->layer->tile_h, 0, PARTICLE_TYPE_EXPLOSION);
 
 				PacketTileUpdate pack;
 				int x, y;
