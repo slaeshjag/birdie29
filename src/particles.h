@@ -6,6 +6,7 @@
 
 enum ParticleType {
 	PARTICLE_TYPE_TEST,
+	PARTICLE_TYPE_BLOOD,
 };
 
 
