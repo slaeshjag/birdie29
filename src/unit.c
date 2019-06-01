@@ -36,16 +36,33 @@
 	} \
 } while(0)
 
+static int _special_func_miner(UnitEntry *unit);
+static int _special_func_turret(UnitEntry *unit);
+
 static UnitProperties _unit_properties[UNIT_TYPES] = {
 	[UNIT_TYPE_GENERATOR] = {.tiles = { 104, 105, 96, 97 }, .cost = 100, .health = 100},
 	[UNIT_TYPE_PYLON] = {.tiles = { 106, -1, 98, -1 }, .cost = 10, .health = 50},
-	[UNIT_TYPE_MINER] = {.tiles = { 107, -1, -1, -1 }, .cost = 20, .health = 20},
-	[UNIT_TYPE_TURRET] = {.tiles = { 108, -1, -1, -1 }, .cost = 50, .health = 50},
+	[UNIT_TYPE_MINER] = {.tiles = { 107, -1, -1, -1 }, .cost = 20, .health = 20, .special_function = _special_func_miner},
+	[UNIT_TYPE_TURRET] = {.tiles = { 108, -1, -1, -1 }, .cost = 50, .health = 50, .special_function = _special_func_turret},
 	[UNIT_TYPE_WALL] = {.tiles = { 109, -1, 101, -1 }, .cost = 5, .health = 50},
 	[UNIT_TYPE_SPAWN] = {.tiles = { 110, -1, -1, -1 }, .cost = -1, .health = -1},
 };
 
+static int _special_func_miner(UnitEntry *unit) {
+	/* Add money for miners */
+	if(unit->powered) {
+		if(ss->team[unit->team].miner_income_counter++ >= INCOME_PER_MONEY) {
+			ss->team[unit->team].money++;
+			ss->team[unit->team].miner_income_counter = 0;
+		}
+	}
+	
+	return 0;
+}
 
+static int _special_func_turret(UnitEntry *unit) {
+	return 0;
+}
 
 void unit_housekeeping() {
 	int i;
@@ -81,14 +98,8 @@ void unit_housekeeping() {
 				
 				free(tmp);
 			} else {
-				
-				/* Add money for miners */
-				if((*e)->type == UNIT_TYPE_MINER && (*e)->powered) {
-					if(ss->team[(*e)->team].miner_income_counter++ >= INCOME_PER_MONEY) {
-						ss->team[(*e)->team].money++;
-						ss->team[(*e)->team].miner_income_counter = 0;
-					}
-				}
+				if((*e)->special_function)
+					(*e)->special_function((*e));
 				
 				e = &(*e)->next;
 			}

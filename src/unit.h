@@ -13,6 +13,12 @@
 #include "powerpylon.h"
 
 typedef enum UnitType UnitType;
+typedef struct UnitTiles UnitTiles;
+typedef struct UnitProperties UnitProperties;
+typedef struct UnitEntry UnitEntry;
+typedef struct Unit Unit;
+
+
 enum UnitType {
 	UNIT_TYPE_GENERATOR,
 	UNIT_TYPE_PYLON,
@@ -24,7 +30,7 @@ enum UnitType {
 };
 
 
-typedef struct UnitTiles UnitTiles;
+
 struct UnitTiles {
 	unsigned int			bottom_left;
 	unsigned int			bottom_right;
@@ -32,15 +38,16 @@ struct UnitTiles {
 	unsigned int			top_right;
 };
 
-typedef struct UnitProperties UnitProperties;
+
 struct UnitProperties {
 	UnitTiles tiles;
 	
 	int cost;
 	int health;
+	
+	int (*special_function)(UnitEntry *unit);
 };
 
-typedef struct UnitEntry UnitEntry;
 struct UnitEntry {
 	int				map_index;
 	int				x;
@@ -60,7 +67,6 @@ struct UnitEntry {
 	int				delete_flag;
 };
 
-typedef struct Unit Unit;
 struct Unit {
 	UnitEntry		*unit;
 };
