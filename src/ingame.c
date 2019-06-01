@@ -277,8 +277,10 @@ void ingame_network_handler() {
 				//sfx_play(SFX_APPLE);
 				break;
 			case PACKET_TYPE_POWER_EVENT:
-				if (pack.power_event.team == me.team)
+				if (pack.power_event.team == me.team) {
+					pylonpower_diff(cs->power_map, pack.power_event.x, pack.power_event.y, pack.power_event.sign);
 					printf("power event at %i, %i: %i\n", pack.power_event.x, pack.power_event.y, pack.power_event.sign);
+				}
 				break;
 		}
 	}

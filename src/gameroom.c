@@ -174,6 +174,8 @@ void gameroom_network_handler() {
 				me.id = pack.start.player_id;
 				me.movable = pack.start.movable;
 				printf("Started game as player %i\n", me.id);
+				if (!cs->power_map)
+					cs->power_map = pylonpower_map_new(cs->map.layer[0]->w, cs->map.layer[0]->h);
 				game_state(GAME_STATE_GAME);
 				break;
 			case PACKET_TYPE_MOVABLE_SPAWN:
@@ -181,6 +183,15 @@ void gameroom_network_handler() {
 				break;
 			case PACKET_TYPE_MOVABLE_DESPAWN:
 				drawable_despawn(cs->drawable, pack.movable_despawn.movable);
+				break;
+			case PACKET_TYPE_POWER_EVENT:
+				if (!cs->power_map)
+					cs->power_map = pylonpower_map_new(cs->map.layer[0]->w, cs->map.layer[0]->h);
+				if (pack.power_event.team == me.team) {
+					pylonpower_diff(cs->power_map, pack.power_event.x, pack.power_event.y, pack.power_event.sign);
+					printf("power event at %i, %i: %i\n", pack.power_event.x, pack.power_event.y, pack.power_event.sign);
+				}
+
 				break;
 		}
 	}
