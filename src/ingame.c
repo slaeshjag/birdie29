@@ -275,7 +275,7 @@ void ingame_network_handler() {
 				game_state(GAME_STATE_GAME_OVER);
 				break;
 
-			case PACKET_TYPE_PARTICLE:
+			case PACKET_TYPE_PARTICLE_EVENT:
 				printf("particle\n");
 				particle_add(pack.particle.effect_type, pack.particle.x, pack.particle.y, pack.particle.angle);
 				//d_particle_emitter_move(s->particle_effect[pack.particle.effect_type], pack.particle.x, pack.particle.y);
@@ -291,6 +291,8 @@ void ingame_network_handler() {
 					printf("power event at %i, %i: %i\n", pack.power_event.x, pack.power_event.y, pack.power_event.sign);
 				}
 				break;
+			default:
+				printf("wat %i\n", pack.type);
 		}
 	}
 }

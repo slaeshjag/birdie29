@@ -12,8 +12,8 @@ void particle_loop() {
 			*next = (*next)->next;
 			free(del);
 		}
-
-		if (!(*next)->next)
+		
+		if (!*next)
 			break;
 	}
 }

@@ -21,6 +21,7 @@ enum PacketType {
 	PACKET_TYPE_TILE_UPDATE,
 	PACKET_TYPE_MAP_CHANGE,
 	PACKET_TYPE_PARTICLE,
+	PACKET_TYPE_PARTICLE_EVENT,
 	PACKET_TYPE_EXPLOSION,
 	PACKET_TYPE_STATUS_UPDATE,
 	PACKET_TYPE_BULLET_ANNOUNCE,
@@ -47,6 +48,7 @@ struct PacketJoin {
 	uint32_t id;
 	char name[NAME_LEN_MAX];
 	int team;
+	int movable;
 };
 
 typedef struct PacketStart PacketStart;

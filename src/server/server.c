@@ -480,14 +480,15 @@ Client *server_get_client_list() {
 
 
 void server_particle_spawn(int x, int y, int angle, enum ParticleType type) {
-	Packet pack;
+	static Packet pack;
 
-	pack.type = PACKET_TYPE_PARTICLE;
+	pack.type = PACKET_TYPE_PARTICLE_EVENT;
 	pack.size = sizeof(PacketParticle);
 	pack.particle.x = x;
 	pack.particle.y = y;
 	pack.particle.angle = angle;
-	pack.particle.type = type;
+	pack.particle.effect_type = type;
 
+	printf("Attempting to spawn particle %i\n", pack.type);
 	server_broadcast_packet(&pack);
 }
