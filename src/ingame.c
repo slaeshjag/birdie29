@@ -14,6 +14,7 @@
 #include "util.h"
 #include "hud.h"
 #include "particles.h"
+#include "healthbar.h"
 //#include "effect.h"
 //#include "sfx.h"
 

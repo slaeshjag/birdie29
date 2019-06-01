@@ -1,6 +1,7 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
+#include <darnit/darnit.h>
 #include "config.h"
 #include "ingame.h"
 
@@ -22,6 +23,7 @@ struct Player {
 	
 	int angle;
 	int selected_building;
+	DARNIT_PARTICLE *power_effect;
 };
 
 void player_set(int id, const char *name, int team, int movable);
