@@ -108,7 +108,18 @@ void menu_init() {
 	muil_vbox_add_child(menu_help.vbox, menu_help.label.title = muil_widget_create_label(gfx.font.large, "How to play"), 0);
 	muil_vbox_add_child(menu_help.vbox, muil_widget_create_spacer_size(0, 10), 0);
 	muil_vbox_add_child(menu_help.vbox, menu_help.label.title = muil_widget_create_label(gfx.font.small, 
-		"You just lost the game lol.\n"
+		"You are a scavenging robot left in a post-apocalyptic world.\n\n"
+		"You must build and defend your base while at the same time mining for nuclear fuel resources. "
+		"Use the WASD keys to move, mouse to aim and position your building cursor. "
+		"TAB or mouse wheel cycles through the available buildings, SPACE places a builing. \n\n"
+		"Buildings can only be built within your powergrid, supplied by your generator. "
+		"Extend your power grid using pylon, but beware! If the pylons lose connection with the generator, your buildings connected to those pylons will stop working. \n\n"
+		"Miners can be placed on nuclear fuel depots and will steadily generate income. "
+		"Protect yourself using walls and turrets, or by shooting projectiles using left or right mouse button. "
+		"After a grace period, a timer will start counting for the player who has the most fuel reserves on stock. "
+		"The team that manages to stay in the lead longest will manage to get their counter down first and will win the game. \n\n"
+		"Beware that building buildings and firing projectiles will use up your fuel stocks. "
+		"Be wise and cunning. Aiming for the opponents power grid close to their generator will disable their entire power distribution, rendering all their miners inoperable. "
 	), 0);
 	muil_vbox_add_child(menu_help.vbox, muil_widget_create_spacer(), 1);
 	muil_vbox_add_child(menu_help.vbox, menu_help.label.title = muil_widget_create_label(gfx.font.small, "2019 party hack for Birdie Gamedev compo\nCode by h4xxel (http://h4xxel.org), slaesjag (http://rdw.se) & Kalops of //actung fulkod\nSound effects by B2"), 0);
