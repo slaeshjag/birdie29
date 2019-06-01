@@ -167,6 +167,23 @@ int main(int argc, char  **argv) {
 	
 	srand(time(NULL));
 	
+	DARNIT_INPUT_MAP keymap={
+		KEY(w),
+		KEY(s),
+		KEY(a),
+		KEY(d),
+		KEY(F1),
+		KEY(F2),
+		KEY(SPACE),
+		KEY(TAB),
+		KEY(RETURN),
+		KEY(ESCAPE),
+		KEY(LSHIFT),
+		KEY(LCTRL),
+	};
+	
+	d_keymapping_set(keymap);
+	
 	sprintf(font_path, "%s", d_fs_exec_path());
 	chdir(tmp = dirname(font_path));
 	sprintf(font_path, "%s/res/font.ttf", tmp);
