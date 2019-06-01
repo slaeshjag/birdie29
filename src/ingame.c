@@ -101,8 +101,9 @@ void ingame_loop() {
 		d_tilemap_recalc(cs->map.layer[i]);
 		d_tilemap_draw(cs->map.layer[i]);
 		d_render_offset(cs->camera.x, cs->camera.y);
-		drawable_render(cs->drawable, i);
 		
+		if(i == MAP_LAYER_BUILDING_LOWER)
+			drawable_render(cs->drawable, 0);
 	}
 	
 	/*for(i = 0; i < PARTICLE_EFFECTS; i++)
